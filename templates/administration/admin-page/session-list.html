@@ -1,0 +1,179 @@
+   {% extends '../admin-layout/base.html' %}
+{% load static %}
+
+   {% block content %}
+   <div class="container mt-4">
+         <div class="row">
+            <div class="col-md-12 mb-5">
+               <div class="card p-3 text-center">
+                  <h5>👤 Liste des Sessions</h5>
+
+               </div>
+            </div>
+{#             <div class="col-md-12 ">#}
+{##}
+{#                  <table class="table table-striped">#}
+{#        <thead>#}
+{#            <tr>#}
+{#                <th>#</th>#}
+{##}
+{#                <th>title</th>#}
+{#                <th>start_time</th>#}
+{#                <th>end_time</th>#}
+{##}
+{#            </tr>#}
+{#        </thead>#}
+{#        <tbody>#}
+{#            {% for session in sessions %}#}
+{#            <tr>#}
+{#                <td>{{ forloop.counter }}</td>#}
+{#                <td>{{ session.title }}</td>#}
+{#                <td>{{ session.start_time }}</td>#}
+{#                <td>{{ session.end_time }}</td>#}
+{##}
+{#            </tr>#}
+{#            {% empty %}#}
+{#            <tr>#}
+{#                <td colspan="6" class="text-center">Aucun participant trouvé.</td>#}
+{#            </tr>#}
+{#            {% endfor %}#}
+{#        </tbody>#}
+{#    </table>#}
+{#             #}
+{#            #}
+{#    #}
+{##}
+{##}
+{#    <!-- Pagination -->#}
+{#    {% if is_paginated %}#}
+{#    <nav aria-label="Page navigation">#}
+{#        <ul class="pagination">#}
+{#            {% if page_obj.has_previous %}#}
+{#            <li class="page-item">#}
+{#                <a class="page-link" href="?page=1">&laquo; Première</a>#}
+{#            </li>#}
+{#            <li class="page-item">#}
+{#                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Précédent</a>#}
+{#            </li>#}
+{#            {% endif %}#}
+{##}
+{#            <li class="page-item disabled">#}
+{#                <span class="page-link">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>#}
+{#            </li>#}
+{##}
+{#            {% if page_obj.has_next %}#}
+{#            <li class="page-item">#}
+{#                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Suivant</a>#}
+{#            </li>#}
+{#            <li class="page-item">#}
+{#                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Dernière &raquo;</a>#}
+{#            </li>#}
+{#            {% endif %}#}
+{#        </ul>#}
+{#    </nav>#}
+{#    {% endif %}#}
+{##}
+{##}
+{##}
+{#             </div>#}
+         {% for item in sessions.all %}
+        <div class="col-xl-4 mt-15">
+
+            <!--begin::Engage Widget 11-->
+            <div class="card card-custom card-stretch gutter-b">
+                <div class="card-body d-flex p-0 ribbon ribbon-clip ribbon-right">
+                    <div class="ribbon-target" style="top: 15px; height: 45px;">
+                        <span class="ribbon-inner bg-danger"> </span>
+
+                        <span class="label pulse pulse-white mr-0 ">
+    <span class="position-relative bold " data-toggle="tooltip" title="{{ item.participant_count }} - Inscrits">{{ item.participant_count  }}</span>
+    <span class="pulse-ring"></span>
+</span>
+
+                    </div>
+                    <div class="d-flex justify-content-center w-100 align-text-top position-absolute " style="margin-top: -50px">
+
+        <img alt="qrcode" src="{{ item.qr_code.url }}" width="200" height="200" class="img-fluid "/>
+                       
+    </div>
+
+                    <div class="flex-grow-1 p-10  card-rounded flex-grow-1">
+
+
+                        <div class="col-12 mt-25">
+                             <h2 class="text-dark pb-3 font-weight-bolder pt-10">{{ item.title }}</h2>
+                        <p class="text-dark-50 pb-5 text-justify font-size-h5">
+                            {{ item.description|truncatechars:100 }}
+                        </p></div>
+
+                        <table class="table table-borderless table-vertical-center mt-5">
+                            <!--begin::Thead-->
+                            <thead>
+                            <tr>
+                                <th class="p-0 w-50px"></th>
+                                <th class="p-0 w-100 min-w-100px"></th>
+                                <th class="p-0 min-w-130px w-100"></th>
+                            </tr>
+                            </thead>
+                            <!--end::Thead-->
+
+                            <!--begin::Tbody-->
+                            <tbody>
+                            <tr>
+                                <td class="pl-0 pt-0 py-5">
+                                    <div class="symbol symbol-45 symbol-light-primary mr-2">
+                                        <span class="symbol-label">
+                                            <span class="svg-icon svg-icon-2x svg-icon-primary">
+                                                <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1"
+                                                     xmlns="http://www.w3.org/2000/svg"
+                                                     xmlns:xlink="http://www.w3.org/1999/xlink">
+                                                    <g id="Stockholm-icons-/-Map-/-Marker1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                        <rect id="bound" x="0" y="0" width="24" height="24"></rect>
+                                                        <path d="M5,10.5 C5,6 8,3 12.5,3 C17,3 20,6.75 20,10.5 C20,12.8325623 17.8236613,16.03566 13.470984,20.1092932 C12.9154018,20.6292577 12.0585054,20.6508331 11.4774555,20.1594925 C7.15915182,16.5078313 5,13.2880005 5,10.5 Z M12.5,12 C13.8807119,12 15,10.8807119 15,9.5 C15,8.11928813 13.8807119,7 12.5,7 C11.1192881,7 10,8.11928813 10,9.5 C10,10.8807119 11.1192881,12 12.5,12 Z"
+              id="Combined-Shape" fill="#000000" fill-rule="nonzero"></path>
+                                                    </g>
+                                                </svg>
+                                            </span>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="pl-0">
+                                    <a href="#" class="text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg">{{ item.location }}COCODY</a>
+                                    <span class="text-muted font-weight-bold d-block">{{ item.speaker }}</span>
+                                </td>
+
+                                <td class="text-left bg-gray-700 rounded">
+                                    <span class="text-white font-weight-bolder d-block font-size-lg">
+                                       {{ item.start_time|time }}
+                                    </span>
+                                    <span class="text-muted font-weight-bold d-block font-size-sm">
+                                        {{ item.start_time|date }}
+                                    </span>
+                                </td>
+
+                            </tr>
+
+                            </tbody>
+                            <!--end::Tbody-->
+                        </table>
+                    </div>
+
+
+                </div>
+
+{#                <div class="card-footer d-flex align-items-center justify-content-between">#}
+{#                    <a href="#" class="btn btn-danger font-weight-bold">S'enregistrer</a>#}
+{#    <!-- QR Code centré -->#}
+{#                    <a href="#" class="btn btn-primary font-weight-bold">Sectoriel</a>#}
+{#                </div>#}
+
+            </div>
+            <!--end::Engage Widget 11-->
+
+        </div>
+    {% endfor %}
+
+         </div>
+
+      </div>
+   {% endblock %}

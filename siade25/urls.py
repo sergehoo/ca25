@@ -14,9 +14,32 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
-urlpatterns = [
+from administration.views import scan_qr_code
+from public.views import HomePageView, blog_list, blog_detail, soumettre_temoignage
+
+urlpatterns = i18n_patterns(
     path('admin/', admin.site.urls),
-]
+    path('accounts/', include('allauth.urls')),  # Inclure toutes les URLs d'authentification
+    path('i18n/', include('django.conf.urls.i18n')),
+    path('organisator/', include('administration.urls')),
+    path('api/', include('administration.api.urls')),
+
+    path('blog/', blog_list, name="blog_list"),
+    path('blog/<slug:slug>/', blog_detail, name="blog_detail"),
+    path('soumettre-temoignage/', soumettre_temoignage, name="soumettre_temoignage"),
+
+    path('', HomePageView.as_view(), name='home'),
+
+    path("sessions/scan/<slug:slug>/", scan_qr_code, name="scan-qr"),
+
+) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

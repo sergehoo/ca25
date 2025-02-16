@@ -1,0 +1,115 @@
+{% load static %}
+{% load i18n %}
+<div class="hero-slider-item overflow-hidden">
+
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 col-md-6 order-md-1 order-2">
+                <div class="slider-item-content-wrap">
+                    <div class="item-content">
+                        <h3 class="item-title1">
+                            {% trans "CONFERENCE D'ABIDJAN" %}
+                        </h3>
+                        <img src="{% static 'assets/images/dots/dotsimpact.png' %}" alt="Shadow Image"
+                             class="dots-1 opacity-100 img-moving-anim2">
+
+                        {#                  <img width="auto" src="{% static 'assets/images/banner/impact-generationnel.png' %}" class="dots-1 opacity-100 img-moving-anim2" >#}
+
+
+                        <div class="button-group ">
+                            <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                Participer
+                            </button>
+                            {#                                    <button class="custom-btn item-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Watch Video</button>#}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 order-md-2 order-1">
+                <div class="item-image">
+                    <div class="img-1 img-moving-anim1">
+                        <img src="{% static 'assets/images/banner-slider/mensa+otabil2.png' %}" alt="Event template">
+                    </div>
+                    <div class="img-2 img-moving-anim2">
+                        <img src="{% static 'assets/images/banner-slider/amazou-syla-emmanuel2.png' %}"
+                             alt="Event template">
+                    </div>
+                    <img src="{% static 'assets/images/dots/dots2.png' %}" alt="Shadow Image"
+                         class="dots-2 img-moving-anim3">
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-text img-moving-anim2">
+            <strong class="big-title"><span class="text"> CA 2025</span></strong>
+        </div>
+    </div>
+</div>
+
+{#<div class="hero-slider-item overflow-hidden">#}
+{#    <div class="container position-relative">#}
+{#        <div class="row align-items-center slide-2">#}
+{#            <div class="text-center">#}
+{#                <div class="slider-item-content-wrap">#}
+{#                    <div class="item-content2">#}
+                        {#                                   <img src="{% static 'assets/images/dots/dots.png' %}" alt="Shadow Image" class="dots-4 img-moving-anim2">#}
+{##}
+{#                        <h3 class="display-3 text-start  align-items-center">#}
+{#                            {% trans "L'Afrique Francophone  au <br> rendez-vous de l'agenda Divin" %}#}
+{#                        </h3>#}
+{##}
+{#                        <div class="conference-video">#}
+{#                            <a href="#" data-bs-toggle="modal" data-bs-target="#videoModal"><i class="fa-solid fa-play"></i></a>#}
+{#                        </div>#}
+{##}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="dots">#}
+{#                <img src="{% static 'assets/images/dots/dots2.png' %}" alt="Shadow Image" class="dots-4 img-moving-anim2">#}
+{#            </div>#}
+{#        </div>#}
+{#        <img src="{% static 'assets/images/dots/dots5.png' %}" alt="Shadow Image" class="dots-3 img-moving-anim3">#}
+{#    </div>#}
+{##}
+{# <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel"#}
+{#                             aria-hidden="true">#}
+{#                            <div class="modal-dialog modal-lg">#}
+{#                                <div class="modal-content">#}
+{#                                    <div class="modal-header">#}
+{#                                        <h5 class="modal-title" id="videoModalLabel">Vidéo</h5>#}
+{#                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>#}
+{#                                    </div>#}
+{#                                    <div class="modal-body popup-body">#}
+{#                                        <!-- Vidéo avec lecture automatique et contrôle -->#}
+{#                                        <video id="videoPlayer" class="w-100">#}
+{#                                            <source src="{% static 'assets/spot_ca_25.mp4' %}" type="video/mp4">#}
+{#                                            Votre navigateur ne supporte pas la lecture de vidéos.#}
+{#                                        </video>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <!-- Script pour gérer la lecture et l'arrêt -->#}
+{#                            <script>#}
+{#                                document.addEventListener('DOMContentLoaded', function () {#}
+{#                                    let videoModal = document.getElementById('videoModal');#}
+{#                                    let videoPlayer = document.getElementById('videoPlayer');#}
+{##}
+{#                                    // Lorsque le modal s'ouvre, démarrer la lecture#}
+{#                                    videoModal.addEventListener('shown.bs.modal', function () {#}
+{#                                        videoPlayer.play();#}
+{#                                    });#}
+{##}
+{#                                    // Lorsque le modal se ferme, arrêter la vidéo et réinitialiser à 0#}
+{#                                    videoModal.addEventListener('hidden.bs.modal', function () {#}
+{#                                        videoPlayer.pause();#}
+{#                                        videoPlayer.currentTime = 0;#}
+{#                                    });#}
+{#                                });#}
+{#                            </script>#}
+{#                            <div class="highlight-text2 img-moving-anim4">#}
+{#                                <strong class="big-title"><span class="text">CA 2025</span></strong>#}
+{#                            </div>#}
+{#                        </div>#}
+{#</div>#}
+

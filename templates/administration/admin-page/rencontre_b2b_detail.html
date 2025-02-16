@@ -1,0 +1,118 @@
+   {% extends '../admin-layout/base.html' %}
+{% load static %}
+{% load humanize %}
+{% load tz %}
+{% now "Y-m-d H:i:s" as now %}
+<style>
+    .time-display {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.2em;
+    }
+
+    .grayscale {
+        filter: grayscale(100%);
+        opacity: 0.6;
+        pointer-events: none; /* Désactive les interactions */
+    }
+    .session-expired {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+</style>
+  {% block content %}
+<div class="container mt-5">
+    <!-- Carte d'information principale -->
+    <div class="card shadow-lg border-0 rounded-lg p-4">
+        <div class="card-body " style="background-image: url({% static 'assets/images/banner/profiletof.png'%}); background-size: 100%; background-repeat: no-repeat">
+            <h2 class="text-center font-weight-bold text-primary">
+                <i class="fa-solid fa-handshake"></i> Détails de la Rencontre B2B
+            </h2>
+            <hr>
+<!-- Photo du Sponsor -->
+            <div class="text-center">
+                <img src="{{ btobdetails.sponsor.profile.miniature.url }}" 
+                     alt="Photo de {{ btobdetails.sponsor.nom }}" 
+                     class="rounded-circle img-thumbnail"
+                     style="width: 250px; height: 250px; object-fit: cover;"
+                     onerror="this.src='/static/assets/images/default_profile.png';">
+            </div>
+        
+            <!-- Informations générales -->
+            <div class="row" >
+                <div class="col-md-6">
+                    <h4><i class="fa-solid fa-user-tie text-primary"></i> Sponsor</h4>
+                    <p class="font-weight-bold">{{ btobdetails.sponsor.nom }} {{ btobdetails.sponsor.prenom }}</p>
+                    <p><i class="fa-solid fa-building text-secondary"></i> {{ btobdetails.sponsor.company }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h4><i class="fa-solid fa-calendar-days text-danger"></i> Date & Heure</h4>
+                    <p class="font-weight-bold">
+                        <i class="fa fa-calendar"></i> {{ btobdetails.date|date:"d F Y" }}
+                    </p>
+                    <p><i class="fa-solid fa-clock text-success"></i> {{ btobdetails.start_time }} - {{ btobdetails.end_time }}</p>
+                </div>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h4><i class="fa-solid fa-user-check text-success"></i> Meetings Confirmés <span class="font-weight-bold display-4 text-center">{{ btobdetails.meeting_count }}</span></h4>
+
+                </div>
+                <div class="col-md-6">
+                    <h4><i class="fa-solid fa-hourglass-end text-warning"></i> Statut</h4>
+                    {% if btobdetails.is_expired %}
+                        <p class="badge badge-danger p-3">Session Expirée</p>
+                    {% else %}
+                        <p class="badge badge-success p-3">Session Active</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des Participants -->
+    <div class="card shadow-lg border-0 rounded-lg mt-5 p-4">
+        <div class="card-body">
+            <h3 class="text-center font-weight-bold text-primary">
+                <i class="fa-solid fa-users"></i> Participants à cette Rencontre B2B
+            </h3>
+            <hr>
+
+            {% if participants %}
+                <table class="table table-hover table-responsive-md">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th><i class="fa-solid fa-user"></i> Nom</th>
+                            <th><i class="fa-solid fa-envelope"></i> Email</th>
+                            <th><i class="fa-solid fa-phone"></i> Contact</th>
+                            <th><i class="fa-solid fa-calendar-check"></i> Date de Confirmation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for meeting in participants %}
+                            <tr>
+                                <td>{{ meeting.participant.nom }} {{ meeting.participant.prenom }}</td>
+                                <td>{{ meeting.participant.email }}</td>
+                                <td>{{ meeting.participant.contact }}</td>
+                                <td>{{ meeting.confirmed_at|date:"d F Y H:i" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-center font-italic text-muted">Aucun participant n'a encore réservé cette session.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

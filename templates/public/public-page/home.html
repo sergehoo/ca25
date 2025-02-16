@@ -1,10 +1,1927 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Title</title>
-</head>
-<body>
+{% extends '../public-layout/base.html' %}
+{% load static %}
+{% load i18n %}
 
-</body>
-</html>
+{% block content %}
+
+      <!-- info sec start -->
+    <div class="info-sec">
+    <div class="container">
+        <div class="info-countdown" style="background-image: url({% static 'assets/images/banner/bg.png' %});">
+            <ul class="counter-box d-flex justify-content-around" id="countdown" 
+                data-countdown="{% if prochaine_session %}{{ prochaine_session.start_time|date:'Y/m/d H:i:s' }}{% else %}2025/03/10 18:00:00{% endif %}">
+            </ul>
+            <div class="dots img-moving-anim2">
+                <img src="{% static 'assets/images/dots/dots3.png' %}" alt="Shadow Image">
+            </div>
+        </div>
+
+        <div class="information-area">
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-duration="600">
+                    <div class="mail">
+                        <div class="icon"><img src="{% static 'assets/images/icon/mail.svg' %}" alt="Mail"></div>
+                        <a href="#" class="mail-link">conferenceca@abmci.com</a>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-duration="800">
+                    <div class="location">
+                        <div class="icon"><img src="{% static 'assets/images/icon/map-pin.svg' %}" alt="Map"></div>
+                        <a href="#" class="location-link">CATHEDRALE ABMCI-Cocody-Palmeraie Y4 </a>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-duration="1000">
+                    <div class="number">
+                        <div class="icon"><img src="{% static 'assets/images/icon/phone.svg' %}" alt="Phone"></div>
+                        <a href="#" class="number-link">(+225) 07 6822 1272 </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var countdownElement = document.getElementById("countdown");
+    var countdownDate = countdownElement.getAttribute("data-countdown");
+
+    function updateCountdown() {
+        var countDownDate = new Date(countdownDate).getTime();
+        var now = new Date().getTime();
+        var distance = countDownDate - now;
+
+        if (distance < 0) {
+            countdownElement.innerHTML = "<li>La prochaine session commence maintenant !</li>";
+            return;
+        }
+
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        countdownElement.innerHTML = `
+            <li><span>${days}</span> jours</li>
+            <li><span>${hours}</span> heures</li>
+            <li><span>${minutes}</span> min</li>
+            <li><span>${seconds}</span> sec</li>
+        `;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+});
+</script>
+{#      <div class="info-sec">#}
+{#         <div class="container">#}
+{#            <div class="info-countdown" style="background-image: url({% static 'assets/images/banner/bg.png' %});">#}
+{#               <ul class="counter-box d-flex justify-content-around" data-countdown="2025/02/20">#}
+{#               </ul>#}
+{#               <div class="dots img-moving-anim2">#}
+{#                  <img src="{% static 'assets/images/dots/dots3.png' %}" alt="Shadow Image">#}
+{#               </div>#}
+{#            </div>#}
+{#            <div class="information-area">#}
+{#               <div class="row g-4">#}
+{#                  <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-duration="600">#}
+{#                     <div class="mail">#}
+{#                        <div class="icon"><img src="{% static 'assets/images/icon/mail.svg' %}" alt="Mail"></div>#}
+{#                        <a href="#" class="mail-link">conferenceca@abmci.com</a>#}
+{#                     </div>#}
+{#                  </div>#}
+{#                  <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-duration="800">#}
+{#                     <div class="location">#}
+{#                        <div class="icon"><img src="{% static 'assets/images/icon/map-pin.svg' %}" alt="Map"></div>#}
+{#                        <a href="#" class="location-link">CATHEDRALE ABMCI-Cocody-Palmeraie Y4 </a>#}
+{#                     </div>#}
+{#                  </div>#}
+{#                  <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-duration="1000">#}
+{#                     <div class="number">#}
+{#                        <div class="icon"><img src="{% static 'assets/images/icon/phone.svg' %}" alt="Phone"></div>#}
+{#                        <a href="#" class="number-link">(+225) 07 000 000 </a>#}
+{#                     </div>#}
+{#                  </div>#}
+{#               </div>#}
+{#            </div>#}
+{#         </div>#}
+{#      </div>#}
+      <!-- info sec end -->
+
+      <section id="about" class="about-sec">
+         <div class="container">
+            <div class="section-head col-xl-12 m-auto text-center">
+                <img src="{% static 'assets/images/bannervisues.png' %}">
+            </div>
+         </div>
+      </section>
+      <!-- about sec start -->
+      <section id="about" class="about-sec">
+         <div class="container">
+            <div class="section-head col-xl-9 m-auto text-center mb-5">
+               <span class="label">{% trans "Bienvenue à la Conference d'Abidjan 2025" %}</span>
+               <h1 class="title mb-4">
+                L'Afrique Francophone au rendez-vous de  l'Agenda Divin.
+                     </h1>
+               <p class="desc mx-3">
+                 Un rassemblement hautement spirituel et majeur de la Francophonie et des Églises Alliance Biblique Missionnaire Côte d’Ivoire .  Cette année, nous nous retrouvons sous le thème “Impact Générationnel”, un appel à laisser une empreinte indélébile dans notre société, en transmettant des valeurs de foi, d’amour et d’engagement à la prochaine génération.
+                     </p>
+            </div>
+            <div class="about-items-wrap" data-aos="fade-right" data-aos-duration="1000">
+               <div class="row g-4">
+                  <div class="col-lg-6" data-aos="fade-right" data-aos-duration="800">
+                     <div class="about-item">
+                        <div class="item-thumb">
+                           <img src="{% static 'assets/images/about/about1.png' %}" alt="About Images">
+                           <div class="item-content">
+                              <div class="content-title text-white">
+                                 <span class="date">Journee 1,18 Mars 2025</span>
+                                 <h5 class="title">Mensa Otabil</h5>
+                              </div>
+                              <div class="about-video">
+                                 <a class="video-btn1 popup-video" data-bs-toggle="modal" data-bs-target="#staticBackdrop" href="https://youtu.be/v_-E0N2Ejsk?list=PL1j6au4j0Fs7q5_5SX0jlEJ2iXF6U3qex"><span><i class="fas fa-play"></i></span></a>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-sm-6 col-lg-3" data-aos="fade-right" data-aos-duration="700">
+                     <div class="about-item">
+                        <div class="item-thumb">
+                           <img src="{% static 'assets/images/about/about2.png' %}" alt="About Images">
+                           <div class="item-content text-white">
+                              <div class="content-title">
+                                 <span class="date">Journee 2,19 Mars 2025</span>
+                                 <h5 class="title">Alexandre AMAZOU</h5>
+                              </div>
+                              <div class="about-video">
+                                 <a class="video-btn1 popup-video" data-bs-toggle="modal" data-bs-target="#staticBackdrop" href=""><span><i class="fas fa-play"></i></span></a>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-sm-6 col-lg-3" data-aos="fade-right" data-aos-duration="600">
+                     <div class="about-item">
+                        <div class="item-thumb">
+                           <img src="{% static 'assets/images/about/about3.png' %}" alt="About Images">
+                           <div class="item-content text-white">
+                              <div class="content-title">
+                                 <span class="date">Journee 3,20 Mars 2025</span>
+                                 <h5 class="title">Sylas Makangou</h5>
+                              </div>
+                              <div class="about-video">
+                                 <a class="video-btn1 popup-video" data-bs-toggle="modal" data-bs-target="#staticBackdrop" href="https://youtu.be/9UHCeveJza4?list=PL1j6au4j0Fs7q5_5SX0jlEJ2iXF6U3qex"><span><i class="fas fa-play"></i></span></a>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="dots img-moving-anim5">
+                     <img src="{% static 'assets/images/dots/dots4.png' %}" alt="Shape Images">
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="shape">
+            <img src="{% static 'assets/images/shape/1.svg' %}" alt="Shadow">
+         </div>
+      </section>
+      <!-- about sec end -->
+      <div class="container mt-5">
+         <hr>
+      </div>
+
+    
+    <section id="schedule" class="schedule-sec">
+    <div class="container">
+        <div class="section-head text-center col-xl-8 m-auto mb-5">
+            <span class="label mb-4">Notre Programme</span>
+            <h2 class="title">" Impact Générationnel "</h2>
+            <p>Une génération dira à l’autre combien tu es grand ; elle proclamera tes œuvres merveilleuses.</p>
+        </div>
+
+        <div class="schedule-content-wrap">
+            <!-- 🟢 Navigation des Jours -->
+            <ul class="nav nav-pills schedule-nav-tab mb-5" id="pills-tab" role="tablist">
+                {% for date, sessions in sessions_par_jour.items %}
+                <li class="nav-item schedule-nav-item" role="presentation">
+                    <button class="nav-link {% if forloop.first %}active{% endif %}" 
+                            id="pills-day-{{ forloop.counter }}-tab" 
+                            data-bs-toggle="pill" 
+                            data-bs-target="#pills-day-{{ forloop.counter }}" 
+                            type="button" role="tab" 
+                            aria-controls="pills-day-{{ forloop.counter }}" 
+                            aria-selected="{{ forloop.first }}">
+                        {% translate 'Jours' %} {{ forloop.counter }}
+                    </button>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <!-- 🟠 Contenu des Sessions -->
+            <div class="tab-content schedule-tab-content" id="pills-tabContent">
+                {% for date, sessions in sessions_par_jour.items %}
+                <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
+                     id="pills-day-{{ forloop.counter }}" 
+                     role="tabpanel" 
+                     aria-labelledby="pills-day-{{ forloop.counter }}-tab">
+
+                    {% for session in sessions %}
+                    <div class="row schedule-item" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="1000" 
+                         style="background-image: url({% static 'assets/images/banner/schedule1.png' %});">
+                        <div class="col-lg-4">
+                            <div class="d-flex align-items-center justify-content-around">
+                                <div class="card-thumb item-thumb">
+                                    <img class="rounded-5" width="100px" 
+                                         src="{% if session.speaker.profile.miniature %}{{ session.speaker.profile.miniature.url }}{% else %}{% static 'assets/images/speaker_default.png' %}{% endif %}" 
+                                         alt="{{ session.speaker.nom }}">
+                                </div>
+                                <div class="card-description">
+                                    <span class="name d-block">{{ session.speaker.nom|default:"Conférencier" }} {{ session.speaker.prenom }}</span>
+                                    <span class="date d-block">{{ session.start_time|date:"d M Y" }}</span>
+                                    <span class="time d-block">{{ session.start_time|time:"H:i" }} - {{ session.end_time|time:"H:i" }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="card-title-area col-7">
+                                    <h4 class="title">{{ session.title }}</h4>
+                                    <p class="title-desc">{{ session.description|truncatewords:20 }} 
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#sessionModal" 
+                                           data-title="{{ session.title }}" 
+                                           data-description="{{ session.description }}">Lire plus</a>
+                                    </p>
+                                </div>
+                                <div class="card-button col-5">
+                                    <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                       S'enregistrer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 🟢 Modal pour afficher les détails des sessions -->
+    <div class="modal fade" id="sessionModal" tabindex="-1" aria-labelledby="sessionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sessionTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="sessionDescription"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 🟠 Script pour mettre à jour le modal avec les infos de la session
+        document.addEventListener("DOMContentLoaded", function() {
+            var sessionModal = document.getElementById("sessionModal");
+            sessionModal.addEventListener("show.bs.modal", function(event) {
+                var button = event.relatedTarget;
+                var title = button.getAttribute("data-title");
+                var description = button.getAttribute("data-description");
+
+                document.getElementById("sessionTitle").textContent = title;
+                document.getElementById("sessionDescription").textContent = description;
+            });
+        });
+    </script>
+</section>
+      <!-- schedule sec start -->
+{#      <section id="schedule" class="schedule-sec">#}
+{#         <div class="container">#}
+{#            <div class="section-head text-center col-xl-8 m-auto mb-5">#}
+{#               <span class="label mb-4">Notre Programme</span>#}
+{#               <h2 class="title">#}
+{#             " Impact Générationnel "#}
+{#               </h2>#}
+{#                <p>Une génération dira à l’autre combien tu es grand ; elle proclamera tes œuvres merveilleuses.</p>#}
+{#            </div>#}
+{#            <div class="schedule-content-wrap">#}
+{#               <ul class="nav nav-pills schedule-nav-tab mb-5" id="pills-tab" role="tablist">#}
+{#                  <li class="nav-item schedule-nav-item" role="presentation">#}
+{#                     <button class="nav-link active" id="pills-day-1-tab" data-bs-toggle="pill" data-bs-target="#pills-day-1" type="button" role="tab" aria-controls="pills-day-1" aria-selected="true">#}
+{#                         {% translate 'Jours' %} 01</button>#}
+{#                  </li>#}
+{#                  <li class="nav-item schedule-nav-item" role="presentation">#}
+{#                     <button class="nav-link" id="pills-day-2-tab" data-bs-toggle="pill" data-bs-target="#pills-day-2" type="button" role="tab" aria-controls="pills-day-2" aria-selected="false">#}
+{#                         {% translate 'Jours' %} 02</button>#}
+{#                  </li>#}
+{#                  <li class="nav-item schedule-nav-item" role="presentation">#}
+{#                     <button class="nav-link" id="pills-day-3-tab" data-bs-toggle="pill" data-bs-target="#pills-day-3" type="button" role="tab" aria-controls="pills-day-3" aria-selected="false">#}
+{#                         {% translate 'Jours' %} 03</button>#}
+{#                  </li>#}
+{#                  <li class="nav-item schedule-nav-item" role="presentation">#}
+{#                     <button class="nav-link" id="pills-day-4-tab" data-bs-toggle="pill" data-bs-target="#pills-day-4" type="button" role="tab" aria-controls="pills-day-4" aria-selected="true">#}
+{#                         {% translate 'Jours' %} 04</button>#}
+{#                  </li>#}
+{#                  <li class="nav-item schedule-nav-item" role="presentation">#}
+{#                     <button class="nav-link" id="pills-day-5-tab" data-bs-toggle="pill" data-bs-target="#pills-day-5" type="button" role="tab" aria-controls="pills-day-5" aria-selected="false">#}
+{#                         {% translate 'Jours' %} 05</button>#}
+{#                  </li>#}
+{#                  <li class="nav-item schedule-nav-item" role="presentation">#}
+{#                     <button class="nav-link" id="pills-day-6-tab" data-bs-toggle="pill" data-bs-target="#pills-day-6" type="button" role="tab" aria-controls="pills-day-6" aria-selected="false">#}
+{#                         {% translate 'Jours' %} 06</button>#}
+{#                  </li>#}
+{##}
+{##}
+{#               </ul>#}
+{#               <div class="tab-content schedule-tab-content" id="pills-tabContent">#}
+{#                  <div class="tab-pane fade show active" id="pills-day-1" role="tabpanel" aria-labelledby="pills-day-1-tab" tabindex="0">#}
+{#                     <div class="row schedule-item" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule1.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb item-thumb">#}
+{#                                 <img width="100px" src="{% static 'assets/images/r-otabil2.png' %}" alt="Profile 1">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Mensa Otabil</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Presentation and Keynotes</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-bismak.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Tudor Bismarck</span>#}
+{#                              <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule1.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-sylas2.png' %}" alt="Profile 3">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Syllas Makangou</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Events and Networking</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-amazou2.png' %}" alt="Profile 4">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Alexandre AMAZOU</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Luminary Sessions</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                  </div>#}
+{#                  <div class="tab-pane fade" id="pills-day-2" role="tabpanel" aria-labelledby="pills-day-2-tab" tabindex="0">#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-emmanuel2.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Emmanuel Pasteur</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class="d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-buttoncol-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-bismak.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Tudor Bismarck</span>#}
+{#                              <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule1.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-sylas2.png' %}" alt="Profile 3">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Syllas Makangou</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Events and Networking</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-amazou2.png' %}" alt="Profile 4">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Alexandre AMAZOU</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Luminary Sessions</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{##}
+{#                  </div>#}
+{#                  <div class="tab-pane fade" id="pills-day-3" role="tabpanel" aria-labelledby="pills-day-3-tab" tabindex="0">#}
+{#                        <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-emmanuel2.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Emmanuel Pasteur</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class="d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-buttoncol-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-bismak.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Tudor Bismarck</span>#}
+{#                              <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule1.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-sylas2.png' %}" alt="Profile 3">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Syllas Makangou</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Events and Networking</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-amazou2.png' %}" alt="Profile 4">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Alexandre AMAZOU</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Luminary Sessions</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                  </div>#}
+{#                  <div class="tab-pane fade" id="pills-day-4" role="tabpanel" aria-labelledby="pills-day-4-tab" tabindex="0">#}
+{#                        <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-emmanuel2.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Emmanuel Pasteur</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class="d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-buttoncol-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-bismak.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Tudor Bismarck</span>#}
+{#                              <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule1.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-sylas2.png' %}" alt="Profile 3">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Syllas Makangou</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Events and Networking</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-amazou2.png' %}" alt="Profile 4">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Alexandre AMAZOU</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Luminary Sessions</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                  </div>#}
+{#                  <div class="tab-pane fade"  id="pills-day-5" role="tabpanel" aria-labelledby="pills-day-5-tab" tabindex="0">#}
+{#                         <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-emmanuel2.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Emmanuel Pasteur</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class="d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-buttoncol-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-bismak.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Tudor Bismarck</span>#}
+{#                              <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule1.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-sylas2.png' %}" alt="Profile 3">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Syllas Makangou</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Events and Networking</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-amazou2.png' %}" alt="Profile 4">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Alexandre AMAZOU</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Luminary Sessions</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                  </div>#}
+{#                  <div class="tab-pane fade" id="pills-day-6" role="tabpanel" aria-labelledby="pills-day-6-tab" tabindex="0">#}
+{#                         <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-emmanuel2.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Emmanuel Pasteur</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class="d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-buttoncol-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-bismak.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Tudor Bismarck</span>#}
+{#                              <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule1.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-sylas2.png' %}" alt="Profile 3">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Syllas Makangou</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Events and Networking</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-amazou2.png' %}" alt="Profile 4">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Alexandre AMAZOU</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Luminary Sessions</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                  </div>#}
+{#                  <div class="tab-pane fade" id="pills-day-7" role="tabpanel" aria-labelledby="pills-day-7-tab" tabindex="0">#}
+{#                       <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-emmanuel2.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Emmanuel Pasteur</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class="d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-buttoncol-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-bismak.png' %}" alt="Profile 2">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Tudor Bismarck</span>#}
+{#                              <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Sessions and Labs</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule1.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-sylas2.png' %}" alt="Profile 3">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Syllas Makangou</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Events and Networking</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <div class="row schedule-item" data-aos="fade-left" data-aos-easing="linear" data-aos-duration="1000" style="background-image: url({% static 'assets/images/banner/schedule2.png' %});">#}
+{#                        <div class="col-lg-4">#}
+{#                           <div class="d-flex align-items-center justify-content-around">#}
+{#                              <div class="card-thumb">#}
+{#                                 <img width="100px"  src="{% static 'assets/images/r-amazou2.png' %}" alt="Profile 4">#}
+{#                              </div>#}
+{#                              <div class="card-description">#}
+{#                                 <span class="name d-block">Alexandre AMAZOU</span>#}
+{#                                 <span class="date d-block">18 Mars 2025</span>#}
+{#                                 <span class="time d-block">08:00 - 08:45</span>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                        <div class="col-lg-8">#}
+{#                           <div class=" d-flex align-items-center justify-content-between">#}
+{#                              <div class="card-title-area col-7">#}
+{#                                 <h4 class="title">Luminary Sessions</h4>#}
+{#                                 <p class="title-desc">Discover the latest trends in creativity and get inspired by creative leaders.<a href="#">Read More</a></p>#}
+{#                              </div>#}
+{#                              <div class="card-button col-5">#}
+{#                                 <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              </div>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                  </div>#}
+{#               </div>#}
+{#               <div class=" text-center py-3">#}
+{#                  <button class="custom-btn schedule-btn">Download</button>#}
+{#               </div>#}
+{#               <div class="dots img-moving-anim1">#}
+{#                  <img src="{% static 'assets/images/dots/dots2.png' %}" alt="Shadow Image">#}
+{#               </div>#}
+{#            </div>#}
+{#         </div>#}
+{#         <div class="shape">#}
+{#            <img src="{% static 'assets/images/shape/2.svg' %}" alt="Shape">#}
+{#         </div>#}
+{#      </section>#}
+      <!-- schedule sec end -->
+
+      <!-- brand sec start -->
+{#      <div id="sponsors" class="brand-sec">#}
+{#         <div class="container">#}
+{#            <div class="brand-items-wrap d-md-flex text-center justify-content-around align-items-center" data-aos="fade-up" data-aos-duration="1000">#}
+{#               <div class="brand-item mb-3">#}
+{#                  <div class="icon">#}
+{#                     <img src="{% static 'assets/images/brand/1.png' %}" alt="Brand Image 1"> Logoipsum#}
+{#                  </div>#}
+{#               </div>#}
+{#               <div class="brand-item mb-3">#}
+{#                  <div class="icon">#}
+{#                     <img src="{% static 'assets/images/brand/brand2.png' %}" alt="Brand Image 2">#}
+{#                  </div>#}
+{#               </div>#}
+{#               <div class="brand-item mb-3">#}
+{#                  <div class="icon">#}
+{#                     <img src="{% static 'assets/images/brand/3.png' %}" alt="Brand Image 3"> Logoipsum#}
+{#                  </div>#}
+{#               </div>#}
+{#               <div class="brand-item mb-3">#}
+{#                  <div class="icon">#}
+{#                     <img src="{% static 'assets/images/brand/brand4.png' %}" alt="Brand Image 4">#}
+{#                  </div>#}
+{#               </div>#}
+{#               <div class="brand-item mb-3">#}
+{#                  <div class="icon">#}
+{#                     <img src="{% static 'assets/images/brand/5.png' %}" alt="Brand Image 5"> Logoipsum#}
+{#                  </div>#}
+{#               </div>#}
+{#            </div>#}
+{#         </div>#}
+{#      </div>#}
+      <!-- brand sec end -->
+
+      <!-- video sec start -->
+      <section class="video-sec" data-src="{% static 'assets/images/banner/home-conference-video-bg.svg' %}" data-parallax>
+         <div class="container">
+            <div class="row align-items-center">
+               <div class="col-lg-4">
+                  <div class="video-wrap">
+                     <div class=" img-moving-anim1 rounded">
+                        <img class="rounded-5" src="{% static 'assets/images/dryaposerge.png' %}" alt="Video Image 1">
+                         <span class="text-dark h4">Dr Yapo Serge </span><br>
+                         <span class="text-muted xs">Président du Comite d'Organisation</span>
+                     </div>
+
+                     <div class="dots img-moving-anim2">
+                        <img src="{% static 'assets/images/dots/dots6.png' %}" alt="Shadow Image">
+                     </div>
+                  </div>
+               </div>
+               <div class="col-lg-8">
+                  <div class="video-content-wrap">
+                     <h4 class="title text-justify">
+                      C’est avec une immense joie et une profonde gratitude envers notre Seigneur JESUS, Que nous vous accueillons à la Conférence d’Abidjan,
+                     </h4>
+                     <p class="desc text-justify">
+  un rendez-vous divinement inspiré pour l’édification et l’élévation spirituelle du peuple de Dieu.
+
+                        Tout au long de cette conférence, nous aurons l’occasion de recevoir des enseignements profonds, des révélations inspirées et des moments intenses de prière et d’adoration qui transformeront nos vies et raffermiront notre foi. Nous croyons fermement que le Seigneur manifestera Sa gloire et que chacun repartira avec un dépôt spirituel qui portera du fruit en abondance.
+                     </p>
+                     <div class="management d-flex">
+                        <h3 class="event count-block p-lg-5 p-3"><span>du 10 au 15</span>Mars 2025</h3>
+                        <h3 class="speakers count-block p-lg-5 p-3"><span>05</span>Orateurs</h3>
+                     </div>
+                     <div class="dots img-moving-anim3">
+                        <img src="{% static 'assets/images/dots/dots7.png' %}" alt="Shadow Image">
+                     </div>
+                     <button class="custom-btn2 video-btn">Rejoignez nous</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+      <!-- video sec end -->
+
+      <!-- speakers sec start -->
+      <section id="speakers" class="speakers-gallery-sec position-relative">
+         <div class="container">
+            <div class="section-head col-xl-8 m-auto text-center mb-5">
+               <span class="label">Nos Honorables orateurs</span>
+               <h2 class="title">
+               Nous avons l’honneur d’accueillir des hommes de Dieu de renommée  internationale, </h2>
+                <p>qui partageront des messages puissants pour équiper, encourager et fortifier le corps de Christ.
+               </p>
+            </div>
+            <div class="speakers-gallery-items-wrap">
+               <div class="row">
+
+                  <div class="col-md-6 col-lg-4 col-xl-3">
+                     <div class="speakers-gallery-item" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="600">
+                        <div class="speakers-gallery-item-thumb overflow-hidden position-relative">
+                           <img src="{% static 'assets/images/gallery/otabil.png' %}" alt="Gallery Image 2">
+                        </div>
+                        <ul class="social-icons social">
+                           <li>
+                              <a href=""><i class="fa-brands fa-facebook-f"></i></a>
+                           </li>
+                           <li>
+                              <a href=""><i class="fa-brands fa-linkedin-in"></i></a>
+                           </li>
+                           <li>
+                              <a href=""><i class="fa-brands fa-twitter"></i></a>
+                           </li>
+                        </ul>
+                        <div class="item-content">
+                           <h3 class="title">Mensa OTABIL</h3>
+                           <span class="sub">ICGC Ghana</span>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-md-6 col-lg-4 col-xl-3">
+                     <div class="speakers-gallery-item" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="800">
+                        <div class="speakers-gallery-item-thumb overflow-hidden position-relative">
+                           <img src="{% static 'assets/images/gallery/bismarck.png' %}" alt="Gallery Image 3">
+                        </div>
+                        <ul class="social-icons social">
+                           <li>
+                              <a href=""><i class="fa-brands fa-facebook-f"></i></a>
+                           </li>
+                           <li>
+                              <a href=""><i class="fa-brands fa-linkedin-in"></i></a>
+                           </li>
+                           <li>
+                              <a href=""><i class="fa-brands fa-twitter"></i></a>
+                           </li>
+                        </ul>
+                        <div class="item-content">
+                           <h3 class="title">Tudor Bismarck</h3>
+                           <span class="sub">Jabula Ministrie </span>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-md-6 col-lg-4 col-xl-3">
+                     <div class="speakers-gallery-item" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="1000">
+                        <div class="speakers-gallery-item-thumb overflow-hidden position-relative">
+                           <img src="{% static 'assets/images/gallery/syllas.png' %}" alt="Gallery Image 4">
+                        </div>
+                        <ul class="social-icons social">
+                           <li>
+                              <a href=""><i class="fa-brands fa-facebook-f"></i></a>
+                           </li>
+                           <li>
+                              <a href=""><i class="fa-brands fa-linkedin-in"></i></a>
+                           </li>
+                           <li>
+                              <a href=""><i class="fa-brands fa-twitter"></i></a>
+                           </li>
+                        </ul>
+                        <div class="item-content">
+                           <h3 class="title">Sylas Imankangou</h3>
+                           <span class="sub">--</span>
+                        </div>
+                     </div>
+                  </div>
+                   <div class="col-md-6 col-lg-4 col-xl-3">
+                     <div class="speakers-gallery-item" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="400">
+                        <div class="speakers-gallery-item-thumb overflow-hidden position-relative">
+                           <img src="{% static 'assets/images/gallery/emmanuel.png' %}" alt="Gallery Image 1">
+                        </div>
+                        <div class="">
+                           <ul class="social-icons social">
+                              <li>
+                                 <a href=""><i class="fa-brands fa-facebook-f"></i></a>
+                              </li>
+                              <li>
+                                 <a href=""><i class="fa-brands fa-linkedin-in"></i></a>
+                              </li>
+                              <li>
+                                 <a href=""><i class="fa-brands fa-twitter"></i></a>
+                              </li>
+                           </ul>
+                        </div>
+                        <div class="item-content">
+                           <h3 class="title">Stella Smith</h3>
+                           <span class="sub">Eventor Live Max</span>
+                        </div>
+                     </div>
+                  </div>
+
+
+
+
+
+
+               </div>
+               <div class="dots img-moving-anim1">
+                  <img src="{% static 'assets/images/dots/dots8.png' %}" alt="Shadow Image">
+               </div>
+            </div>
+            <div class="d-flex justify-content-center mt-5">
+               <button class="custom-btn custom-btn2">+ Speakers</button>
+            </div>
+         </div>
+         <div class="shape">
+            <img src="{% static 'assets/images/shape/3.svg' %}" alt="">
+         </div>
+      </section>
+      <!-- speakers sec end -->
+      <div class="container">
+         <hr>
+      </div>
+      <!-- cta sec start-->
+      <section class="cta-sec">
+         <div class="container">
+            <div class="cta-content-wrap text-center" data-aos="fade-right" data-aos-duration="1000">
+               <h2 class="cta-title  m-auto mb-4 mx-5">
+                  Une génération dira à l’autre combien tu es grand ; elle proclamera tes œuvres merveilleuses.
+               </h2>
+               <p class="desc mb-5">
+                  Ce thème nous invite à prendre conscience de notre responsabilité et à devenir des acteurs du changement, en transmettant une foi vivante et agissante aux générations futures.
+               </p>
+               <form action="#">
+                  <input type="text" name="email" class="form-control" placeholder="{% trans 'Passez le message' %}">
+                  <button class="custom-btn custom-btn2">{% trans 'Informer' %}</button>
+               </form>
+               <div class="dots">
+                  <img src="{% static 'assets/images/dots/dots9.png' %}" alt="Shadow Image" class="cta-dots-1 img-moving-anim1">
+                  <img src="{% static 'assets/images/dots/dots10.png' %}" alt="Shadow Image" class="cta-dots-2 img-moving-anim2">
+               </div>
+            </div>
+         </div>
+         <div class="shape">
+            <img src="{% static 'assets/images/shape/4.svg' %}" alt="Shape">
+         </div>
+      </section>
+      <!-- cta sec end-->
+
+      <!-- review sec start -->
+    <!-- Section Témoignages -->
+<section class="review-sec" style="background-image: url({% static 'assets/images/banner/group22.png' %});">
+    <div class="container" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="1000">
+        <h2 class="col-10 col-md-10 col-lg-8 col-xl-7 my-5 text-white">
+            Vous faites partie des milliers de personnes impactées par la Conférence d'Abidjan
+        </h2>
+
+        <!-- 🟢 Bouton pour ouvrir le modal de soumission -->
+        <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#temoignageModal">
+            Laisser un Témoignage
+        </button>
+
+        <!-- 🟠 Témoignages en carrousel -->
+        <div class="review-cards-wrap" x-data="{ activeTestimonial: 0, temoignage: {} }">
+            <div class="review-card-items-wrap">
+                {% for temoignage in temoignages %}
+                <div class="review-card-item" x-show="activeTestimonial === {{ forloop.counter0 }}">
+                    <p class="card-desc">
+                        “{{ temoignage.temoignage|truncatewords:20 }}...”
+                    </p>
+                    <button class="btn btn-sm btn-outline-light" 
+                        @click="temoignage = {nom: '{{ temoignage.nom }}', texte: '{{ temoignage.temoignage }}' }" 
+                        data-bs-toggle="modal" data-bs-target="#temoignageDetailModal">
+                        Lire Plus
+                    </button>
+                    
+                    <div class="profile">
+                        <div class="thumb">
+                            <img src="{% static 'assets/images/review/img.png' %}" alt="Review Image">
+                        </div>
+                        <div class="content">
+                            <h5 class="name">{{ temoignage.nom }}</h5>
+                            <span>{{ temoignage.email|default:"" }}</span>
+                        </div>
+                    </div>
+                    
+                    <ul class="rating-star list-unstyled d-flex">
+                        {% for i in "12345"|slice:temoignage.note %}
+                        <li class="active"><i class="fas fa-star"></i></li>
+                        {% endfor %}
+                        {% for i in "12345"|slice:"-temoignage.note" %}
+                        <li><i class="fas fa-star"></i></li>
+                        {% endfor %}
+                    </ul>
+                    <span>{{ temoignage.note }}/5 Rating</span>
+                </div>
+                {% empty %}
+                <p class="text-center text-white">Aucun témoignage pour le moment.</p>
+                {% endfor %}
+            </div>
+
+            <!-- 🟢 Boutons de navigation -->
+            <div class="carousel-nav flex justify-center mt-4">
+                <button type="button" class="main-left-arrow" 
+                        @click="activeTestimonial = (activeTestimonial - 1 + {{ temoignages|length }}) % {{ temoignages|length }}">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button type="button" class="main-right-arrow" 
+                        @click="activeTestimonial = (activeTestimonial + 1) % {{ temoignages|length }}">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🟢 MODAL D'AFFICHAGE DU TÉMOIGNAGE COMPLET -->
+    <div class="modal fade" id="temoignageDetailModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" x-text="temoignage.nom"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p x-text="temoignage.texte"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('temoignages', () => ({
+            temoignageActif: null
+        }))
+    });
+</script>
+{#      <section class="review-sec" style="background-image: url({% static 'assets/images/banner/group22.png' %});">#}
+{#         <div class="container" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="1000">#}
+{#            <h2 class=" col-10 col-md-10 col-lg-8 col-xl-7 my-5 text-white">#}
+{#               Vous Faites Partir des milliers de personnes qui ont étés impactés par la conference d'Abidjan#}
+{#            </h2>#}
+{#            <div class="review-cards-wrap">#}
+{#               <div class="review-card-items-wrap">#}
+{#                  <div class="review-card-item">#}
+{#                     <p class="card-desc">#}
+{#                        “Thank you for running the event so smoothly – I had a great time, not only presenting, but also watching other sessions and interacting with attendees.”#}
+{#                     </p>#}
+{#                     <div class="profile">#}
+{#                        <div class="thumb">#}
+{#                           <img src="{% static 'assets/images/review/img.png' %}" alt="Review Image">#}
+{#                        </div>#}
+{#                        <div class="content">#}
+{#                           <h5 class="name">Martha Smith</h5>#}
+{#                           <span>San Francisco</span>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <ul class="rating-star list-unstyled d-flex">#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                     </ul>#}
+{#                     <span>5/5 Rating</span>#}
+{#                  </div>#}
+{#                  <div class="review-card-item ">#}
+{#                     <p class="card-desc">#}
+{#                        “Thank you for running the event so smoothly – I had a great time, not only presenting, but also watching other sessions and interacting with attendees.”#}
+{#                     </p>#}
+{#                     <div class="profile">#}
+{#                        <div class="thumb">#}
+{#                           <img src="{% static 'assets/images/review/img2.png' %}" alt="Review Image">#}
+{#                        </div>#}
+{#                        <div class="content">#}
+{#                           <h5 class="name">Martha Smith</h5>#}
+{#                           <span>San Francisco</span>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <ul class="rating-star list-unstyled d-flex">#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                     </ul>#}
+{#                     <span>5/5 Rating</span>#}
+{#                  </div>#}
+{#                  <div class="review-card-item">#}
+{#                     <p class="card-desc">#}
+{#                        “Thank you for running the event so smoothly – I had a great time, not only presenting, but also watching other sessions and interacting with attendees.”#}
+{#                     </p>#}
+{#                     <div class="profile">#}
+{#                        <div class="thumb">#}
+{#                           <img src="{% static 'assets/images/review/img3.png' %}" alt="Review Image">#}
+{#                        </div>#}
+{#                        <div class="content">#}
+{#                           <h5 class="name">Martha Smith</h5>#}
+{#                           <span>San Francisco</span>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <ul class="rating-star list-unstyled d-flex">#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                     </ul>#}
+{#                     <span>5/5 Rating</span>#}
+{#                  </div>#}
+{#                  <div class="review-card-item">#}
+{#                     <p class="card-desc">#}
+{#                        “Thank you for running the event so smoothly – I had a great time, not only presenting, but also watching other sessions and interacting with attendees.”#}
+{#                     </p>#}
+{#                     <div class="profile">#}
+{#                        <div class="thumb">#}
+{#                           <img src="{% static 'assets/images/review/img2.png' %}" alt="Review Image">#}
+{#                        </div>#}
+{#                        <div class="content">#}
+{#                           <h5 class="name">Martha Smith</h5>#}
+{#                           <span>San Francisco</span>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <ul class="rating-star list-unstyled d-flex">#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                     </ul>#}
+{#                     <span>5/5 Rating</span>#}
+{#                  </div>#}
+{#                  <div class="review-card-item">#}
+{#                     <p class="card-desc">#}
+{#                        “Thank you for running the event so smoothly – I had a great time, not only presenting, but also watching other sessions and interacting with attendees.”#}
+{#                     </p>#}
+{#                     <div class="profile">#}
+{#                        <div class="thumb">#}
+{#                           <img src="{% static 'assets/images/review/img3.png' %}" alt="Review Image">#}
+{#                        </div>#}
+{#                        <div class="content">#}
+{#                           <h5 class="name">Martha Smith</h5>#}
+{#                           <span>San Francisco</span>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <ul class="rating-star list-unstyled d-flex">#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                     </ul>#}
+{#                     <span>5/5 Rating</span>#}
+{#                  </div>#}
+{#                  <div class="review-card-item">#}
+{#                     <p class="card-desc">#}
+{#                        “Thank you for running the event so smoothly – I had a great time, not only presenting, but also watching other sessions and interacting with attendees.”#}
+{#                     </p>#}
+{#                     <div class="profile">#}
+{#                        <div class="thumb">#}
+{#                           <img src="{% static 'assets/images/review/img.png' %}" alt="Review Image">#}
+{#                        </div>#}
+{#                        <div class="content">#}
+{#                           <h5 class="name">Martha Smith</h5>#}
+{#                           <span>San Francisco</span>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <ul class="rating-star list-unstyled d-flex">#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                     </ul>#}
+{#                     <span>5/5 Rating</span>#}
+{#                  </div>#}
+{#                  <div class="review-card-item">#}
+{#                     <p class="card-desc">#}
+{#                        “Thank you for running the event so smoothly – I had a great time, not only presenting, but also watching other sessions and interacting with attendees.”#}
+{#                     </p>#}
+{#                     <div class="profile">#}
+{#                        <div class="thumb">#}
+{#                           <img src="{% static 'assets/images/review/img2.png' %}" alt="Review Image">#}
+{#                        </div>#}
+{#                        <div class="content">#}
+{#                           <h5 class="name">Martha Smith</h5>#}
+{#                           <span>San Francisco</span>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <ul class="rating-star list-unstyled d-flex">#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                     </ul>#}
+{#                     <span>5/5 Rating</span>#}
+{#                  </div>#}
+{#                  <div class="review-card-item">#}
+{#                     <p class="card-desc">#}
+{#                        “Thank you for running the event so smoothly – I had a great time, not only presenting, but also watching other sessions and interacting with attendees.”#}
+{#                     </p>#}
+{#                     <div class="profile">#}
+{#                        <div class="thumb">#}
+{#                           <img src="{% static 'assets/images/review/img3.png' %}" alt="Review Image">#}
+{#                        </div>#}
+{#                        <div class="content">#}
+{#                           <h5 class="name">Martha Smith</h5>#}
+{#                           <span>San Francisco</span>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <ul class="rating-star list-unstyled d-flex">#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                     </ul>#}
+{#                     <span>5/5 Rating</span>#}
+{#                  </div>#}
+{#                  <div class="review-card-item">#}
+{#                     <p class="card-desc">#}
+{#                        “Thank you for running the event so smoothly – I had a great time, not only presenting, but also watching other sessions and interacting with attendees.”#}
+{#                     </p>#}
+{#                     <div class="profile">#}
+{#                        <div class="thumb">#}
+{#                           <img src="{% static 'assets/images/review/img.png' %}" alt="Review Image">#}
+{#                        </div>#}
+{#                        <div class="content">#}
+{#                           <h5 class="name">Martha Smith</h5>#}
+{#                           <span>San Francisco</span>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                     <ul class="rating-star list-unstyled d-flex">#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                        <li class="active"><i class="fas fa-star"></i></li>#}
+{#                     </ul>#}
+{#                     <span>5/5 Rating</span>#}
+{#                  </div>#}
+{#               </div>#}
+{#               <div class="carousel-nav">#}
+{#                  <button type="button" class="main-left-arrow"><i class="fa-solid fa-chevron-left"></i></button>#}
+{#                  <button type="button" class="main-right-arrow"><i class="fa-solid fa-chevron-right"></i></button>#}
+{#               </div>#}
+{#               <div class="dots">#}
+{#                  <img src="{% static 'assets/images/dots/dots11.png' %}" alt="Shadow Image">#}
+{#               </div>#}
+{#            </div>#}
+{#         </div>#}
+{#      </section>#}
+      <!-- review sec end -->
+
+      <!-- pricing sec start -->
+      <section id="pricing" class="pricing-sec">
+         <div class="container">
+            <div class="section-head col-xl-8 m-auto text-center px-5">
+               <span class="label">Les differentes sessions</span>
+               <h2 class="title mb-4">
+                  Scanner le code et confirmer votre participation
+               </h2>
+               <p class="desc mb-5">
+                 La Conférence d’Abidjan 2025 est un rendez-vous incontournable pour tous ceux qui souhaitent voir un réveil authentique au sein de leurs familles, églises et communautés.
+                 Cette rencontre rassemblera des croyants de toute la Côte d’Ivoire et d’ailleurs, avec pour objectif de :
+               </p>
+            </div>
+
+            <div class="pricing-cart-wrap">
+
+               <div class="row row-cols-1 row-cols-lg-3 g-4">
+               {% for session in sessions %}
+<div class="col col-md-6 col-lg-4">
+    <div class="card h-100" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">
+        <div class="card-body">
+            <span class="card-label"><i class="fa-sharp fa-solid fa-circle text-primary"></i> {{ session.title }}</span>
+
+            <!-- QR Code -->
+            <div class="d-flex justify-content-center w-100 align-text-top my-3">
+                <img alt="qrcode" src="{{ session.qr_code.url }}" width="150" height="150" class="img-fluid"/>
+            </div>
+
+            <h3 class="price-package">
+                <span class="bold" data-toggle="tooltip" title="{{ session.participant_count }} - Inscrits">
+                    {{ session.participant_count }} participants
+                </span>
+            </h3>
+
+            <ul class="list-unstyled mt-3">
+                <li><i class="fa-solid fa-check"></i> <strong>Lieu :</strong> {{ session.location }}</li>
+                <li><i class="fa-solid fa-check"></i> <strong>Orateur :</strong> {{ session.speaker }}</li>
+                <li><i class="fa-solid fa-check"></i> <strong>Horaire :</strong> {{ session.start_time|time }} - {{ session.start_time|date }}</li>
+            </ul>
+
+            <p class="text-muted mt-3">{{ session.description|truncatechars:100 }}</p>
+
+            <div class="card-btn mt-3">
+                <button class="custom-btn custom-btn2 mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    S'inscrire
+                </button>
+                <span class="card-footer-label">Assurez votre place dès maintenant</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{#                   {% for session in sessions  %}#}
+{#                  <div class="col col-md-6 col-lg-4">#}
+{#                     <div class="card  h-100" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="2000">#}
+{#                        <div class="card-body">#}
+{#                           <span class="card-lable"><i class="fa-sharp fa-solid fa-circle"></i>{{ session }}</span>#}
+{#                           <h3 class="price-pacage">$190 <span class="regular-price">/ regular price</span>#}
+{#                           </h3>#}
+{#                           <ul>#}
+{#                              <li><a href=""><i class="fa-solid fa-check"></i>Regular price: $190 until Sept 20</a></li>#}
+{#                              <li><a href=""><i class="fa-solid fa-check"></i>Last minute price: $490 until the end</a></li>#}
+{#                           </ul>#}
+{#                           <div class="card-btn">#}
+{#                              <button class="custom-btn custom-btn2 mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal">Buy Tickets</button>#}
+{#                              <span class="card-footer-label">When you don't need a VAT invoice</span>#}
+{#                           </div>#}
+{#                        </div>#}
+{#                     </div>#}
+{#                  </div>#}
+{#                   {% endfor %}#}
+
+               </div>
+               <div class="dots img-moving-anim1">
+                  <img src="{% static 'assets/images/dots/dots12.png' %}" alt="Shadow Image">
+               </div>
+            </div>
+
+         </div>
+         <div class="shape">
+            <img src="{% static 'assets/images/shape/5.svg' %}" alt="Shape">
+         </div>
+      </section>
+      <!-- pricing sec end -->
+
+
+      <div class="container">
+         <hr>
+      </div>
+      <!-- gallery sec start -->
+  <section class="gallery-sec" data-aos="fade-up" data-aos-duration="1200">
+    <div class="container">
+        <div class="col-xl-8 section-head text-center m-auto mb-5">
+            <span class="label">Revivez les meilleurs moments</span>
+            <h2 class="title">Albums Photos de la Conférence d'Abidjan</h2>
+        </div>
+
+        <div class="row">
+            {% for album in albums %}
+            <div class="col-md-12">
+                <!-- Utilisation d'Alpine.js pour afficher ou masquer l'album -->
+                <div x-data="{ open: false }" class="album-card p-3 mb-4 border rounded shadow-sm" data-aos="fade-up">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="album-title">{{ album.titre }}</h3>
+                        <button @click="open = !open" class="btn btn-primary">
+                            <span x-show="!open">Voir les photos <i class="fa fa-chevron-down"></i></span>
+                            <span x-show="open">Masquer les photos <i class="fa fa-chevron-up"></i></span>
+                        </button>
+                    </div>
+                    <p class="album-description">{{ album.description }}</p>
+
+                    <!-- Section des photos de l'album -->
+                    <div x-show="open" x-transition class="album-photos row g-3 mt-3">
+                        {% for photo in album.photos.all %}
+                        <div class="col-md-3">
+                            <div class="image-gallery-item" data-aos="fade-up" data-aos-duration="800">
+                                <a class="item-thumb" href="{{ photo.image.url }}" data-lightbox="album-{{ album.pk }}" data-title="{{ photo.description }}">
+                                    <img src="{{ photo.image.url }}" class="img-fluid rounded shadow-sm" alt="{{ photo.description }}">
+                                    <span class="view">ZOOM</span>
+                                </a>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-center text-muted">Aucune photo disponible pour cet album.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center">Aucun album disponible pour le moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+      <!-- gallery sec end -->
+
+
+      <div class="container">
+         <hr>
+      </div>
+
+   
+      <!-- blog sec start -->
+<section class="blog-sec" data-aos="fade-up" data-aos-duration="1000">
+    <div class="container">
+        <div class="section-head d-flex justify-content-between">
+            <h2 class="blog-title">
+               Résumé des messages de la Conference 
+            </h2>
+            <a href="{% url 'blog_list' %}" class="blog-btn custom-btn">Voir tout</a>
+        </div>
+        <div class="blog-cards-wrap zoom-gallery">
+            <div class="dots img-moving-anim1">
+                <img src="{% static 'assets/images/dots/dots15.png' %}" alt="Shadow Image" class="blog-dots-1">
+            </div>
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                {% for article in articles %}
+                <div class="col col-md-6 col-lg-4" data-aos="fade-up" data-aos-duration="{{ forloop.counter0|add:1 }}00">
+                    <div class="card h-100 border-0">
+                        <a class="card-thumb item-thumb overflow-hidden" href="{{ article.image.url }}">
+                            <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
+                            <span class="view">VIEW</span>
+                        </a>
+                        <div class="card-body">
+                            <span class="label">{{ article.category.name }}</span>
+                            <h5 class="card-title">
+                                {{ article.title }}
+                            </h5>
+                            <p class="card-desc">{{ article.content|truncatewords:20 }}</p>
+                            <a href="{% url 'blog_detail' article.slug %}" class="blog-btn">Lire plus</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-center">Aucun article disponible pour le moment.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="shape">
+        <img src="{% static 'assets/images/shape/7.svg' %}" alt="Shape">
+    </div>
+</section>
+<!-- blog sec end -->
+   
+
+      <!-- footer area start -->
+    <footer class="footer-area py-5 text-white" style="background: linear-gradient(45deg, #0a3d62, #1e3799);">
+    <div class="container">
+        <div class="footer-top">
+            <div class="row">
+                <!-- LOGO & DESCRIPTION -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="footer-info">
+                        <a href="{% url 'home' %}" class="footer-logo">
+                            <img src="{% static 'assets/images/logo/logo.png' %}" alt="Conférence d'Abidjan Logo" class="img-fluid" style="max-width: 180px;">
+                        </a>
+                        <p class="footer-desc mt-3">
+                            La Conférence d'Abidjan rassemble des milliers de croyants autour d'enseignements inspirants et puissants, animés par des hommes de Dieu de renommée internationale.
+                        </p>
+                        <ul class="footer-social social mt-3">
+                            <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
+                            <li><a href="#"><i class="fa-brands fa-linkedin-in"></i></a></li>
+                            <li><a href="#"><i class="fa-brands fa-twitter"></i></a></li>
+                            <li><a href="#"><i class="fa-brands fa-youtube"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- NAVIGATION RAPIDE -->
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <div class="footer-links">
+                        <h5 class="footer-title">À propos</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#">Programme</a></li>
+                            <li><a href="#">Orateurs</a></li>
+                            <li><a href="#">S'inscrire</a></li>
+                            <li><a href="#">Nos Partenaires</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- INFORMATIONS PRATIQUES -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="footer-links">
+                        <h5 class="footer-title">Informations</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Accès & Hébergement</a></li>
+                            <li><a href="#">Plan du Site</a></li>
+                            <li><a href="#">Conditions Générales</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- CONTACT -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-contact">
+                        <h5 class="footer-title">Nous Contacter</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fa-solid fa-envelope"></i> contact@conferenceabidjan.com</li>
+                            <li><i class="fa-solid fa-phone"></i> +225 01 23 45 67 89</li>
+                            <li><i class="fa-solid fa-location-dot"></i> Abidjan, Côte d'Ivoire</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COPYRIGHT -->
+        <hr class="bg-light">
+        <div class="footer-copyright text-center mt-3">
+            <p class="mb-0">© 2025 Conférence d'Abidjan. Tous droits réservés. Site conçu avec passion.</p>
+        </div>
+    </div>
+</footer>
+      <!-- footer area end -->
+
+      <!-- Modal -->
+      <div class="modal fade popup-modal" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+         <div class="modal-dialog modal-lg popup-dialogue modal-dialog-centered">
+            <div class="modal-content popup-content p-4 bg-white">
+               <button type="button" class="btn btn-secondary  ms-auto" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></button>
+
+               <div class="modal-body popup-body">
+
+                  mo
+            </div>
+         </div>
+      </div>
+
+      <!-- Button trigger modal -->
+
+      <!-- Modal 2 -->
+      <div class="modal  popup-box fade" id="exampleModal" tabindex="-1" aria-hidden="true">
+         <div class="modal-dialog popup-box-dialog modal-dialog-centered">
+            <div class="modal-content popup-box-content">
+               <div class="popup-card" style="width:100%">
+                  <button type="button" class="btn popup2-btn  ms-auto" data-bs-dismiss="modal"><i class="fa-solid fa-xmark"></i></button>
+                  <img src="{% static 'assets/images/popup.png' %}" class="card-img-top" alt="popup-bg">
+                  <div class="card-body popup-card-body">
+                     <div class="popup-title-area">
+                        <p class="popup-sub">October 2, 2023</p>
+                        <h5 class="card-title popup-title">Virtual sessions. Eventor Live@MAX</h5>
+                     </div>
+                     <a href="#" class="btn popup-play" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="fa-solid fa-play"></i></a>
+                  </div>
+
+                     <div id="eventbrite-widget-container-443112520477"></div>
+
+                     <script src="https://www.eventbrite.com/static/widgets/eb_widgets.js"></script>
+
+                     <script type="text/javascript">
+                        var exampleCallback = function() {
+                           console.log('Order complete!');
+                        };
+
+                        window.EBWidgets.createWidget({
+                           // Required
+                           widgetType: 'checkout',
+                           eventId: '443112520477',
+                           iframeContainerId: 'eventbrite-widget-container-443112520477',
+
+                           // Optional
+                           iframeContainerHeight: 425,  // Widget height in pixels. Defaults to a minimum of 425px if not provided
+                           onOrderComplete: exampleCallback  // Method called when an order has successfully completed
+                        });
+                     </script>
+
+                  </form>
+               </div>
+            </div>
+         </div>
+      </div>
+
+
+
+
+
+{% endblock %}

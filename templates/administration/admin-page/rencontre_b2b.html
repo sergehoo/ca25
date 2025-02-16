@@ -1,0 +1,154 @@
+   {% extends '../admin-layout/base.html' %}
+{% load static %}
+{% load humanize %}
+{% load tz %}
+{% now "Y-m-d H:i:s" as now %}
+<style>
+    .time-display {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.2em;
+    }
+
+    .grayscale {
+        filter: grayscale(100%);
+        opacity: 0.6;
+        pointer-events: none; /* Désactive les interactions */
+    }
+    .session-expired {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-align: center;
+}
+</style>
+   {% block content %}
+   <div class="container mt-4">
+         <div class="row">
+             <div class="col-md-12 mb-5">
+                 <div class="card p-3 text-center">
+                     <h5>👤 Liste des Sessions</h5>
+
+                 </div>
+             </div>
+             <div class="d-flex justify-content-left mt-5">
+                 <button class="custom-btn custom-btn2">+ B2B</button>
+             </div>
+             <section id="speakers" class="speakers-gallery-sec position-relative">
+                 <div class="container">
+                     <div class="section-head col-xl-12 m-auto text-center mb-5">
+                         <h1 class="">Une Rencontre B2B Exclusive avec les Leaders d’Influence</h1>
+<h2 class="mb-10 text-muted">
+Ils nous accordent le privilège de partager un moment unique, malgré un agenda des plus exigeants. Une opportunité inédite d’échanger avec les figures incontournables de notre Société.
+</h2>
+
+                     </div>
+                     <div class="speakers-gallery-items-wrap">
+                         <div class="row">
+                             {% for session in btob %}
+    <div class="col-md-6 col-lg-4 col-xl-3">
+    <div class="speakers-gallery-item aos-init aos-animate session-block" 
+        
+         data-aos="fade-up" data-aos-easing="linear" data-aos-duration="400" {% if session.is_expired %} style="filter: grayscale(100%); opacity: 0.6;"{% endif %}>
+        
+        <div class="position-absolute zindex-1 m-5">
+            <span class="label pulse pulse-warning">
+                <span class="label label-xl font-weight-boldest custom-btn custom-btn2 position-absolute m-5 text-white">{{ session.meeting_count }}</span>
+                <span class="pulse-ring"></span>
+            </span>
+        </div>
+
+        <div class="speakers-gallery-item-thumb overflow-hidden position-relative">
+            <img src="{{ session.sponsor.profile.photo.url }}" alt="Photo de {{ session.sponsor.nom }}"
+                 onerror="this.src='/static/assets/images/gallery/gallery2.jpg';">
+        </div>
+
+        <div class="col-7 bg-light-primary px-2 py-2 rounded-xl mb-7 position-absolute" style="margin-top: -150px">
+            <a href="{% url 'rencontreb2b-details' session.pk %}" class="text-primary font-weight-bold font-size-h4 mt-2">
+                <i class="fa fa-calendar-check text-danger mr-3"></i>{{ session.date|naturalday }} <br>
+                <i class="fa fa-business-time text-danger mr-1"></i>
+                <span class="time-display">
+                    {{ session.start_time|time:"H:i" }} - {{ session.end_time|time:"H:i" }}
+                </span>
+            </a>
+        </div>
+
+        <div class="item-content mb-15">
+            <h3 class="title">{{ session.sponsor.nom|upper }} {{ session.sponsor.prenom|upper }}</h3>
+            <span class="sub">{{ session.sponsor.fonction }}</span>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+                         </div>
+                         <div class="dots img-moving-anim1">
+                             <img src="/static/assets/images/dots/dots8.png" alt="Shadow Image">
+                         </div>
+                     </div>
+
+                 </div>
+                 <div class="shape">
+                     <img src="/static/assets/images/shape/3.svg" alt="">
+                 </div>
+             </section>
+
+
+         </div>
+
+      </div>
+         <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Fonction pour charger les sessions B2B
+            function loadBtobSessions() {
+                fetch("/fr/api/organisateur/btob")
+                    .then(response => response.json())
+                    .then(data => {
+                        let tableBody = document.getElementById("btob-table-body");
+                        tableBody.innerHTML = ""; // Effacer l'ancien contenu
+                        data.forEach(session => {
+                            let row = `<tr>
+                                <td>${session.sponsor__nom}</td>
+                                <td>${session.date}</td>
+                                <td>${session.start_time}</td>
+                                <td>${session.end_time}</td>
+                                <td>${session.details || "Aucun détail"}</td>
+                            </tr>`;
+                            tableBody.innerHTML += row;
+                        });
+                    })
+                    .catch(error => console.error("Erreur lors du chargement :", error));
+            }
+
+            // Fonction pour charger les meetings
+            function loadMeetings() {
+                fetch("/fr/api/organisateur/meetings")
+                    .then(response => response.json())
+                    .then(data => {
+                        let tableBody = document.getElementById("meeting-table-body");
+                        tableBody.innerHTML = "";
+                        data.forEach(meeting => {
+                            let row = `<tr>
+                                <td>${meeting.participant__nom}</td>
+                                <td>${meeting.btob__sponsor__nom}</td>
+                                <td>${meeting.btob__date}</td>
+                                <td>${meeting.btob__start_time}</td>
+                            </tr>`;
+                            tableBody.innerHTML += row;
+                        });
+                    })
+                    .catch(error => console.error("Erreur lors du chargement :", error));
+            }
+
+            // Charger les données au chargement de la page
+            loadBtobSessions();
+            loadMeetings();
+        });
+    </script>
+     
+   {% endblock %}
