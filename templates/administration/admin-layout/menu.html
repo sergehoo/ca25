@@ -1,0 +1,94 @@
+ {% load static %}
+{% load i18n %}
+<ul class="navbar-nav m-auto">
+    <li class="nav-item">
+        <a href="#" class="nav-link py-3">Accueil</a>
+        <div class="drop-down">
+            <div class="row drop-down-wrap g-0">
+                <div class="col-7">
+                    <ul class="drop-down-menu">
+                        <li class="dropdown-item d-flex align-items-center">
+                            <div class="item-icon">
+                                <img src="{% static 'assets/images/icon/icon.svg' %}" alt="icon Images">
+                            </div>
+                            <a href="index.html" class="item-content">
+                                <h5 class="item-title">Homepage Conference</h5>
+                                <span class="item-sub">Sessions Overview</span>
+                            </a>
+                        </li>
+                        <li class="dropdown-item d-flex align-items-center">
+                            <div class="item-icon">
+                                <img src="{% static 'assets/images/icon/icon2.svg' %}" alt="icon Images">
+                            </div>
+                            <a href="index-music.html" class="item-content">
+                                <h5 class="item-title">Homepage Music</h5>
+                                <span class="item-sub">Sessions Overview</span>
+                            </a>
+                        </li>
+                        <li class="dropdown-item d-flex align-items-center">
+                            <div class="item-icon">
+                                <img src="{% static 'assets/images/icon/icon3.svg' %}" alt="icon Images">
+                            </div>
+                            <a href="index-eventbrite.html" class="item-content">
+                                <h5 class="item-title">Homepage Eventbrite</h5>
+                                <span class="item-sub">Sessions Overview</span>
+                            </a>
+                        </li>
+                        <li class="dropdown-item d-flex align-items-center">
+                            <div class="item-icon">
+                                <img src="{% static 'assets/images/icon/icon4.svg' %}" alt="icon Images">
+                            </div>
+                            <a href="index-dark.html" class="item-content">
+                                <h5 class="item-title">Homepage Dark</h5>
+                                <span class="item-sub">Sessions Overview</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-5">
+                    <div class="dropdown-thumb position-relative"
+                         style="background-image: url({% static 'assets/images/banner/home-conference-dropdown-bg.jpg' %});">
+                        <a class="dropdown-sub position-absolute" href="#"><span>Register Now</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li class="nav-item">
+        <a href="#about" class="nav-link py-3">About</a>
+    </li>
+    <li class="nav-item">
+        <a href="#schedule" class="nav-link py-3">Schedule</a>
+    </li>
+    <li class="nav-item">
+        <a href="#sponsors" class="nav-link py-3">Sponsors</a>
+    </li>
+    <li class="nav-item">
+        <a href="#speakers" class="nav-link py-3">Speakers</a>
+    </li>
+    <li class="nav-item">
+        <a href="#pricing" class="nav-link py-3">Pricing</a>
+    </li>
+
+{#    <li class="nav-item">#}
+{#    <form action="{% url 'set_language' %}" method="post">#}
+{#        {% csrf_token %}#}
+{#        <select class="form-control nav-item" name="language" onchange="this.form.submit()">#}
+{#            {% get_current_language as LANGUAGE_CODE %}#}
+{#            {% get_available_languages as LANGUAGES %}#}
+{#            {% for lang_code, lang_name in LANGUAGES %}#}
+{#                <option value="{{ lang_code }}" {% if lang_code == LANGUAGE_CODE %}selected{% endif %}>#}
+{#                    {% if lang_code == 'en' %}#}
+{#                        🇬🇧 {{ lang_name }}#}
+{#                    {% elif lang_code == 'fr' %}#}
+{#                        🇫🇷 {{ lang_name }}#}
+{#                    {% else %}#}
+{#                        {{ lang_name }}#}
+{#                    {% endif %}#}
+{#                </option>#}
+{#            {% endfor %}#}
+{#        </select>#}
+{#    </form>#}
+{#</li>#}
+
+</ul>
