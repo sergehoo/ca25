@@ -80,7 +80,7 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
-    # 'public.middleware.VisitCounterMiddleware',
+    'public.middleware.VisitCounterMiddleware',
 ]
 
 ROOT_URLCONF = 'siade25.urls'
