@@ -63,7 +63,7 @@ INSTALLED_APPS = [
     'public',
     'administration',
     "compressor",
-    'decouple'
+    'decouple',
 
 ]
 

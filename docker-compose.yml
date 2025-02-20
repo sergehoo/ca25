@@ -1,10 +1,32 @@
 services:
+#  caweb:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    command: >
+#      sh -c "python manage.py migrate &&
+#             python manage.py collectstatic --noinput &&
+#             gunicorn siade25.wsgi:application --bind 0.0.0.0:8000"
+#    ports:
+#      - "2002:8000"
+#    volumes:
+#      - .:/app
+#      - static_volume:/siade25/static
+#      - staticfiles_volume:/siade25/staticfiles
+#      - media_volume:/siade25/media
+#    env_file:
+#      - ./.env
+#    depends_on:
+#      - cadb
+#      - redis
+#    restart: always
   caweb:
     build:
       context: .
       dockerfile: Dockerfile
     command: >
-      sh -c "python manage.py migrate &&
+      sh -c "until pg_isready -h cadb -U ${DB_USER}; do sleep 2; done &&
+             python manage.py migrate &&
              python manage.py collectstatic --noinput &&
              gunicorn siade25.wsgi:application --bind 0.0.0.0:8000"
     ports:
@@ -17,21 +39,36 @@ services:
     env_file:
       - ./.env
     depends_on:
-      - cadb
-      - redis
+      cadb:
+        condition: service_healthy  # ✅ Attend que PostgreSQL soit prêt
+      redis:
+        condition: service_started
     restart: always
-
+#  cadb:
+#    image: postgis/postgis:13-3.1
+#    environment:
+#      POSTGRES_DB: ${DB_NAME}
+#      POSTGRES_USER: ${DB_USER}
+#      POSTGRES_PASSWORD: ${DB_PASSWORD}
+#
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+#
+#    restart: always
   cadb:
     image: postgis/postgis:13-3.1
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-
     volumes:
       - pgdata:/var/lib/postgresql/data
-
     restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      retries: 5
+      timeout: 5s
 
   cadminer:
     image: adminer
