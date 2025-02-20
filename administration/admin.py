@@ -146,17 +146,17 @@ class GuestarsSpeakerAdmin(admin.ModelAdmin):
     autocomplete_fields = ('user',)
 
 
-@admin.register(VisitCounter)
-class VisitCounterAdmin(admin.ModelAdmin):
-    list_display = ('ip_address', 'timestamp', 'user_agent')
-
-    def total_visits(self):
-        return format_html("<strong>{}</strong>", VisitCounter.objects.count())
-
-    total_visits.short_description = "Total des visites"
-
+# @admin.register(VisitCounter)
+# class VisitCounterAdmin(admin.ModelAdmin):
+#     list_display = ('ip_address', 'timestamp', 'user_agent')
+#
+#     def total_visits(self):
+#         return format_html("<strong>{}</strong>", VisitCounter.objects.count())
+#
+#     total_visits.short_description = "Total des visites"
+#
 
 # Ajouter un panneau de statistiques dans l'admin
 admin.site.site_header = "Administration du site"
 admin.site.site_title = "Admin"
-admin.site.index_title = f"Total des visites : {VisitCounter.objects.count()}"
+# admin.site.index_title = f"Total des visites : {VisitCounter.objects.count()}"
