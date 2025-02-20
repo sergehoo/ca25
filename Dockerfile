@@ -25,7 +25,7 @@ ENV GDAL_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/libgdal.so
 
 RUN pip install --upgrade pip
 
-COPY requirements.txt /smitci-app/requirements.txt
+COPY requirements.txt /siade25-app/requirements.txt
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
