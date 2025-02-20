@@ -16,8 +16,8 @@ RUN apt-get update && \
     python3-distutils \
     python3-setuptools \
     python3-dev \
-    libgl1-mesa-glx \  # 🔥 Ajout de la librairie pour OpenCV
-    libglib2.0-0 \  # 🔥 Ajout d'une dépendance pour éviter d'autres erreurs
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 # Set GDAL environment variables
