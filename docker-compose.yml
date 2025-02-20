@@ -1,0 +1,87 @@
+services:
+  caweb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn siade25.wsgi:application --bind 0.0.0.0:8000"
+    ports:
+      - "2002:8000"
+    volumes:
+      - .:/app
+      - static_volume:/siade25/static
+      - staticfiles_volume:/siade25/staticfiles
+      - media_volume:/siade25/media
+    env_file:
+      - ./.env
+    depends_on:
+      - cadb
+      - redis
+    restart: always
+
+  cadb:
+    image: postgis/postgis:13-3.1
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+    restart: always
+
+  cadminer:
+    image: adminer
+    restart: always
+    ports:
+      - 2502:8080  # Port mapping for Adminer
+    environment:
+      - ADMINER_DEFAULT_SERVER=cadb  # Default DB server in Adminer
+
+  redis:
+    image: redis:6
+    ports:
+      - "6380:6379"  # Redirection directe pour éviter la confusion
+    restart: always
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A cadb worker --loglevel=info
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - cadb
+    environment:
+      CELERY_BROKER_URL: redis://redis:6380/0  # Utilisation du nom du service Docker
+    restart: always
+
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A siade25 beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - cadb
+    environment:
+      CELERY_BROKER_URL: redis://redis:6380/0  # Utilisation du nom du service Docker
+    restart: always
+
+volumes:
+  pgdata:
+    driver: local
+  static_volume:
+  staticfiles_volume:
+  media_volume:

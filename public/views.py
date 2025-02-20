@@ -10,7 +10,7 @@ from django.views.generic import TemplateView
 
 from administration.models import Session, Temoignage
 from public.forms import MeetingForm, TemoignageForm, CommentForm
-from public.models import Album, BlogPost
+from public.models import Album, BlogPost, GuestarsSpeaker
 
 
 def soumettre_temoignage(request):
@@ -36,9 +36,6 @@ class HomePageView(TemplateView):
         """ Ajoute la liste des participants à la session B2B """
         context = super().get_context_data(**kwargs)
         context["sessions"] = Session.objects.all()
-        context["albums"] = Album.objects.prefetch_related("photos").all()
-        context["articles"] = BlogPost.objects.filter(status="published").order_by('-published_at')[:3]
-        context["temoignages"] = Temoignage.objects.filter(statut="Validé").order_by('-date_soumission')[:10]
 
         sessions = Session.objects.all().order_by('start_time')
 
@@ -52,7 +49,10 @@ class HomePageView(TemplateView):
         context = {
             'sessions_par_jour': dict(sessions_par_jour),
             'prochaine_session': prochaine_session,
-
+            'speakerguestars':GuestarsSpeaker.objects.select_related("user").all(),
+            'albums': Album.objects.prefetch_related("photos").all(),
+            'articles': BlogPost.objects.filter(status="published").order_by('-published_at')[:3],
+            'temoignages': Temoignage.objects.filter(statut="Validé").order_by('-date_soumission')[:10]
         }
 
         return context

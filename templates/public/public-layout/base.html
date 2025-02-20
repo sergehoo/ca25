@@ -12,7 +12,8 @@
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-   
+   {% load compress %}
+{% compress css %}
    <!-- animation -->
    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
@@ -38,6 +39,7 @@
      <link rel="stylesheet" type="text/css" href="{% static 'color-switch/css/switch.css' %}">
 {#	<link href="{% static 'color-switch/css/color-2.css' %}" rel="alternate stylesheet" type="text/css" title="color-2">#}
 	<link href="{% static 'color-switch/css/color-3.css' %}" rel="alternate stylesheet" type="text/css" title="color-3">
+    {% endcompress %}
 {#	<link href="{% static 'color-switch/css/color-4.css' %}" rel="alternate stylesheet" type="text/css" title="color-4">#}
 {#	<link href="{% static 'color-switch/css/color-5.css' %}" rel="alternate stylesheet" type="text/css" title="color-5">#}
 {#	<link href="{% static 'color-switch/css/color-6.css' %}" rel="alternate stylesheet" type="text/css" title="color-6">#}
@@ -219,7 +221,7 @@
                         <img src="{% static 'assets/images/icon/sun.svg' %}" alt="Sun" class="fa-sun" style="display: none;">
                         <img src="{% static 'assets/images/icon/moon.svg' %}" alt="Moon" class="fa-moon">
                      </div>
-                     <button class="header-btn custom-btn2 btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">Connexion</button>
+{#                     <button class="header-btn custom-btn2 btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">Connexion</button>#}
                      <!-- Language Selector -->
                       <form action="{% url 'set_language' %}" method="post" class="d-flex align-items-center">
         {% csrf_token %}

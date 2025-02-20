@@ -345,3 +345,29 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Commentaire de {self.author} sur {self.post.title}"
+
+
+class GuestarsSpeaker(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="guestartspeaker")
+    fonction = models.CharField(max_length=255,blank=True, null=True)
+    organisme = models.CharField(max_length=255,blank=True, null=True)
+    facebook = models.URLField(blank=True, null=True)
+    linkedin = models.URLField(blank=True, null=True)
+    twitter = models.URLField(blank=True, null=True)
+    website = models.URLField(blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    birth_date = models.DateField(blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f" {self.user} sur {self.fonction}"
+
+
+
+class VisitCounter(models.Model):
+    ip_address = models.GenericIPAddressField()  # Adresse IP du visiteur
+    user_agent = models.TextField(blank=True, null=True)  # Infos sur le navigateur
+    timestamp = models.DateTimeField(default=now)  # Date et heure de la visite
+
+    def __str__(self):
+        return f"Visite de {self.ip_address} - {self.timestamp}"

@@ -1,8 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.utils.html import format_html
 
 from administration.models import Event, Session, Attendance, Temoignage
-from public.models import User, BeToBe, Meeting, Profile, Album, Photo, Category, BlogPost, Comment
+from public.models import User, BeToBe, Meeting, Profile, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, \
+    VisitCounter
 
 
 @admin.register(User)
@@ -32,6 +34,8 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = ("user", "birth_date", "address", "linkedin", "twitter")
     search_fields = ("user__nom", "user__prenom", "user__email")
     list_filter = ("birth_date",)
+    ordering = ('user',)  # Tri des éléments
+    autocomplete_fields = ('user',)
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("user")
@@ -58,6 +62,8 @@ class AttendanceAdmin(admin.ModelAdmin):
     list_display = ('user', 'session', 'scanned_at')
     search_fields = ('user__username', 'session__title')
     list_filter = ('scanned_at',)
+    ordering = ('user',)  # Tri des éléments
+    autocomplete_fields = ('user',)
 
 
 @admin.register(BeToBe)
@@ -129,3 +135,33 @@ class CommentAdmin(admin.ModelAdmin):
 
     def approve_comments(self, request, queryset):
         queryset.update(approved=True)
+
+
+@admin.register(GuestarsSpeaker)
+class GuestarsSpeakerAdmin(admin.ModelAdmin):
+    list_display = ('user', 'fonction', 'organisme')  # Colonnes affichées dans la liste
+    search_fields = ('user__nom', 'user__prenom', 'fonction', 'organisme')  # Champs de recherche
+    list_filter = ('organisme',)  # Filtres à droite
+    ordering = ('user',)  # Tri des éléments
+    autocomplete_fields = ('user',)
+
+
+@admin.register(VisitCounter)
+# class VisitCounterAdmin(admin.ModelAdmin):
+#     list_display = ('ip_address', 'timestamp', 'user_agent')
+#     list_filter = ('timestamp',)
+#     search_fields = ('ip_address', 'user_agent')
+
+class VisitCounterAdmin(admin.ModelAdmin):
+    list_display = ('ip_address', 'timestamp', 'user_agent')
+
+    def total_visits(self):
+        return format_html("<strong>{}</strong>", VisitCounter.objects.count())
+
+    total_visits.short_description = "Total des visites"
+
+
+# Ajouter un panneau de statistiques dans l'admin
+admin.site.site_header = "Administration du site"
+admin.site.site_title = "Admin"
+admin.site.index_title = f"Total des visites : {VisitCounter.objects.count()}"

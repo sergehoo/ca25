@@ -1,0 +1,201 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-02-17 10:49+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: administration/models.py:102
+msgid "Nom du participant"
+msgstr "Participant's Name"
+
+#: administration/models.py:103
+msgid "Email"
+msgstr "Email"
+
+#: administration/models.py:104
+msgid "Téléphone"
+msgstr "Phone"
+
+#: administration/models.py:105
+msgid "Témoignage"
+msgstr "Testimonial"
+
+#: administration/models.py:106
+msgid "Note"
+msgstr "Rating"
+
+#: administration/models.py:108
+msgid "Statut"
+msgstr "Status"
+
+#: administration/models.py:109
+msgid "Date de soumission"
+msgstr "Submission Date"
+
+#: administration/models.py:110
+msgid "Date de validation"
+msgstr "Validation Date"
+
+#: siade25/settings.py:182
+msgid "Français"
+msgstr "French"
+
+#: siade25/settings.py:183
+msgid "Anglais"
+msgstr "English"
+
+#: siade25/settings.py:184
+msgid "Espagnol"
+msgstr "Spanish"
+
+#: siade25/settings.py:185
+msgid "Allemand"
+msgstr "German"
+
+#: siade25/settings.py:186
+msgid "Chinois Simplifié"
+msgstr "Simplified Chinese"
+
+#: siade25/settings.py:187
+msgid "Hindi"
+msgstr "Hindi"
+
+#: templates/account/login.html:5 templates/account/login.html:9
+#: templates/account/login.html:31
+msgid "Se connecter"
+msgstr "Sign In"
+
+#: templates/account/login.html:19
+#, python-format
+msgid ""
+"Si vous n'avez pas encore de compte, veuillez d'abord %(link)s vous inscrire %(end_link)s."
+msgstr ""
+"If you do not have an account yet, please %(link)ssign up%(end_link)s first."
+
+#: templates/account/login.html:42
+msgid "Se connecter avec une clé d’accès"
+msgstr "Sign in with a passkey"
+
+#: templates/account/login.html:47
+msgid "Envoyez-moi un code de connexion par email"
+msgstr "Email me a sign-in code"
+
+#: templates/public/public-layout/base.html:253
+msgid "Souscrire"
+msgstr "Subscribe"
+
+#: templates/public/public-layout/base.html:270
+msgid "Accueil"
+msgstr "Home"
+
+#: templates/public/public-page/home.html:122
+msgid "Bienvenue à la Conférence d'Abidjan 2025"
+msgstr "Welcome to the Abidjan Conference 2025"
+
+#: templates/public/public-page/home.html:124
+msgid "L'Afrique Francophone au rendez-vous de l'Agenda Divin."
+msgstr "Francophone Africa at the meeting point of the Divine Agenda."
+
+#: templates/public/public-page/home.html:127
+msgid ""
+"\n"
+"                 Un rassemblement hautement spirituel et majeur de la "
+"Francophonie et des Églises Alliance Biblique Missionnaire Côte d’Ivoire.  "
+"Cette année, nous nous retrouvons sous le thème “Impact Générationnel”, un "
+"appel à laisser une empreinte indélébile dans notre société, en transmettant "
+"des valeurs de foi, d’amour et d’engagement à la prochaine génération.\n"
+"                     "
+msgstr ""
+"\n"
+"A highly spiritual and major gathering of the Francophonie and the Alliance Biblique Missionnaire Churches of Côte d'Ivoire. "
+"This year, we gather under the theme “Generational Impact,” a call to leave an indelible mark on our society by transmitting "
+"values of faith, love, and commitment to the next generation.\n"
+
+#: templates/public/public-page/home.html:201
+msgid "Notre Programme"
+msgstr "Our Program"
+
+#: templates/public/public-page/home.html:202
+msgid "Impact Générationnel"
+msgstr "Generational Impact"
+
+#: templates/public/public-page/home.html:203
+msgid ""
+"Une génération dira à l’autre combien tu es grand ; elle proclamera tes "
+"œuvres merveilleuses."
+msgstr ""
+"One generation will tell the next how great You are; they will proclaim Your wonderful works."
+
+#: templates/public/public-page/home.html:218
+msgid "Jours"
+msgstr "Days"
+
+#: templates/public/public-page/home.html:261
+msgid "S'enregistrer"
+msgstr "Register"
+
+#: templates/public/public-page/home.html:1233
+msgid "Passez le message"
+msgstr "Spread the Message"
+
+#: templates/public/public-page/home.html:1234
+msgid "Informer"
+msgstr "Inform"
+
+#: templates/public/public-page/home.html:1585
+msgid "participants"
+msgstr "participants"
+
+#: templates/public/public-page/home.html:1590
+msgid "Lieu :"
+msgstr "Location:"
+
+#: templates/public/public-page/home.html:1591
+msgid "Orateur :"
+msgstr "Speaker:"
+
+#: templates/public/public-page/home.html:1592
+msgid "Horaire :"
+msgstr "Schedule:"
+
+#: templates/public/public-page/home.html:1601
+msgid "Assurez votre place dès maintenant"
+msgstr "Secure Your Spot Now"
+
+#: templates/public/public-page/home.html:1703
+msgid "Résumé des messages de la Conférence"
+msgstr "Summary of Conference Messages"
+
+#: templates/public/public-page/home.html:1705
+msgid "Voir tout"
+msgstr "See All"
+
+#: templates/public/public-page/home.html:1717
+msgid "Voir"
+msgstr "View"
+
+#: templates/public/public-page/home.html:1725
+msgid "Lire plus"
+msgstr "Read More"
+
+#: templates/public/public-page/home.html:1730
+msgid "Aucun article disponible pour le moment."
+msgstr "No articles available at the moment."
+
+#: templates/slider.html:11
+msgid "CONFÉRENCE D'ABIDJAN"
+msgstr "ABIDJAN CONFERENCE"

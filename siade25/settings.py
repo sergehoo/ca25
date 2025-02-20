@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'public',
     'administration',
+    "compressor",
 
 ]
 
@@ -77,6 +78,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "allauth.account.middleware.AccountMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    'public.middleware.VisitCounterMiddleware',
 ]
 
 ROOT_URLCONF = 'siade25.urls'
@@ -121,9 +124,7 @@ DATABASES = {
 #     }
 # }
 
-LOCALE_PATHS = [
-    BASE_DIR / 'locale/',
-]
+
 AUTH_USER_MODEL = 'public.User'
 ACCOUNT_FORMS = {
     'signup': 'public.forms.CustomSignupForm',  # Modifier avec ton app
@@ -160,7 +161,6 @@ AUTHENTICATION_BACKENDS = (
 GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', '/opt/homebrew/opt/gdal/lib/libgdal.dylib')
 GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH', '/opt/homebrew/opt/geos/lib/libgeos_c.dylib')
 
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -183,7 +183,7 @@ LANGUAGES = [
     ('en', _('Anglais')),
     # ('es', _('Espagnol')),
     # ('de', _('Allemand')),
-    # ('zh-hans', _('Chinois Simplifié')),
+    # ('hi', _('Hindi')),
 ]
 
 LANGUAGE_CODE = 'fr'
@@ -196,6 +196,9 @@ USE_TZ = True
 
 USE_L10N = True
 
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',  # Dossier où seront stockés les fichiers de traduction
+]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
@@ -207,6 +210,12 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
+
+# STORAGES = {
+#     "staticfiles": {
+#         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+#     },
+# }
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")

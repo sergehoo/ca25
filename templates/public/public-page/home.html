@@ -8,7 +8,7 @@
     <div class="info-sec">
     <div class="container">
         <div class="info-countdown" style="background-image: url({% static 'assets/images/banner/bg.png' %});">
-            <ul class="counter-box d-flex justify-content-around" id="countdown" 
+            <ul class="counter-box d-flex justify-content-around" id="countdown"
                 data-countdown="{% if prochaine_session %}{{ prochaine_session.start_time|date:'Y/m/d H:i:s' }}{% else %}2025/03/10 18:00:00{% endif %}">
             </ul>
             <div class="dots img-moving-anim2">
@@ -121,11 +121,13 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="section-head col-xl-9 m-auto text-center mb-5">
                <span class="label">{% trans "Bienvenue à la Conference d'Abidjan 2025" %}</span>
                <h1 class="title mb-4">
-                L'Afrique Francophone au rendez-vous de  l'Agenda Divin.
+               {% trans "L'Afrique Francophone au rendez-vous de  l'Agenda Divin." %}
                      </h1>
                <p class="desc mx-3">
+                   {% blocktrans %}
                  Un rassemblement hautement spirituel et majeur de la Francophonie et des Églises Alliance Biblique Missionnaire Côte d’Ivoire .  Cette année, nous nous retrouvons sous le thème “Impact Générationnel”, un appel à laisser une empreinte indélébile dans notre société, en transmettant des valeurs de foi, d’amour et d’engagement à la prochaine génération.
-                     </p>
+                     {% endblocktrans %}
+               </p>
             </div>
             <div class="about-items-wrap" data-aos="fade-right" data-aos-duration="1000">
                <div class="row g-4">
@@ -192,13 +194,13 @@ document.addEventListener("DOMContentLoaded", function() {
          <hr>
       </div>
 
-    
+
     <section id="schedule" class="schedule-sec">
     <div class="container">
         <div class="section-head text-center col-xl-8 m-auto mb-5">
-            <span class="label mb-4">Notre Programme</span>
-            <h2 class="title">" Impact Générationnel "</h2>
-            <p>Une génération dira à l’autre combien tu es grand ; elle proclamera tes œuvres merveilleuses.</p>
+            <span class="label mb-4">{% trans " Notre Programme" %}</span>
+            <h2 class="title">{% trans "  Impact Générationnel " %}</h2>
+            <p>{% trans "Une génération dira à l’autre combien tu es grand ; elle proclamera tes œuvres merveilleuses." %}</p>
         </div>
 
         <div class="schedule-content-wrap">
@@ -206,12 +208,12 @@ document.addEventListener("DOMContentLoaded", function() {
             <ul class="nav nav-pills schedule-nav-tab mb-5" id="pills-tab" role="tablist">
                 {% for date, sessions in sessions_par_jour.items %}
                 <li class="nav-item schedule-nav-item" role="presentation">
-                    <button class="nav-link {% if forloop.first %}active{% endif %}" 
-                            id="pills-day-{{ forloop.counter }}-tab" 
-                            data-bs-toggle="pill" 
-                            data-bs-target="#pills-day-{{ forloop.counter }}" 
-                            type="button" role="tab" 
-                            aria-controls="pills-day-{{ forloop.counter }}" 
+                    <button class="nav-link {% if forloop.first %}active{% endif %}"
+                            id="pills-day-{{ forloop.counter }}-tab"
+                            data-bs-toggle="pill"
+                            data-bs-target="#pills-day-{{ forloop.counter }}"
+                            type="button" role="tab"
+                            aria-controls="pills-day-{{ forloop.counter }}"
                             aria-selected="{{ forloop.first }}">
                         {% translate 'Jours' %} {{ forloop.counter }}
                     </button>
@@ -222,19 +224,19 @@ document.addEventListener("DOMContentLoaded", function() {
             <!-- 🟠 Contenu des Sessions -->
             <div class="tab-content schedule-tab-content" id="pills-tabContent">
                 {% for date, sessions in sessions_par_jour.items %}
-                <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" 
-                     id="pills-day-{{ forloop.counter }}" 
-                     role="tabpanel" 
+                <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
+                     id="pills-day-{{ forloop.counter }}"
+                     role="tabpanel"
                      aria-labelledby="pills-day-{{ forloop.counter }}-tab">
 
                     {% for session in sessions %}
-                    <div class="row schedule-item" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="1000" 
+                    <div class="row schedule-item" data-aos="fade-right" data-aos-easing="linear" data-aos-duration="1000"
                          style="background-image: url({% static 'assets/images/banner/schedule1.png' %});">
                         <div class="col-lg-4">
                             <div class="d-flex align-items-center justify-content-around">
                                 <div class="card-thumb item-thumb">
-                                    <img class="rounded-5" width="100px" 
-                                         src="{% if session.speaker.profile.miniature %}{{ session.speaker.profile.miniature.url }}{% else %}{% static 'assets/images/speaker_default.png' %}{% endif %}" 
+                                    <img class="rounded-5" width="100px"
+                                         src="{% if session.speaker.profile.miniature %}{{ session.speaker.profile.miniature.url }}{% else %}{% static 'assets/images/speaker_default.png' %}{% endif %}"
                                          alt="{{ session.speaker.nom }}">
                                 </div>
                                 <div class="card-description">
@@ -248,15 +250,15 @@ document.addEventListener("DOMContentLoaded", function() {
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="card-title-area col-7">
                                     <h4 class="title">{{ session.title }}</h4>
-                                    <p class="title-desc">{{ session.description|truncatewords:20 }} 
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#sessionModal" 
-                                           data-title="{{ session.title }}" 
+                                    <p class="title-desc">{{ session.description|truncatewords:20 }}
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#sessionModal"
+                                           data-title="{{ session.title }}"
                                            data-description="{{ session.description }}">Lire plus</a>
                                     </p>
                                 </div>
                                 <div class="card-button col-5">
                                     <button class="custom-btn2" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                       S'enregistrer
+                                      {% trans "S'enregistrer" %} 
                                     </button>
                                 </div>
                             </div>
@@ -1157,97 +1159,43 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
             <div class="speakers-gallery-items-wrap">
                <div class="row">
+                {% for speaker in speakerguestars %}
+         <div class="col-md-6 col-lg-4 col-xl-3">
+            <div class="speakers-gallery-item" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="600">
+               <div class="speakers-gallery-item-thumb overflow-hidden position-relative">
+                  {% if speaker.user.profile.photo %}
+                     <img src="{{ speaker.user.profile.photo.url }}" alt="Photo de {{ speaker.user.nom }}">
+                  {% else %}
+                     <img src="{% static 'assets/images/gallery/default-profile.png' %}" alt="Photo par défaut">
+                  {% endif %}
+               </div>
+               <ul class="social-icons social">
+                  {% if speaker.facebook %}
+                  <li>
+                     <a href="{{ speaker.facebook }}" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                  </li>
+                  {% endif %}
+                  {% if speaker.linkedin %}
+                  <li>
+                     <a href="{{ speaker.linkedin }}" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+                  </li>
+                  {% endif %}
+                  {% if speaker.twitter %}
+                  <li>
+                     <a href="{{ speaker.twitter }}" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+                  </li>
+                  {% endif %}
+               </ul>
+               <div class="item-content">
+                  <h3 class="title">{{ speaker.user.nom }} {{ speaker.user.prenom }}</h3>
+                  <span class="sub">{{ speaker.organisme|default:"Indépendant" }}</span>
+               </div>
+            </div>
+         </div>
+         {% empty %}
+         <p class="text-center">Aucun intervenant pour le moment.</p>
+         {% endfor %}
 
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                     <div class="speakers-gallery-item" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="600">
-                        <div class="speakers-gallery-item-thumb overflow-hidden position-relative">
-                           <img src="{% static 'assets/images/gallery/otabil.png' %}" alt="Gallery Image 2">
-                        </div>
-                        <ul class="social-icons social">
-                           <li>
-                              <a href=""><i class="fa-brands fa-facebook-f"></i></a>
-                           </li>
-                           <li>
-                              <a href=""><i class="fa-brands fa-linkedin-in"></i></a>
-                           </li>
-                           <li>
-                              <a href=""><i class="fa-brands fa-twitter"></i></a>
-                           </li>
-                        </ul>
-                        <div class="item-content">
-                           <h3 class="title">Mensa OTABIL</h3>
-                           <span class="sub">ICGC Ghana</span>
-                        </div>
-                     </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                     <div class="speakers-gallery-item" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="800">
-                        <div class="speakers-gallery-item-thumb overflow-hidden position-relative">
-                           <img src="{% static 'assets/images/gallery/bismarck.png' %}" alt="Gallery Image 3">
-                        </div>
-                        <ul class="social-icons social">
-                           <li>
-                              <a href=""><i class="fa-brands fa-facebook-f"></i></a>
-                           </li>
-                           <li>
-                              <a href=""><i class="fa-brands fa-linkedin-in"></i></a>
-                           </li>
-                           <li>
-                              <a href=""><i class="fa-brands fa-twitter"></i></a>
-                           </li>
-                        </ul>
-                        <div class="item-content">
-                           <h3 class="title">Tudor Bismarck</h3>
-                           <span class="sub">Jabula Ministrie </span>
-                        </div>
-                     </div>
-                  </div>
-                  <div class="col-md-6 col-lg-4 col-xl-3">
-                     <div class="speakers-gallery-item" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="1000">
-                        <div class="speakers-gallery-item-thumb overflow-hidden position-relative">
-                           <img src="{% static 'assets/images/gallery/syllas.png' %}" alt="Gallery Image 4">
-                        </div>
-                        <ul class="social-icons social">
-                           <li>
-                              <a href=""><i class="fa-brands fa-facebook-f"></i></a>
-                           </li>
-                           <li>
-                              <a href=""><i class="fa-brands fa-linkedin-in"></i></a>
-                           </li>
-                           <li>
-                              <a href=""><i class="fa-brands fa-twitter"></i></a>
-                           </li>
-                        </ul>
-                        <div class="item-content">
-                           <h3 class="title">Sylas Imankangou</h3>
-                           <span class="sub">--</span>
-                        </div>
-                     </div>
-                  </div>
-                   <div class="col-md-6 col-lg-4 col-xl-3">
-                     <div class="speakers-gallery-item" data-aos="fade-up" data-aos-easing="linear" data-aos-duration="400">
-                        <div class="speakers-gallery-item-thumb overflow-hidden position-relative">
-                           <img src="{% static 'assets/images/gallery/emmanuel.png' %}" alt="Gallery Image 1">
-                        </div>
-                        <div class="">
-                           <ul class="social-icons social">
-                              <li>
-                                 <a href=""><i class="fa-brands fa-facebook-f"></i></a>
-                              </li>
-                              <li>
-                                 <a href=""><i class="fa-brands fa-linkedin-in"></i></a>
-                              </li>
-                              <li>
-                                 <a href=""><i class="fa-brands fa-twitter"></i></a>
-                              </li>
-                           </ul>
-                        </div>
-                        <div class="item-content">
-                           <h3 class="title">Stella Smith</h3>
-                           <span class="sub">Eventor Live Max</span>
-                        </div>
-                     </div>
-                  </div>
 
 
 
@@ -1259,9 +1207,9 @@ document.addEventListener("DOMContentLoaded", function() {
                   <img src="{% static 'assets/images/dots/dots8.png' %}" alt="Shadow Image">
                </div>
             </div>
-            <div class="d-flex justify-content-center mt-5">
-               <button class="custom-btn custom-btn2">+ Speakers</button>
-            </div>
+{#            <div class="d-flex justify-content-center mt-5">#}
+{#               <button class="custom-btn custom-btn2">+ Speakers</button>#}
+{#            </div>#}
          </div>
          <div class="shape">
             <img src="{% static 'assets/images/shape/3.svg' %}" alt="">
@@ -1318,12 +1266,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     <p class="card-desc">
                         “{{ temoignage.temoignage|truncatewords:20 }}...”
                     </p>
-                    <button class="btn btn-sm btn-outline-light" 
-                        @click="temoignage = {nom: '{{ temoignage.nom }}', texte: '{{ temoignage.temoignage }}' }" 
+                    <button class="btn btn-sm btn-outline-light"
+                        @click="temoignage = {nom: '{{ temoignage.nom }}', texte: '{{ temoignage.temoignage }}' }"
                         data-bs-toggle="modal" data-bs-target="#temoignageDetailModal">
                         Lire Plus
                     </button>
-                    
+
                     <div class="profile">
                         <div class="thumb">
                             <img src="{% static 'assets/images/review/img.png' %}" alt="Review Image">
@@ -1333,7 +1281,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             <span>{{ temoignage.email|default:"" }}</span>
                         </div>
                     </div>
-                    
+
                     <ul class="rating-star list-unstyled d-flex">
                         {% for i in "12345"|slice:temoignage.note %}
                         <li class="active"><i class="fas fa-star"></i></li>
@@ -1351,11 +1299,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
             <!-- 🟢 Boutons de navigation -->
             <div class="carousel-nav flex justify-center mt-4">
-                <button type="button" class="main-left-arrow" 
+                <button type="button" class="main-left-arrow"
                         @click="activeTestimonial = (activeTestimonial - 1 + {{ temoignages|length }}) % {{ temoignages|length }}">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <button type="button" class="main-right-arrow" 
+                <button type="button" class="main-right-arrow"
                         @click="activeTestimonial = (activeTestimonial + 1) % {{ temoignages|length }}">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
@@ -1634,14 +1582,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
             <h3 class="price-package">
                 <span class="bold" data-toggle="tooltip" title="{{ session.participant_count }} - Inscrits">
-                    {{ session.participant_count }} participants
+                    {{ session.participant_count }} {% trans "participants" %}
                 </span>
             </h3>
 
             <ul class="list-unstyled mt-3">
-                <li><i class="fa-solid fa-check"></i> <strong>Lieu :</strong> {{ session.location }}</li>
-                <li><i class="fa-solid fa-check"></i> <strong>Orateur :</strong> {{ session.speaker }}</li>
-                <li><i class="fa-solid fa-check"></i> <strong>Horaire :</strong> {{ session.start_time|time }} - {{ session.start_time|date }}</li>
+                <li><i class="fa-solid fa-check"></i> <strong>{% trans "Lieu :" %}</strong> {{ session.location }}</li>
+                <li><i class="fa-solid fa-check"></i> <strong>{% trans "Orateur :" %}</strong> {{ session.speaker }}</li>
+                <li><i class="fa-solid fa-check"></i> <strong>{% trans "Horaire :" %}</strong> {{ session.start_time|time }} - {{ session.start_time|date }}</li>
             </ul>
 
             <p class="text-muted mt-3">{{ session.description|truncatechars:100 }}</p>
@@ -1650,7 +1598,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 <button class="custom-btn custom-btn2 mb-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
                     S'inscrire
                 </button>
-                <span class="card-footer-label">Assurez votre place dès maintenant</span>
+                <span class="card-footer-label">{% trans "Assurez votre place dès maintenant" %}</span>
             </div>
         </div>
     </div>
@@ -1746,15 +1694,15 @@ document.addEventListener("DOMContentLoaded", function() {
          <hr>
       </div>
 
-   
+
       <!-- blog sec start -->
 <section class="blog-sec" data-aos="fade-up" data-aos-duration="1000">
     <div class="container">
         <div class="section-head d-flex justify-content-between">
             <h2 class="blog-title">
-               Résumé des messages de la Conference 
+              {% trans " Résumé des messages de la Conference" %}
             </h2>
-            <a href="{% url 'blog_list' %}" class="blog-btn custom-btn">Voir tout</a>
+            <a href="{% url 'blog_list' %}" class="blog-btn custom-btn">{% trans "Voir tout" %}</a>
         </div>
         <div class="blog-cards-wrap zoom-gallery">
             <div class="dots img-moving-anim1">
@@ -1766,7 +1714,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <div class="card h-100 border-0">
                         <a class="card-thumb item-thumb overflow-hidden" href="{{ article.image.url }}">
                             <img src="{{ article.image.url }}" class="card-img-top" alt="{{ article.title }}">
-                            <span class="view">VIEW</span>
+                            <span class="view">{% trans " Voir" %}</span>
                         </a>
                         <div class="card-body">
                             <span class="label">{{ article.category.name }}</span>
@@ -1774,12 +1722,12 @@ document.addEventListener("DOMContentLoaded", function() {
                                 {{ article.title }}
                             </h5>
                             <p class="card-desc">{{ article.content|truncatewords:20 }}</p>
-                            <a href="{% url 'blog_detail' article.slug %}" class="blog-btn">Lire plus</a>
+                            <a href="{% url 'blog_detail' article.slug %}" class="blog-btn">{% trans "Lire plus" %}</a>
                         </div>
                     </div>
                 </div>
                 {% empty %}
-                <p class="text-center">Aucun article disponible pour le moment.</p>
+                <p class="text-center">{% trans "Aucun article disponible pour le moment." %}</p>
                 {% endfor %}
             </div>
         </div>
@@ -1789,7 +1737,7 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
 </section>
 <!-- blog sec end -->
-   
+
 
       <!-- footer area start -->
     <footer class="footer-area py-5 text-white" style="background: linear-gradient(45deg, #0a3d62, #1e3799);">
