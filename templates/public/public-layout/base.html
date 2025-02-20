@@ -72,7 +72,7 @@
     <button id="closeButton" class="close-btn">❌</button>
 
     <!-- Compte à rebours -->
-    <div id="countdown" class="countdown-text">Fin de la vidéo dans <span id="timer">...</span> secondes</div>
+    <div id="videoCountdown" class="countdown-text">Fin de la vidéo dans <span id="timer">...</span> secondes</div>
 
     <video id="videoPlayer" class="w-100" autoplay muted>
         <source src="{% static 'assets/spot_ca_25.mp4' %}" type="video/mp4">
@@ -153,57 +153,56 @@
 <!-- Script pour gérer la vidéo, le son et le countdown -->
 <!-- Script pour gérer la vidéo, le son et le countdown -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let videoContainer = document.getElementById("videoContainer");
-        let videoPlayer = document.getElementById("videoPlayer");
-        let unmuteButton = document.getElementById("unmuteButton");
-        let closeButton = document.getElementById("closeButton");
-        let countdownText = document.getElementById("countdown");
-        let timerElement = document.getElementById("timer");
+   document.addEventListener("DOMContentLoaded", function () {
+    let videoContainer = document.getElementById("videoContainer");
+    let videoPlayer = document.getElementById("videoPlayer");
+    let unmuteButton = document.getElementById("unmuteButton");
+    let closeButton = document.getElementById("closeButton");
+    let timerElement = document.getElementById("timer");
 
-        // Démarrer la vidéo automatiquement
-        videoPlayer.play();
-
-        // Afficher le bouton d'activation du son si la vidéo est mutée
-        if (videoPlayer.muted) {
-            unmuteButton.style.display = "block";
-        }
-
-        // Activation du son après interaction utilisateur
-        unmuteButton.addEventListener("click", function () {
-            videoPlayer.muted = false;
-            videoPlayer.volume = 1.0;
-            unmuteButton.style.display = "none"; // Cacher le bouton après activation
-        });
-
-        // Bouton de fermeture manuelle de la vidéo
-        closeButton.addEventListener("click", function () {
-            videoContainer.style.display = "none";
-            videoPlayer.pause(); // Stopper la vidéo immédiatement
-        });
-
-        // Initialiser le compte à rebours
-        let duration = Math.floor(videoPlayer.duration); // Récupérer la durée de la vidéo en secondes
+    // Fonction pour gérer le countdown de la vidéo
+    function videoCountdown() {
+        let duration = Math.floor(videoPlayer.duration);
         if (isNaN(duration) || duration <= 0) {
-            duration = 10; // Valeur par défaut si la durée n'est pas encore chargée
+            duration = 10;
         }
         timerElement.textContent = duration;
 
-        // Décompte du timer
         let countdownInterval = setInterval(() => {
             duration--;
             timerElement.textContent = duration;
             if (duration <= 0) {
                 clearInterval(countdownInterval);
+                videoContainer.style.display = "none";
             }
         }, 1000);
 
-        // Cacher la vidéo une fois la lecture terminée
         videoPlayer.onended = function () {
             clearInterval(countdownInterval);
             videoContainer.style.display = "none";
         };
+    }
+
+    // Démarrer la vidéo et le countdown
+    videoPlayer.play();
+    videoCountdown();
+
+    // Gestion du son de la vidéo
+    if (videoPlayer.muted) {
+        unmuteButton.style.display = "block";
+    }
+
+    unmuteButton.addEventListener("click", function () {
+        videoPlayer.muted = false;
+        videoPlayer.volume = 1.0;
+        unmuteButton.style.display = "none";
     });
+
+    closeButton.addEventListener("click", function () {
+        videoContainer.style.display = "none";
+        videoPlayer.pause();
+    });
+});
 </script>
    <div class="body-wrap">
       <!-- header area start -->
