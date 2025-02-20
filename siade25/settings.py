@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'public',
     'administration',
     "compressor",
+    'decouple'
 
 ]
 
@@ -123,7 +124,6 @@ DATABASES = {
         'PORT': config('DB_PORT', default=5432, cast=int),
     }
 }
-
 
 AUTH_USER_MODEL = 'public.User'
 ACCOUNT_FORMS = {
