@@ -349,8 +349,8 @@ class Comment(models.Model):
 
 class GuestarsSpeaker(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="guestartspeaker")
-    fonction = models.CharField(max_length=255,blank=True, null=True)
-    organisme = models.CharField(max_length=255,blank=True, null=True)
+    fonction = models.CharField(max_length=255, blank=True, null=True)
+    organisme = models.CharField(max_length=255, blank=True, null=True)
     facebook = models.URLField(blank=True, null=True)
     linkedin = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
@@ -361,7 +361,6 @@ class GuestarsSpeaker(models.Model):
 
     def __str__(self):
         return f" {self.user} sur {self.fonction}"
-
 
 
 class VisitCounter(models.Model):
