@@ -6,6 +6,7 @@ from public.models import VisitCounter
 
 logger = logging.getLogger(__name__)
 
+
 class VisitCounterMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
