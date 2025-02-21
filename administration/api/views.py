@@ -1,6 +1,8 @@
 from dj_rest_auth.registration.views import RegisterView
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
 from django.utils.timezone import now
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, permissions, generics, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -12,7 +14,7 @@ from administration.api.serializers import BeToBeSerializer, MeetingSerializer, 
 from administration.models import Attendance, Session, Temoignage
 from public.models import BeToBe, Meeting, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker
 
-
+@method_decorator(csrf_exempt, name="dispatch")
 class CustomRegisterView(RegisterView):
     """ Vue d'inscription personnalisée """
     serializer_class = CustomRegisterSerializer

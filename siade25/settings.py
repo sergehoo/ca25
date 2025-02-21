@@ -154,7 +154,7 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",  # Authentification JWT sécurisée
     ],
     "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",  # Toutes les requêtes nécessitent une authentification
+        "rest_framework.permissions.AllowAny",  # Toutes les requêtes nécessitent une authentification
     ],
 }
 
@@ -175,8 +175,8 @@ AUTHENTICATION_BACKENDS = (
     "djoser.auth_backends.LoginFieldBackend",
 )
 
-# GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', '/opt/homebrew/opt/gdal/lib/libgdal.dylib')
-# GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH', '/opt/homebrew/opt/geos/lib/libgeos_c.dylib')
+GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', '/opt/homebrew/opt/gdal/lib/libgdal.dylib')
+GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH', '/opt/homebrew/opt/geos/lib/libgeos_c.dylib')
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -247,13 +247,13 @@ SITE_ID = 1
 # REST Framework Configuration
 
 # Configuration Allauth
-ACCOUNT_RATE_LIMITS = {
-    "login_failed": "5/5m",  # Max 5 tentatives toutes les 5 minutes
-    "email_login_failed": "5/5m",
-    "password_reset": "5/1h",  # Max 5 demandes de reset password par heure
-    "verify_email": "3/10m",  # Max 3 envois d'email de vérification toutes les 10 min
-    "signup": "10/h",  # Max 10 inscriptions par heure
-}
+# ACCOUNT_RATE_LIMITS = {
+#     "login_failed": "5/5m",  # Max 5 tentatives toutes les 5 minutes
+#     "email_login_failed": "5/5m",
+#     "password_reset": "5/1h",  # Max 5 demandes de reset password par heure
+#     "verify_email": "3/10m",  # Max 3 envois d'email de vérification toutes les 10 min
+#     "signup": "10/h",  # Max 10 inscriptions par heure
+# }
 
 ACCOUNT_AUTHENTICATION_METHOD = "username"
 ACCOUNT_EMAIL_REQUIRED = True
