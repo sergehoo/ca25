@@ -39,7 +39,7 @@ class User(AbstractUser):
     prenom = models.CharField(max_length=100, blank=True, null=True)
     contact = models.CharField(max_length=100, blank=True, null=True)
     email = models.CharField(max_length=100, blank=True, null=True)
-    role = models.CharField(max_length=20, choices=ROLES)
+    role = models.CharField(max_length=20, choices=ROLES, blank=True, null=True)
     fonction = models.CharField(max_length=255, blank=True, null=True)
     company = models.CharField(max_length=255, blank=True, null=True)
     sector = models.CharField(max_length=255, blank=True, null=True)  # Secteur d'activité

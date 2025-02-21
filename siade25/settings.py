@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 # ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost').split(',')
-ALLOWED_HOSTS = ['http://conferencedabidjan.com/', 'http://conferencedabidjan.com/', 'https://www.conferencedabidjan.com/', 'https://conferencedabidjan.com/', '*']
+ALLOWED_HOSTS = ['http://conferencedabidjan.com/', 'http://conferencedabidjan.com', 'https://www.conferencedabidjan.com', 'https://conferencedabidjan.com/', '*']
 CSRF_TRUSTED_ORIGINS = [
     'https://conferencedabidjan.com/',
     'https://www.conferencedabidjan.com/',
@@ -175,8 +175,8 @@ AUTHENTICATION_BACKENDS = (
     "djoser.auth_backends.LoginFieldBackend",
 )
 
-# GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', '/opt/homebrew/opt/gdal/lib/libgdal.dylib')
-# GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH', '/opt/homebrew/opt/geos/lib/libgeos_c.dylib')
+GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', '/opt/homebrew/opt/gdal/lib/libgdal.dylib')
+GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH', '/opt/homebrew/opt/geos/lib/libgeos_c.dylib')
 
 AUTH_PASSWORD_VALIDATORS = [
     {
