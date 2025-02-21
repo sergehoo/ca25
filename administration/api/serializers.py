@@ -20,7 +20,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     nom = serializers.CharField(required=True)
     prenom = serializers.CharField(required=True)
     contact = serializers.CharField(required=False, allow_blank=True)
-    role = serializers.ChoiceField(choices=User.ROLES,required=False)
+    role = serializers.ChoiceField(choices=User.ROLES, required=False)
 
     def save(self, request):
         """ ✅ Correction : Ajout du paramètre request """
@@ -41,6 +41,7 @@ class CustomRegisterSerializer(RegisterSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """ Sérialiseur pour le profil utilisateur """
+
     class Meta:
         model = Profile
         fields = ["photo", "miniature", "linkedin", "twitter", "website", "address", "birth_date", "bio"]
@@ -52,7 +53,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["civilite", "nom", "prenom", "email", "contact", "role", "fonction", "company", "sector", "description", "preferences", "profile"]
+        fields = ["civilite", "nom", "prenom", "email", "contact", "role", "fonction", "company", "sector",
+                  "description", "preferences", "profile"]
 
     def update(self, instance, validated_data):
         """ Mise à jour de l'utilisateur et du profil """
@@ -75,6 +77,7 @@ class CustomLoginSerializer(LoginSerializer):
     username = None
     email = serializers.EmailField()
 
+
 class BeToBeSerializer(serializers.ModelSerializer):
     sponsor_name = serializers.CharField(source='sponsor.nom', read_only=True)
 
@@ -96,12 +99,14 @@ class PhotoSerializer(serializers.ModelSerializer):
         model = Photo
         fields = '__all__'
 
+
 class AlbumSerializer(serializers.ModelSerializer):
     photos = PhotoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Album
         fields = '__all__'
+
 
 class EventSerializer(serializers.ModelSerializer):
     organizer_name = serializers.CharField(source="organizer.nom", read_only=True)
@@ -111,12 +116,31 @@ class EventSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "description", "start_date", "end_date", "location", "organizer", "organizer_name"]
 
 
+class SpeakerSerializer(serializers.ModelSerializer):
+    """ Sérialiseur pour renvoyer toutes les informations du speaker """
+    photo = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ["id", "civilite", "nom", "prenom",  "fonction", "company", "photo", "sector",
+                  "description"]
+
+    def get_photo(self, obj):
+        """ Récupérer l'URL de la photo du speaker à partir de son profil """
+        if hasattr(obj, "profile") and obj.profile.photo:
+            return obj.profile.photo.url  # Retourne l'URL de l'image
+        return None  # Si pas de photo, retourner None
+
+
 class SessionSerializer(serializers.ModelSerializer):
+    """ Sérialiseur des sessions avec les détails du speaker """
     qr_code_url = serializers.SerializerMethodField()
+    speaker = SpeakerSerializer(read_only=True)  # Renvoie toutes les infos du speaker
 
     class Meta:
         model = Session
-        fields = ["id", "uuid", "event", "speaker", "title", "description", "start_time", "end_time", "qr_code_url", "slug"]
+        fields = ["id", "uuid", "event", "speaker", "title", "description", "start_time", "end_time", "qr_code_url",
+                  "slug"]
 
     def get_qr_code_url(self, obj):
         if obj.qr_code:
@@ -159,7 +183,9 @@ class TemoignageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Temoignage
-        fields = ["id", "participant", "participant_name", "nom", "email", "telephone", "temoignage", "note", "statut", "date_soumission", "date_validation"]
+        fields = ["id", "participant", "participant_name", "nom", "email", "telephone", "temoignage", "note", "statut",
+                  "date_soumission", "date_validation"]
+
 
 # class MeetingSerializer(serializers.ModelSerializer):
 #     participant_name = serializers.CharField(source="participant.nom", read_only=True)
@@ -194,7 +220,8 @@ class BlogPostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BlogPost
-        fields = ["id", "title", "slug", "category", "category_name", "author", "author_name", "content", "image", "created_at", "updated_at", "published_at", "status"]
+        fields = ["id", "title", "slug", "category", "category_name", "author", "author_name", "content", "image",
+                  "created_at", "updated_at", "published_at", "status"]
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -210,4 +237,5 @@ class GuestarsSpeakerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GuestarsSpeaker
-        fields = ["id", "user", "user_name", "fonction", "organisme", "facebook", "linkedin", "twitter", "website", "address", "birth_date", "bio"]
+        fields = ["id", "user", "user_name", "fonction", "organisme", "facebook", "linkedin", "twitter", "website",
+                  "address", "birth_date", "bio"]
