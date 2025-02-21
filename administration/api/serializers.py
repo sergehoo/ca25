@@ -123,7 +123,7 @@ class SpeakerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "civilite", "nom", "prenom", "fonction", "company", "photo", "miniature", "sector",
+        fields = ["id", "civilite", "nom", "prenom", "fonction", "company", "photo", "sector",
                   "description"]
 
     def get_photo(self, obj):
@@ -234,9 +234,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class GuestarsSpeakerSerializer(serializers.ModelSerializer):
-    user_name = serializers.CharField(source="user.nom", read_only=True)
+    nom = serializers.CharField(source="user.nom", read_only=True)
+    prenom = serializers.CharField(source="user.prenom", read_only=True)
+    speaker = SpeakerSerializer(read_only=True)  # Renvoie toutes les infos du speaker
+
 
     class Meta:
         model = GuestarsSpeaker
-        fields = ["id", "user", "user_name", "fonction", "organisme", "facebook", "linkedin", "twitter", "website",
-                  "address", "birth_date", "bio"]
+        fields = ["id", "speaker", "nom","prenom", "fonction", "organisme",
+                  "birth_date", "bio"]
