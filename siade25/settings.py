@@ -51,10 +51,17 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'allauth',
     'allauth.account',
+
+    'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
+
+
     'django_filters',
     'djoser',
     'corsheaders',
@@ -64,6 +71,7 @@ INSTALLED_APPS = [
     'administration',
     "compressor",
     'decouple',
+    'django_user_agents',
 
 ]
 
@@ -80,6 +88,8 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    'django_user_agents.middleware.UserAgentMiddleware',
+
     'public.middleware.VisitCounterMiddleware',
 ]
 
@@ -133,22 +143,28 @@ ACCOUNT_FORMS = {
 CELERY_BROKER_URL = config('REDIS_URL')
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+# Active JWT avec Simple JWT
+REST_USE_JWT = True
+
+# Configuration REST Framework
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",  # Authentification JWT sécurisée
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-
-        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",  # Toutes les requêtes nécessitent une authentification
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,  # Limite les résultats paginés à 10 par page
+}
 
+# Configuration de JWT (Sécurité renforcée)
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # Le token expire après 1 jour
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # Le refresh token expire après 7 jours
+    "ROTATE_REFRESH_TOKENS": True,  # Régénère un nouveau refresh token
+    "BLACKLIST_AFTER_ROTATION": True,  # Blacklist les anciens tokens
+    "SIGNING_KEY": SECRET_KEY,  # Utilise la clé secrète Django
+    "AUTH_HEADER_TYPES": ("Bearer",),  # Type d'authentification JWT
 }
 
 AUTHENTICATION_BACKENDS = (
@@ -227,6 +243,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 1
 # USE_L10N = True
+# REST Framework Configuration
 
 # Configuration Allauth
 ACCOUNT_RATE_LIMITS = {
@@ -237,10 +254,12 @@ ACCOUNT_RATE_LIMITS = {
     "signup": "10/h",  # Max 10 inscriptions par heure
 }
 
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_AUTHENTICATION_METHOD = "username"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_VERIFICATION = "optional"
+ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
+
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "/"
@@ -268,10 +287,3 @@ DJOSER = {
     },
 }
 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-}

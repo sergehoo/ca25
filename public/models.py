@@ -2,6 +2,7 @@ from datetime import datetime
 from io import BytesIO
 
 import cv2
+import requests
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.core.exceptions import ValidationError
@@ -28,6 +29,8 @@ class User(AbstractUser):
         ('Madame', 'Madame'),
         ('Docteur', 'Docteur'),
         ('Professeur', 'Professeur'),
+        ('Pasteur', 'Pasteur'),
+        ('Bishop', 'Bishop'),
         ('Excellence', 'Excellence'),
         ('Honorable', 'Honorable'),
     ]
@@ -367,6 +370,56 @@ class VisitCounter(models.Model):
     ip_address = models.GenericIPAddressField()  # Adresse IP du visiteur
     user_agent = models.TextField(blank=True, null=True)  # Infos sur le navigateur
     timestamp = models.DateTimeField(default=now)  # Date et heure de la visite
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Utilisateur (si connecté)
+
+    # Localisation
+    country = models.CharField(max_length=100, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    region = models.CharField(max_length=100, blank=True, null=True)
+    postal_code = models.CharField(max_length=20, blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+    isp = models.CharField(max_length=255, blank=True, null=True)  # Fournisseur d'accès Internet
+
+    # Type d'appareil
+    is_mobile = models.BooleanField(default=False)
+    is_tablet = models.BooleanField(default=False)
+    is_pc = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Visite de {self.ip_address} - {self.timestamp}"
+        device = "Mobile" if self.is_mobile else "Tablette" if self.is_tablet else "PC"
+        return f"Visite de {self.ip_address} ({device}, {self.city}, {self.country}) - {self.timestamp}"
+
+    @staticmethod
+    def get_location(ip):
+        """Utilise une API externe pour récupérer la localisation de l'IP."""
+        try:
+            response = requests.get(f"http://ip-api.com/json/{ip}")
+            data = response.json()
+            if data['status'] == 'success':
+                return {
+                    "country": data.get("country"),
+                    "city": data.get("city"),
+                    "region": data.get("regionName"),
+                    "postal_code": data.get("zip"),
+                    "latitude": data.get("lat"),
+                    "longitude": data.get("lon"),
+                    "isp": data.get("isp"),
+                }
+        except requests.RequestException:
+            pass
+        return {}
+
+    def save(self, *args, **kwargs):
+        """Remplit les informations de localisation et le type d'appareil avant de sauvegarder."""
+        if not self.country and self.ip_address:
+            location_data = self.get_location(self.ip_address)
+            self.country = location_data.get("country")
+            self.city = location_data.get("city")
+            self.region = location_data.get("region")
+            self.postal_code = location_data.get("postal_code")
+            self.latitude = location_data.get("latitude")
+            self.longitude = location_data.get("longitude")
+            self.isp = location_data.get("isp")
+
+        super().save(*args, **kwargs)
