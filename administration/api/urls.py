@@ -4,7 +4,8 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import BeToBeViewSet, MeetingViewSet, CustomRegisterView, UserProfileView, ChangePasswordView, AlbumViewSet, \
-    PhotoViewSet, CategoryViewSet, BlogPostViewSet, CommentViewSet, GuestarsSpeakerViewSet
+    PhotoViewSet, CategoryViewSet, BlogPostViewSet, CommentViewSet, GuestarsSpeakerViewSet, SessionViewSet, \
+    AttendanceViewSet, TemoignageViewSet
 
 router = DefaultRouter()
 router.register(r'btob', BeToBeViewSet)
@@ -17,6 +18,11 @@ router.register(r"categories", CategoryViewSet, basename="category")
 router.register(r"blogposts", BlogPostViewSet, basename="blogpost")
 router.register(r"comments", CommentViewSet, basename="comment")
 router.register(r"guestarspeakers", GuestarsSpeakerViewSet, basename="guestarspeaker")
+# router.register(r"events", EventViewSet, basename="event")
+router.register(r"sessions", SessionViewSet, basename="session")
+router.register(r"attendances", AttendanceViewSet, basename="attendance")
+router.register(r"temoignages", TemoignageViewSet, basename="temoignage")
+
 
 urlpatterns = [
     path("organisateur/", include(router.urls)),

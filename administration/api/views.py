@@ -1,11 +1,15 @@
 from dj_rest_auth.registration.views import RegisterView
+from django.shortcuts import get_object_or_404
+from django.utils.timezone import now
 from rest_framework import viewsets, permissions, generics, status
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from administration.api.serializers import BeToBeSerializer, MeetingSerializer, CustomRegisterSerializer, \
     UserSerializer, AlbumSerializer, PhotoSerializer, CategorySerializer, BlogPostSerializer, CommentSerializer, \
-    GuestarsSpeakerSerializer
+    GuestarsSpeakerSerializer, AttendanceSerializer, TemoignageSerializer, SessionSerializer
+from administration.models import Attendance, Session, Temoignage
 from public.models import BeToBe, Meeting, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker
 
 
@@ -121,3 +125,58 @@ class GuestarsSpeakerViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class SessionViewSet(viewsets.ModelViewSet):
+    """ API CRUD pour les sessions """
+    queryset = Session.objects.all()
+    serializer_class = SessionSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+class AttendanceViewSet(viewsets.ModelViewSet):
+    """ API CRUD pour l'enregistrement des présences """
+    queryset = Attendance.objects.all()
+    serializer_class = AttendanceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=["post"])
+    def scan_qr(self, request):
+        """ Endpoint pour scanner un QR Code et enregistrer une présence """
+        slug = request.data.get("slug")
+        session = get_object_or_404(Session, slug=slug)
+
+        # Vérifier si l'utilisateur est déjà enregistré
+        if Attendance.objects.filter(user=request.user, session=session).exists():
+            return Response({"message": "Vous êtes déjà enregistré pour cette session."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Enregistrer la présence
+        attendance = Attendance.objects.create(user=request.user, session=session)
+        return Response(AttendanceSerializer(attendance).data, status=status.HTTP_201_CREATED)
+
+
+class TemoignageViewSet(viewsets.ModelViewSet):
+    """ API CRUD pour les témoignages """
+    queryset = Temoignage.objects.all()
+    serializer_class = TemoignageSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(participant=self.request.user)
+
+    @action(detail=True, methods=["post"], permission_classes=[permissions.IsAdminUser])
+    def valider(self, request, pk=None):
+        """ Valider un témoignage """
+        temoignage = self.get_object()
+        temoignage.statut = "Validé"
+        temoignage.date_validation = now()
+        temoignage.save()
+        return Response({"message": "Témoignage validé."}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["post"], permission_classes=[permissions.IsAdminUser])
+    def rejeter(self, request, pk=None):
+        """ Rejeter un témoignage """
+        temoignage = self.get_object()
+        temoignage.statut = "Rejeté"
+        temoignage.save()
+        return Response({"message": "Témoignage rejeté."}, status=status.HTTP_200_OK)
