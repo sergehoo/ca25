@@ -20,7 +20,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     nom = serializers.CharField(required=True)
     prenom = serializers.CharField(required=True)
     contact = serializers.CharField(required=False, allow_blank=True)
-    role = serializers.ChoiceField(choices=User.ROLES)
+    role = serializers.ChoiceField(choices=User.ROLES,required=False)
 
     def save(self, request):
         """ ✅ Correction : Ajout du paramètre request """
