@@ -24,10 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost').split(',')
+# ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost').split(',')
+ALLOWED_HOSTS = ['http://conferencedabidjan.com/', 'http://conferencedabidjan.com/', 'https://www.conferencedabidjan.com/', 'https://conferencedabidjan.com/', '*']
 CSRF_TRUSTED_ORIGINS = [
-    'https://siade.com',
-    'https://www.siade.com',
+    'https://conferencedabidjan.com/',
+    'https://www.conferencedabidjan.com/',
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
