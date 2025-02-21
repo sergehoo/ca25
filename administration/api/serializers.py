@@ -2,6 +2,7 @@ import uuid
 from io import BytesIO
 
 import qrcode
+from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.contrib.sites.models import Site
 from django.core.files import File
 from django.urls import reverse
@@ -13,29 +14,28 @@ from administration.models import Event, Session, Attendance, Temoignage
 from public.models import BeToBe, Meeting, Photo, Album, User, Profile, Category, BlogPost, Comment, GuestarsSpeaker
 
 
-class CustomRegisterSerializer(serializers.ModelSerializer):
-    """ Sérialiseur pour l'inscription de l'utilisateur """
-    password1 = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
+class CustomRegisterSerializer(RegisterSerializer):
+    """ Sérialiseur personnalisé pour l'inscription de l'utilisateur """
+    civilite = serializers.CharField(required=False, allow_blank=True)
+    nom = serializers.CharField(required=True)
+    prenom = serializers.CharField(required=True)
+    contact = serializers.CharField(required=False, allow_blank=True)
+    role = serializers.ChoiceField(choices=User.ROLES)
 
-    class Meta:
-        model = User
-        fields = ["civilite", "nom", "prenom", "email", "contact", "role", "password1", "password2"]
+    def save(self, request):
+        """ ✅ Correction : Ajout du paramètre request """
+        user = super().save(request)  # Utiliser la méthode save() de `RegisterSerializer`
+        user.civilite = self.validated_data.get("civilite", "")
+        user.nom = self.validated_data.get("nom", "")
+        user.prenom = self.validated_data.get("prenom", "")
+        user.contact = self.validated_data.get("contact", "")
+        user.role = self.validated_data.get("role", "participant")  # Valeur par défaut
 
-    def validate(self, data):
-        """ Vérification des mots de passe """
-        if data["password1"] != data["password2"]:
-            raise serializers.ValidationError({"password": "Les mots de passe ne correspondent pas."})
-        return data
-
-    def create(self, validated_data):
-        """ Création de l'utilisateur """
-        password = validated_data.pop("password1")
-        validated_data.pop("password2")
-        user = User.objects.create(**validated_data)
-        user.set_password(password)
         user.save()
-        Profile.objects.create(user=user)  # Créer un profil vide par défaut
+
+        # ✅ Créer un profil par défaut pour le nouvel utilisateur
+        Profile.objects.create(user=user)
+
         return user
 
 

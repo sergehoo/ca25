@@ -69,14 +69,14 @@ class MeetingViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)  # 🔍 S'assure que la réponse est bien une liste `[]`
 
 
-class MeetingViewSet(viewsets.ModelViewSet):
-    """ Gestion des rendez-vous entre participants et sponsors """
-    queryset = Meeting.objects.all()
-    serializer_class = MeetingSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-        serializer.save(participant=self.request.user)
+# class MeetingViewSet(viewsets.ModelViewSet):
+#     """ Gestion des rendez-vous entre participants et sponsors """
+#     queryset = Meeting.objects.all()
+#     serializer_class = MeetingSerializer
+#     permission_classes = [IsAuthenticated]
+#
+#     def perform_create(self, serializer):
+#         serializer.save(participant=self.request.user)
 
 
 class AlbumViewSet(viewsets.ModelViewSet):
