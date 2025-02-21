@@ -234,12 +234,17 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class GuestarsSpeakerSerializer(serializers.ModelSerializer):
+    """ Sérialiseur pour afficher les détails du Guestars Speaker, y compris la photo """
     nom = serializers.CharField(source="user.nom", read_only=True)
     prenom = serializers.CharField(source="user.prenom", read_only=True)
-    speaker = SpeakerSerializer(read_only=True)  # Renvoie toutes les infos du speaker
-
+    photo = serializers.SerializerMethodField()  # Correction de l'accès à la photo
 
     class Meta:
         model = GuestarsSpeaker
-        fields = ["id", "speaker", "nom","prenom", "fonction", "organisme",
-                  "birth_date", "bio"]
+        fields = ["id", "photo", "nom", "prenom", "fonction", "organisme", "bio"]
+
+    def get_photo(self, obj):
+        """ Récupérer l'URL de la photo du speaker à partir de son profil """
+        if hasattr(obj.user, "profile") and obj.user.profile.photo:
+            return obj.user.profile.photo.url  # Retourne l'URL de l'image
+        return None  # Si pas de photo, retourne None
