@@ -54,7 +54,7 @@ class Session(models.Model):
             self.uuid = str(uuid.uuid4().int)[:8]
             # Générer un slug unique
         if not self.slug:
-            self.slug = slugify(f"{self.title}-{self.uuid}")
+            self.slug = slugify(f"{self.event}-{self.title}-{self.uuid}")
 
         # Générer le QR Code basé sur le slug
         current_site = Site.objects.get_current()

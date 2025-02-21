@@ -120,9 +120,10 @@ class SpeakerSerializer(serializers.ModelSerializer):
     """ Sérialiseur pour renvoyer toutes les informations du speaker """
     photo = serializers.SerializerMethodField()
 
+
     class Meta:
         model = User
-        fields = ["id", "civilite", "nom", "prenom",  "fonction", "company", "photo", "sector",
+        fields = ["id", "civilite", "nom", "prenom", "fonction", "company", "photo", "miniature", "sector",
                   "description"]
 
     def get_photo(self, obj):

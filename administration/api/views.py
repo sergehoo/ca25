@@ -5,7 +5,7 @@ from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, permissions, generics, status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from administration.api.serializers import BeToBeSerializer, MeetingSerializer, CustomRegisterSerializer, \
@@ -123,7 +123,7 @@ class GuestarsSpeakerViewSet(viewsets.ModelViewSet):
     """ Gestion des intervenants """
     queryset = GuestarsSpeaker.objects.all()
     serializer_class = GuestarsSpeakerSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
