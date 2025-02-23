@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Count
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.timezone import now
@@ -137,18 +138,37 @@ class EventDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
 
 @login_required
 def scan_qr_code(request, slug):
-    # Récupérer la session correspondant au slug du QR code
+    """ Gérer le scan du QR Code et rediriger correctement """
+
     session = get_object_or_404(Session, slug=slug)
 
-    # Vérifier si l'utilisateur est déjà enregistré pour cette session
-    attendance, created = Attendance.objects.get_or_create(user=request.user, session=session)
+    # Vérifier si la requête vient de l'application mobile
+    user_agent = request.META.get("HTTP_USER_AGENT", "").lower()
+    is_mobile_app = "myapp" in user_agent  # Modifier avec l'User-Agent de ton app mobile
 
-    if created:
-        messages.success(request, f"Votre présence à la session '{session.title}' a été confirmée ! ✅")
-    else:
-        messages.warning(request, f"Vous avez déjà scanné le QR Code pour cette session. ⚠")
+    if is_mobile_app:
+        # Si l'utilisateur est connecté, enregistrer sa présence
+        if request.user.is_authenticated:
+            attendance, created = Attendance.objects.get_or_create(user=request.user, session=session)
+            return JsonResponse({
+                "message": "Présence confirmée.",
+                "session": session.title,
+                "already_registered": not created
+            }, status=200)
+        else:
+            return JsonResponse({"error": "Authentification requise."}, status=401)
 
-    return redirect("session-detail", pk=session.pk)
+    # Si le scan est fait en dehors de l'application, rediriger vers l'App Store ou Google Play
+    app_store_url = "https://apps.apple.com/app/id123456789"  # Lien de l'application iOS
+    play_store_url = "https://play.google.com/store/apps/details?id=com.exemple.myapp"  # Lien Android
+
+    if "android" in user_agent:
+        return redirect(play_store_url)
+    elif "iphone" in user_agent or "ipad" in user_agent:
+        return redirect(app_store_url)
+
+    # Redirection par défaut vers la page de téléchargement si autre navigateur
+    return redirect("https://www.conferencedabidjan.com/app")
 
 
 class SessionListView( ListView):

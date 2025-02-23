@@ -186,11 +186,12 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     """ API CRUD pour l'enregistrement des présences """
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     @action(detail=False, methods=["post"])
     def scan_qr(self, request):
-        """ Endpoint pour scanner un QR Code et enregistrer une présence """
+        """ API pour scanner un QR Code et enregistrer une présence """
+
         slug = request.data.get("slug")
         session = get_object_or_404(Session, slug=slug)
 

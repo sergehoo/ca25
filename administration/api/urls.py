@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from .views import BeToBeViewSet, MeetingViewSet, UserProfileView, ChangePasswordView, AlbumViewSet, \
     PhotoViewSet, CategoryViewSet, BlogPostViewSet, CommentViewSet, GuestarsSpeakerViewSet, SessionViewSet, \
     AttendanceViewSet, TemoignageViewSet, CustomRegisterViewSet
+from ..views import scan_qr_code
 
 router = DefaultRouter()
 router.register(r'btob', BeToBeViewSet)
@@ -24,6 +25,7 @@ router.register(r"guestarspeakers", GuestarsSpeakerViewSet, basename="guestarspe
 # router.register(r"events", EventViewSet, basename="event")
 router.register(r"sessions", SessionViewSet, basename="session")
 router.register(r"attendances", AttendanceViewSet, basename="attendance")
+path("scan/<slug:slug>/", scan_qr_code, name="scan-qr"),
 router.register(r"temoignages", TemoignageViewSet, basename="temoignage")
 router.register(r'auth/register', CustomRegisterViewSet, basename='register')
 

@@ -52,15 +52,17 @@ class Session(models.Model):
         # Générer un UUID à 8 chiffres unique
         if not self.uuid:
             self.uuid = str(uuid.uuid4().int)[:8]
-            # Générer un slug unique
+
+        # Générer un slug unique
         if not self.slug:
             self.slug = slugify(f"{self.event}-{self.title}-{self.uuid}")
 
-        # Générer le QR Code basé sur le slug
+        # URL de scan sécurisé
         current_site = Site.objects.get_current()
-        qr_data = f"https://{current_site.domain}{reverse('scan-qr', kwargs={'slug': self.slug})}"
+        scan_url = f"https://{current_site.domain}{reverse('scan-qr', kwargs={'slug': self.slug})}"
 
-        qr = qrcode.make(qr_data)
+        # Générer le QR Code
+        qr = qrcode.make(scan_url)
         qr_io = BytesIO()
         qr.save(qr_io, format='PNG')
 
