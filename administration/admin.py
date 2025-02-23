@@ -31,11 +31,18 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "birth_date", "address", "linkedin", "twitter")
+    list_display = ("user", "birth_date", "badge_preview", "linkedin", "twitter")
     search_fields = ("user__nom", "user__prenom", "user__email")
     list_filter = ("birth_date",)
     ordering = ('user',)  # Tri des éléments
     autocomplete_fields = ('user',)
+
+    def badge_preview(self, obj):
+        if obj.badge:
+            return format_html('<img src="{}" width="100" />', obj.badge.url)
+        return "(Pas de badge)"
+
+    badge_preview.short_description = "Badge"
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("user")

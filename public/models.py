@@ -4,6 +4,7 @@ from datetime import datetime
 from io import BytesIO
 
 import cv2
+import qrcode
 import requests
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group, Permission
@@ -12,7 +13,7 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 from django.utils.text import slugify
 from django.utils.timezone import now, make_aware
 
@@ -82,6 +83,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     photo = models.ImageField(upload_to="profiles/", blank=True, null=True)
     miniature = models.ImageField(upload_to="profiles/", blank=True, null=True)
+    badge = models.ImageField(upload_to="badges/", blank=True, null=True)
     linkedin = models.URLField(blank=True, null=True)
     twitter = models.URLField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
@@ -90,12 +92,174 @@ class Profile(models.Model):
     bio = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        """ Sauvegarde et conversion en WebP """
-        super().save(*args, **kwargs)
-        if self.photo:
+        """ Évite la récursion infinie en séparant la génération des fichiers """
+        if not self.pk:  # Si l'objet est créé pour la première fois
+            super().save(*args, **kwargs)  # Sauvegarde initiale pour obtenir un ID utilisateur
+
+        # ✅ Générer le badge et traiter les images seulement si l'objet a déjà un ID
+        updated_fields = []
+
+        if not self.badge:  # Si le badge n'existe pas, le générer
+            self.generate_badge()
+            updated_fields.append("badge")
+
+        if self.photo and not self.photo.name.endswith(".webp"):  # Vérifier et convertir en WebP
             self.force_webp_conversion()
-            self.generate_miniature()
-            super().save(update_fields=["photo"])
+            updated_fields.append("photo")
+
+        if updated_fields:  # Si des champs ont été modifiés, sauvegarder uniquement ces champs
+            super().save(update_fields=updated_fields)
+        else:
+            super().save(*args, **kwargs)  # Sauvegarde normale si rien n'est modifié
+
+    def generate_badge(self):
+        """ Génère un badge personnalisé avec QR Code, Nom et Rôle """
+        if not self.user.nom or not self.user.prenom:
+            print("⚠️ Impossible de générer le badge : nom/prénom manquant")
+            return
+
+        # 📌 Charger le template du badge
+        template_path = os.path.join(settings.MEDIA_ROOT, "templates/templateweb.png")
+        if not os.path.exists(template_path):
+            print(f"❌ Erreur : Le fichier {template_path} est introuvable !")
+            return
+
+        template = Image.open(template_path)
+        width, height = template.size
+
+        # 📌 Générer un QR Code contenant un lien vers le profil utilisateur
+        qr_data = f"https://www.conferencedabidjan.com/profile/{self.user.id}"
+        qr = qrcode.make(qr_data)
+        qr = qr.resize((350, 350))  # 📌 QR Code plus grand (350x350)
+
+        # 🎨 Ajouter le nom et le rôle du participant
+        draw = ImageDraw.Draw(template)
+        font_path = os.path.join(settings.BASE_DIR, "static/fonts/Arial.ttf")
+
+        font_name = ImageFont.truetype(font_path, 100)  # 📌 Police grande pour le nom
+        font_role = ImageFont.truetype(font_path, 70)  # 📌 Police plus petite pour le rôle
+
+        participant_name = f"{self.user.nom} {self.user.prenom}"
+        participant_role = f"{self.user.get_role_display()}"  # 📌 Rôle du participant
+
+        # 📌 Fonction pour couper le texte en plusieurs lignes si trop long
+        def wrap_text(text, font, max_width):
+            words = text.split()
+            lines = []
+            current_line = ""
+
+            for word in words:
+                test_line = current_line + " " + word if current_line else word
+                text_width, _ = draw.textbbox((0, 0), test_line, font=font)[2:]
+                if text_width <= max_width:
+                    current_line = test_line
+                else:
+                    lines.append(current_line)
+                    current_line = word
+
+            if current_line:
+                lines.append(current_line)
+
+            return lines
+
+        # 📌 Largeur maximale du texte pour éviter le débordement
+        max_text_width = width - 100  # 100px de marge
+
+        # 📌 Nom formaté en plusieurs lignes si nécessaire
+        name_lines = wrap_text(participant_name, font_name, max_text_width)
+
+        # 📌 Calcul de la position du nom en fonction du nombre de lignes
+        line_spacing = 15  # Espacement entre les lignes
+        total_text_height = len(name_lines) * (font_name.size + line_spacing)
+        text_y = height // 2 - total_text_height // 3  # Centrage vertical
+
+        # 📌 Affichage du nom (ligne par ligne)
+        for line in name_lines:
+            text_width, _ = draw.textbbox((0, 0), line, font=font_name)[2:]
+            text_x = (width - text_width) // 2
+            draw.text((text_x, text_y), line, fill="black", font=font_name)
+            text_y += font_name.size + line_spacing  # Déplacer vers la ligne suivante
+
+        # 📌 Position du rôle sous le nom
+        role_width, role_height = draw.textbbox((0, 0), participant_role, font=font_role)[2:]
+        role_x = (width - role_width) // 2
+        role_y = text_y + 30  # 📌 30 pixels sous le nom
+        draw.text((role_x, role_y), participant_role, fill="gray", font=font_role)  # 📌 Couleur plus discrète
+
+        # 📌 Position du QR Code en bas à droite
+        qr_position = (width - 420, height - 350)
+        template.paste(qr, qr_position)
+
+        # 📌 Sauvegarde de l'image finale
+        buffer = BytesIO()
+        template.save(buffer, format="PNG")
+
+        # 📌 Enregistrer le fichier dans le modèle
+        file_name = f"badges/badge_{self.user.id}.png"
+        self.badge.save(file_name, ContentFile(buffer.getvalue()), save=True)
+        # def generate_badge(self):
+    #     """ Génère un badge personnalisé avec QR Code """
+    #     if not self.user.nom or not self.user.prenom:
+    #         print("⚠️ Impossible de générer le badge : nom/prénom manquant")
+    #         return
+    #
+    #     # Charger le template du badge
+    #     template_path = os.path.join(settings.MEDIA_ROOT, "templates/templateweb.png")
+    #     if not os.path.exists(template_path):
+    #         print(f"❌ Erreur : Le fichier {template_path} est introuvable !")
+    #         return
+    #
+    #     template = Image.open(template_path)
+    #     width, height = template.size
+    #
+    #     # Définir positions du texte et QR Code
+    #     name_position = (width // 2, height // 2 - 60)  # Texte centré
+    #     role_position = (width // 2, height // 1 - 0)  # 📌 Rôle sous le nom
+    #     qr_position = (width - 420, height - 350)  # QR Code en bas à droite
+    #
+    #     # Générer un QR Code contenant un lien vers le profil utilisateur
+    #     qr_data = f"https://www.conferencedabidjan.com/profile/{self.user.id}"
+    #     qr = qrcode.make(qr_data)
+    #     qr = qr.resize((350, 350))  # Taille du QR Code
+    #
+    #     # Ajouter le nom du participant
+    #     draw = ImageDraw.Draw(template)
+    #     # font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"  # Police standard
+    #     font_path = os.path.join(settings.BASE_DIR, "static/fonts/Arial.ttf")
+    #     font = ImageFont.truetype(font_path, 160)  # Grande taille pour le texte
+    #
+    #     font_role = ImageFont.truetype(font_path, 100)  # 📌 Police plus petite pour le rôle
+    #
+    #     participant_name = f"{self.user.nom} {self.user.prenom}"
+    #     participant_role = f"{self.user.get_role_display()}"  # 📌 Rôle du participant
+    #
+    #     # Centrer le texte
+    #     text_width, text_height = draw.textbbox((0, 0), participant_name, font=font)[2:]
+    #     text_x = (width - text_width) // 2
+    #     text_y = name_position[1]
+    #     draw.text((text_x, text_y), participant_name, fill="black", font=font)
+    #
+    #     # 📌 Centrage du texte pour le rôle
+    #     role_width, role_height = draw.textbbox((0, 0), participant_role, font=font_role)[2:]
+    #     role_x = (width - role_width) // 2
+    #     role_y = role_position[1]
+    #     draw.text((role_x, role_y), participant_role, fill="gray", font=font_role)  # 📌 Couleur plus discrète
+    #
+    #     # Ajouter le QR Code au badge
+    #     template.paste(qr, qr_position)
+    #
+    #     # Sauvegarde de l'image finale
+    #     buffer = BytesIO()
+    #     template.save(buffer, format="PNG")
+    #
+    #     # Enregistrer le fichier dans le modèle
+    #     file_name = f"badges/badge_{self.user.id}.png"
+    #     self.badge.save(file_name, ContentFile(buffer.getvalue()), save=True)  # ✅ Correction : save=True
+
+
+
+    def __str__(self):
+        return f"Profil de {self.user.nom} {self.user.prenom}"
 
     def force_webp_conversion(self):
         """ Convertit n'importe quel format en WebP avec compression optimisée """

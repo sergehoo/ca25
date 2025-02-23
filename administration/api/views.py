@@ -186,7 +186,7 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     """ API CRUD pour l'enregistrement des présences """
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     @action(detail=False, methods=["post"])
     def scan_qr(self, request):
