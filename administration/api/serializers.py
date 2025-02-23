@@ -45,12 +45,23 @@ class CustomRegisterSerializer(RegisterSerializer):
         return data
 
 
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
-    """ Sérialiseur pour le profil utilisateur """
+    """ Sérialiseur pour le modèle Profile """
+
+    user_email = serializers.EmailField(source="user.email", read_only=True)
+    user_nom = serializers.CharField(source="user.nom", read_only=True)
+    user_prenom = serializers.CharField(source="user.prenom", read_only=True)
+    user_role = serializers.CharField(source="user.get_role_display", read_only=True)
 
     class Meta:
         model = Profile
-        fields = ["photo", "miniature", "linkedin", "twitter", "website", "address", "birth_date", "bio"]
+        fields = [
+            "user_email", "user_nom", "user_prenom", "user_role",
+            "photo", "miniature", "badge", "linkedin", "twitter",
+            "website", "address", "birth_date", "bio"
+        ]
 
 
 class UserSerializer(serializers.ModelSerializer):

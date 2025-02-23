@@ -12,9 +12,9 @@ from rest_framework.response import Response
 
 from administration.api.serializers import BeToBeSerializer, MeetingSerializer, CustomRegisterSerializer, \
     UserSerializer, AlbumSerializer, PhotoSerializer, CategorySerializer, BlogPostSerializer, CommentSerializer, \
-    GuestarsSpeakerSerializer, AttendanceSerializer, TemoignageSerializer, SessionSerializer
+    GuestarsSpeakerSerializer, AttendanceSerializer, TemoignageSerializer, SessionSerializer, UserProfileSerializer
 from administration.models import Attendance, Session, Temoignage
-from public.models import BeToBe, Meeting, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker
+from public.models import BeToBe, Meeting, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, Profile
 from allauth.account import app_settings as allauth_settings
 
 
@@ -66,13 +66,17 @@ class CustomRegisterViewSet(viewsets.ViewSet):
 #         return JsonResponse({"error": "GET method not allowed. Use POST."}, status=405)
 
 
-class UserProfileView(generics.RetrieveUpdateAPIView):
-    """ Vue pour récupérer et mettre à jour le profil utilisateur """
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+class UserProfileView(generics.RetrieveAPIView):
+    """ API pour récupérer le profil de l'utilisateur connecté """
 
-    def get_object(self):
-        return self.request.user
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]  # ✅ Authentification requise
+
+    def get(self, request, *args, **kwargs):
+        """ Retourne le profil de l'utilisateur connecté """
+        profile = Profile.objects.get(user=request.user)  # 🔍 Récupérer le profil de l'utilisateur
+        serializer = self.get_serializer(profile)
+        return Response(serializer.data)
 
 
 class ChangePasswordView(generics.UpdateAPIView):

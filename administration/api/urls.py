@@ -31,6 +31,7 @@ router.register(r'auth/register', CustomRegisterViewSet, basename='register')
 
 urlpatterns = [
                   path("organisateur/", include(router.urls)),
+                  path("utilisateur/profile/", UserProfileView.as_view(), name="user-profile"),
 
                   # path("auth/register/", CustomRegisterView.as_view(), name="register"),
                   path("auth/login/", LoginView.as_view(), name="login"),
