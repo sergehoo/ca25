@@ -16,7 +16,7 @@ User = get_user_model()
 
 
 # Create your views here.
-class AdminDah( TemplateView):
+class AdminDah(TemplateView):
     template_name = "administration/admin-page/dashboard.html"
 
     def test_func(self):
@@ -136,7 +136,6 @@ class EventDeleteView(UserPassesTestMixin, LoginRequiredMixin, DeleteView):
         return redirect("home")
 
 
-@login_required
 def scan_qr_code(request, slug):
     """ Gérer le scan du QR Code et rediriger correctement """
 
@@ -171,7 +170,7 @@ def scan_qr_code(request, slug):
     return redirect("https://www.conferencedabidjan.com/app")
 
 
-class SessionListView( ListView):
+class SessionListView(ListView):
     model = Session
     template_name = "administration/admin-page/session-list.html"
     context_object_name = "sessions"
