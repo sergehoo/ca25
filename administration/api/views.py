@@ -131,14 +131,14 @@ class AlbumViewSet(viewsets.ModelViewSet):
     """ Gestion des albums photos """
     queryset = Album.objects.all()
     serializer_class = AlbumSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
 
 class PhotoViewSet(viewsets.ModelViewSet):
     """ Gestion des photos dans les albums """
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
 
 class CategoryViewSet(viewsets.ModelViewSet):

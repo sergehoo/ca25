@@ -23,6 +23,8 @@ class User(AbstractUser):
     ROLES = [
         ('participant', 'Participant'),
         ('exposant', 'Exposant'),
+        ('Orateur', 'Orateur'),
+        ('FISS', 'FISS'),
         ('sponsor', 'Sponsor'),
         ('media', 'Media'),
         ('organisateur', 'Organisateur'),
