@@ -35,9 +35,7 @@ urlpatterns += i18n_patterns(
     path('blog/', blog_list, name="blog_list"),
     path('blog/<slug:slug>/', blog_detail, name="blog_detail"),
     path('soumettre-temoignage/', soumettre_temoignage, name="soumettre_temoignage"),
-
     path('', HomePageView.as_view(), name='home'),
-
     path("sessions/scan/<slug:slug>/", scan_qr_code, name="scan-qr"),
 
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

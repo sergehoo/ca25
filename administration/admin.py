@@ -109,7 +109,7 @@ class AlbumAdmin(admin.ModelAdmin):
 
 @admin.register(Photo)
 class PhotoAdmin(admin.ModelAdmin):
-    list_display = ('album', 'image', 'date_ajout',"share_buttons")
+    list_display = ('album', 'image', 'date_ajout', "share_buttons")
 
     def share_buttons(self, obj):
         """ Génère les boutons de partage dans l'admin Django """
@@ -162,7 +162,10 @@ class GuestarsSpeakerAdmin(admin.ModelAdmin):
 
 @admin.register(VisitCounter)
 class VisitCounterAdmin(admin.ModelAdmin):
-    list_display = ('ip_address', 'timestamp', 'user_agent')
+    list_display = ('ip_address', 'timestamp', 'user_agent',
+                    'is_mobile',
+                    'is_tablet',
+                    'is_pc')
 
     def total_visits(self):
         return format_html("<strong>{}</strong>", VisitCounter.objects.count())
