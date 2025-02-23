@@ -151,46 +151,56 @@
 </style>
 
 <!-- Script pour gérer la vidéo, le son et le countdown -->
-<!-- Script pour gérer la vidéo, le son et le countdown -->
 <script>
-   document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     let videoContainer = document.getElementById("videoContainer");
     let videoPlayer = document.getElementById("videoPlayer");
     let unmuteButton = document.getElementById("unmuteButton");
     let closeButton = document.getElementById("closeButton");
     let timerElement = document.getElementById("timer");
+    let countdownInterval;
 
-    // Fonction pour gérer le countdown de la vidéo
-    function videoCountdown() {
+    function startVideo() {
+        // Réinitialiser la vidéo et le son
+        videoPlayer.currentTime = 0;
+        videoPlayer.muted = true;
+        videoPlayer.play();
+
+        // Démarrer le countdown
         let duration = Math.floor(videoPlayer.duration);
         if (isNaN(duration) || duration <= 0) {
             duration = 10;
         }
         timerElement.textContent = duration;
 
-        let countdownInterval = setInterval(() => {
+        countdownInterval = setInterval(() => {
             duration--;
             timerElement.textContent = duration;
             if (duration <= 0) {
                 clearInterval(countdownInterval);
-                videoContainer.style.display = "none";
+                closeVideo();
             }
         }, 1000);
 
         videoPlayer.onended = function () {
             clearInterval(countdownInterval);
-            videoContainer.style.display = "none";
+            closeVideo();
         };
     }
 
-    // Démarrer la vidéo et le countdown
-    videoPlayer.play();
-    videoCountdown();
-
-    // Gestion du son de la vidéo
-    if (videoPlayer.muted) {
-        unmuteButton.style.display = "block";
+    function closeVideo() {
+        videoContainer.style.display = "none";
+        videoPlayer.pause();
+        videoPlayer.currentTime = 0; // Remettre la vidéo au début
+        clearInterval(countdownInterval);
     }
+
+    // Gérer l'affichage du bouton "Activer le son"
+    videoPlayer.addEventListener("play", function () {
+        if (videoPlayer.muted) {
+            unmuteButton.style.display = "block";
+        }
+    });
 
     unmuteButton.addEventListener("click", function () {
         videoPlayer.muted = false;
@@ -199,9 +209,11 @@
     });
 
     closeButton.addEventListener("click", function () {
-        videoContainer.style.display = "none";
-        videoPlayer.pause();
+        closeVideo();
     });
+
+    // Démarrer la vidéo au chargement de la page
+    startVideo();
 });
 </script>
    <div class="body-wrap">
