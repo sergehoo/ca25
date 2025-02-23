@@ -194,12 +194,13 @@ class Profile(models.Model):
 
         # 📌 Sauvegarde de l'image finale
         buffer = BytesIO()
-        template.save(buffer, format="PNG")
+        template.save(buffer, format="WEBP", quality=90)
 
         # 📌 Enregistrer le fichier dans le modèle
-        file_name = f"badges/badge_{self.user.id}.png"
+        file_name = f"badges/badge_{self.user.id}.webp"
         self.badge.save(file_name, ContentFile(buffer.getvalue()), save=True)
         # def generate_badge(self):
+
     #     """ Génère un badge personnalisé avec QR Code """
     #     if not self.user.nom or not self.user.prenom:
     #         print("⚠️ Impossible de générer le badge : nom/prénom manquant")
@@ -257,8 +258,6 @@ class Profile(models.Model):
     #     # Enregistrer le fichier dans le modèle
     #     file_name = f"badges/badge_{self.user.id}.png"
     #     self.badge.save(file_name, ContentFile(buffer.getvalue()), save=True)  # ✅ Correction : save=True
-
-
 
     def __str__(self):
         return f"Profil de {self.user.nom} {self.user.prenom}"
