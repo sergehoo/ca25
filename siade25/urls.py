@@ -18,14 +18,22 @@ from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.urls import path, include
 
 from administration.views import scan_qr_code
+from public.sitemaps import StaticViewSitemap, EventSitemap, SpeakerSitemap
 from public.views import HomePageView, blog_list, blog_detail, soumettre_temoignage
 
 urlpatterns = [
     path("api/", include('administration.api.urls')),  # API indépendante
 ]
+
+sitemaps = {
+    'static': StaticViewSitemap,
+    'events': EventSitemap,
+    'speakers': SpeakerSitemap,
+}
 
 urlpatterns += i18n_patterns(
     path('admin/', admin.site.urls),
@@ -37,6 +45,7 @@ urlpatterns += i18n_patterns(
     path('soumettre-temoignage/', soumettre_temoignage, name="soumettre_temoignage"),
     path('', HomePageView.as_view(), name='home'),
     path("sessions/scan/<slug:slug>/", scan_qr_code, name="scan-qr"),
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
 
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 if settings.DEBUG:

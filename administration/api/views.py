@@ -1,7 +1,8 @@
 from allauth.account.utils import complete_signup
 from dj_rest_auth.registration.views import RegisterView
+from django.conf.urls.static import static
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
@@ -38,6 +39,8 @@ class CustomRegisterViewSet(viewsets.ViewSet):
                 status=status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 # class CustomRegisterView(RegisterView):
 #     """ Vue d'inscription personnalisée """
 #
@@ -190,6 +193,7 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     """ API CRUD pour l'enregistrement des présences """
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
+
     # permission_classes = [IsAuthenticated]
 
     @action(detail=False, methods=["post"])
