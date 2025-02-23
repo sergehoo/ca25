@@ -109,7 +109,21 @@ class AlbumAdmin(admin.ModelAdmin):
 
 @admin.register(Photo)
 class PhotoAdmin(admin.ModelAdmin):
-    list_display = ('album', 'image', 'date_ajout')
+    list_display = ('album', 'image', 'date_ajout',"share_buttons")
+
+    def share_buttons(self, obj):
+        """ Génère les boutons de partage dans l'admin Django """
+        share_links = obj.get_share_links()
+        return format_html(
+            '<a href="{}" target="_blank">Facebook</a> | '
+            '<a href="{}" target="_blank">Twitter</a> | '
+            '<a href="{}" target="_blank">WhatsApp</a> | '
+            '<a href="{}" target="_blank">LinkedIn</a>',
+            share_links["facebook"], share_links["twitter"],
+            share_links["whatsapp"], share_links["linkedin"]
+        )
+
+    share_buttons.short_description = "Partager"
 
 
 @admin.register(Category)

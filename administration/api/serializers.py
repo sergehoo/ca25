@@ -15,28 +15,34 @@ from public.models import BeToBe, Meeting, Photo, Album, User, Profile, Category
 
 
 class CustomRegisterSerializer(RegisterSerializer):
-    """ Sérialiseur personnalisé pour l'inscription de l'utilisateur """
-    civilite = serializers.CharField(required=False, allow_blank=True)
     nom = serializers.CharField(required=True)
     prenom = serializers.CharField(required=True)
+    email = serializers.EmailField(required=True)
     contact = serializers.CharField(required=False, allow_blank=True)
-    role = serializers.ChoiceField(choices=User.ROLES, required=False)
+    role = serializers.ChoiceField(choices=User.ROLES, required=True)
+    fonction = serializers.CharField(required=False, allow_blank=True)
+    company = serializers.CharField(required=False, allow_blank=True)
+    sector = serializers.CharField(required=False, allow_blank=True)
 
-    def save(self, request):
-        """ ✅ Correction : Ajout du paramètre request """
-        user = super().save(request)  # Utiliser la méthode save() de `RegisterSerializer`
-        user.civilite = self.validated_data.get("civilite", "")
-        user.nom = self.validated_data.get("nom", "")
-        user.prenom = self.validated_data.get("prenom", "")
-        user.contact = self.validated_data.get("contact", "")
-        user.role = self.validated_data.get("role", "participant")  # Valeur par défaut
+    def validate_email(self, email):
+        """ Vérifie que l'email est unique """
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Un utilisateur avec cet email existe déjà.")
+        return email
 
-        user.save()
-
-        # ✅ Créer un profil par défaut pour le nouvel utilisateur
-        Profile.objects.create(user=user)
-
-        return user
+    def get_cleaned_data(self):
+        """ Récupère les données nettoyées avant la création de l'utilisateur """
+        data = super().get_cleaned_data()
+        data.update({
+            "nom": self.validated_data.get("nom", ""),
+            "prenom": self.validated_data.get("prenom", ""),
+            "contact": self.validated_data.get("contact", ""),
+            "role": self.validated_data.get("role", ""),
+            "fonction": self.validated_data.get("fonction", ""),
+            "company": self.validated_data.get("company", ""),
+            "sector": self.validated_data.get("sector", ""),
+        })
+        return data
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

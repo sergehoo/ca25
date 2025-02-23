@@ -25,10 +25,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 # ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost').split(',')
-ALLOWED_HOSTS = ['http://conferencedabidjan.com/', 'http://conferencedabidjan.com', 'https://www.conferencedabidjan.com', 'https://conferencedabidjan.com/', '*']
+ALLOWED_HOSTS = ['conferencedabidjan.com', 'www.conferencedabidjan.com','127.0.0.1','localhost']
 CSRF_TRUSTED_ORIGINS = [
-    'https://conferencedabidjan.com/',
-    'https://www.conferencedabidjan.com/',
+    "https://conferencedabidjan.com",
+    "https://www.conferencedabidjan.com",
+    "http://127.0.0.1",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
 ]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
@@ -61,7 +64,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     "dj_rest_auth",
     "dj_rest_auth.registration",
-
 
     'django_filters',
     'djoser',
@@ -151,6 +153,7 @@ REST_USE_JWT = True
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication",
+        'rest_framework.authentication.TokenAuthentication',
         "rest_framework_simplejwt.authentication.JWTAuthentication",  # Authentification JWT sécurisée
     ],
     "DEFAULT_PERMISSION_CLASSES": [
@@ -159,19 +162,25 @@ REST_FRAMEWORK = {
 }
 
 # Configuration de JWT (Sécurité renforcée)
+# SIMPLE_JWT = {
+#     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # Le token expire après 1 jour
+#     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # Le refresh token expire après 7 jours
+#     "ROTATE_REFRESH_TOKENS": True,  # Régénère un nouveau refresh token
+#     "BLACKLIST_AFTER_ROTATION": True,  # Blacklist les anciens tokens
+#     "SIGNING_KEY": SECRET_KEY,  # Utilise la clé secrète Django
+#     "AUTH_HEADER_TYPES": ("Bearer",),  # Type d'authentification JWT
+# }
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # Le token expire après 1 jour
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # Le refresh token expire après 7 jours
-    "ROTATE_REFRESH_TOKENS": True,  # Régénère un nouveau refresh token
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # Token JWT expire après 1 jour
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # Refresh token expire après 7 jours
+    "ROTATE_REFRESH_TOKENS": True,  # Régénère un refresh token après chaque connexion
     "BLACKLIST_AFTER_ROTATION": True,  # Blacklist les anciens tokens
     "SIGNING_KEY": SECRET_KEY,  # Utilise la clé secrète Django
-    "AUTH_HEADER_TYPES": ("Bearer",),  # Type d'authentification JWT
+    "AUTH_HEADER_TYPES": ("Bearer",),  # Authentification via "Bearer <token>"
 }
-
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',  # this is default
-    # 'guardian.backends.ObjectPermissionBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
     "djoser.auth_backends.LoginFieldBackend",
 )
 
@@ -212,6 +221,7 @@ USE_I18N = True
 USE_TZ = True
 
 USE_L10N = True
+
 
 LOCALE_PATHS = [
     BASE_DIR / 'locale',  # Dossier où seront stockés les fichiers de traduction
@@ -255,16 +265,23 @@ SITE_ID = 1
 #     "signup": "10/h",  # Max 10 inscriptions par heure
 # }
 
-ACCOUNT_AUTHENTICATION_METHOD = "username"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_VERIFICATION = False
-ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
+ACCOUNT_ADAPTER = "public.adapters.NoRedirectAccountAdapter"
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'administration.api.serializers.CustomRegisterSerializer',
+}
 
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "/"
-
+SITE_URL = "https://www.conferencedabidjan.com"
+# APPEND_SLASH = False
 # LOGIN_REDIRECT_URL = "home"
 # LOGOUT_REDIRECT_URL = "landing"
 # ACCOUNT_LOGOUT_REDIRECT = "account_login"
@@ -275,20 +292,18 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
 DJOSER = {
-    'LOGIN_FIELD': 'username',
-    'USER_CREATE_PASSWORD_RETYPE': True,
-    'SEND_CONFIRMATION_EMAIL': False,
-    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': False,
-    'USERNAME_CHANGED_EMAIL_CONFIRMATION': False,
-    'ACTIVATION_URL': 'auth/activate/{uid}/{token}/',
-    'SEND_ACTIVATION_EMAIL': False,
-    'SERIALIZERS': {
-        'user_create': 'djoser.serializers.UserCreateSerializer',
-        'user': 'djoser.serializers.UserSerializer',
+    "LOGIN_FIELD": "email",
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    "SEND_CONFIRMATION_EMAIL": True,  # ✅ Active la confirmation par email
+    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": False,
+    "USERNAME_CHANGED_EMAIL_CONFIRMATION": False,
+    "ACTIVATION_URL": "auth/activate/{uid}/{token}/",
+    "SEND_ACTIVATION_EMAIL": True,
+    "SERIALIZERS": {
+        "user_create": "djoser.serializers.UserCreateSerializer",
+        "user": "djoser.serializers.UserSerializer",
     },
 }
-
-
 
 # Configuration de l'e-mail via fichier .env
 EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")

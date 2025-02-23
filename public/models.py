@@ -1,3 +1,5 @@
+import os
+import uuid
 from datetime import datetime
 from io import BytesIO
 
@@ -38,7 +40,7 @@ class User(AbstractUser):
     nom = models.CharField(max_length=50, blank=True, null=True)
     prenom = models.CharField(max_length=100, blank=True, null=True)
     contact = models.CharField(max_length=100, blank=True, null=True)
-    email = models.CharField(max_length=100, blank=True, null=True)
+    email = models.EmailField(unique=True, verbose_name="Adresse email")
     role = models.CharField(max_length=20, choices=ROLES, blank=True, null=True)
     fonction = models.CharField(max_length=255, blank=True, null=True)
     company = models.CharField(max_length=255, blank=True, null=True)
@@ -62,9 +64,21 @@ class User(AbstractUser):
         verbose_name="user permissions",
     )
 
+    USERNAME_FIELD = "email"  # Utilisation de l'email comme identifiant
+    REQUIRED_FIELDS = ["nom", "prenom"]
+
+    def __str__(self):
+        return f"{self.nom} {self.prenom} ({self.email})"
+
+    class Meta:
+        ordering = ["nom", "prenom"]
+        verbose_name = "Utilisateur"
+        verbose_name_plural = "Utilisateurs"
+
 
 class Profile(models.Model):
-    """ Profil utilisateur avec informations supplémentaires """
+    """ Profil utilisateur avec gestion avancée des images (WebP & Miniature) """
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     photo = models.ImageField(upload_to="profiles/", blank=True, null=True)
     miniature = models.ImageField(upload_to="profiles/", blank=True, null=True)
@@ -76,118 +90,124 @@ class Profile(models.Model):
     bio = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        """ Sauvegarde l'image après traitement """
+        """ Sauvegarde et conversion en WebP """
         super().save(*args, **kwargs)
         if self.photo:
-            self.process_image()
-            self.process_miniature()
+            self.force_webp_conversion()
+            self.generate_miniature()
+            super().save(update_fields=["photo"])
 
-    def process_image(self):
-        """ Rogner et redimensionner l’image sans la déformer """
+    def force_webp_conversion(self):
+        """ Convertit n'importe quel format en WebP avec compression optimisée """
+        if not self.photo:
+            return
+
         image_path = self.photo.path
-        target_size = (900, 1333)  # Taille cible
+        target_size = (900, 1333)  # Taille standardisée
+        output_format = "webp"  # AVIF possible si Pillow le supporte
 
         try:
             with Image.open(image_path) as img:
-                img = img.convert("RGB")  # Convertir en RGB si nécessaire
+                img = img.convert("RGB")  # WebP ne supporte pas CMYK ou GIF
 
-                # Calcul des proportions
+                # Vérifier si WebP est supporté
+                from PIL import features
+                if not features.check("webp"):
+                    print("⚠️ WebP n'est pas supporté par cette version de Pillow !")
+                    return
+
+                # Recadrage intelligent pour conserver la proportion
                 img_ratio = img.width / img.height
                 target_ratio = target_size[0] / target_size[1]
 
-                # Rognage intelligent pour conserver le visage centré
                 if img_ratio > target_ratio:
-                    # Image trop large -> Rogner sur la largeur
                     new_width = int(target_ratio * img.height)
                     left = (img.width - new_width) // 2
-                    right = left + new_width
-                    img = img.crop((left, 0, right, img.height))
+                    img = img.crop((left, 0, left + new_width, img.height))
                 else:
-                    # Image trop haute -> Rogner sur la hauteur
                     new_height = int(img.width / target_ratio)
-                    top = (img.height - new_height) // 4  # Ajusté pour garder plus de place au-dessus du visage
-                    bottom = top + new_height
-                    img = img.crop((0, top, img.width, bottom))
+                    top = (img.height - new_height) // 4
+                    img = img.crop((0, top, img.width, top + new_height))
 
-                # Redimensionner à la taille exacte
+                # Redimensionnement final
                 img = img.resize(target_size, Image.LANCZOS)
 
-                # Sauvegarde optimisée
-                img.save(image_path, quality=90)
+                # Convertir en WebP
+                buffer = BytesIO()
+                img.save(buffer, format="WEBP", quality=85)
+
+                # Renommer et sauvegarder en WebP
+                base_name = os.path.splitext(os.path.basename(image_path))[0]
+                new_filename = f"profiles/{base_name}.webp"
+
+                self.photo.save(new_filename, ContentFile(buffer.getvalue()), save=False)
+
+                # Supprimer l'ancien fichier s'il existe
+                if os.path.exists(image_path):
+                    os.remove(image_path)
 
         except Exception as e:
-            print(f"Erreur lors du traitement de l'image : {e}")
+            print(f"❌ Erreur lors de la conversion en WebP : {e}")
 
-    def process_miniature(self):
-        """ Redimensionne et centre la miniature sans aplatir l’image """
+    def generate_miniature(self):
+        """ Génère une miniature WebP centrée sur le visage """
+        if not self.photo:
+            return
+
         image_path = self.photo.path
-        output_size = (600, 600)  # Taille cible de la miniature
+        output_size = (600, 600)  # Taille standardisée
 
         try:
-            img = cv2.imread(image_path)  # Charger l'image avec OpenCV
+            img = cv2.imread(image_path)
             if img is None:
-                return  # Évite les erreurs si l'image ne peut pas être chargée
+                return
 
-            # Convertir en niveaux de gris pour la détection des visages
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-            # Charger le modèle de détection de visages OpenCV
             face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-
-            # Détecter les visages
             faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(50, 50))
 
             if len(faces) > 0:
-                # Prendre le plus grand visage détecté (celui le plus proche de la caméra)
-                faces = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)  # Trier par taille
+                faces = sorted(faces, key=lambda f: f[2] * f[3], reverse=True)
                 x, y, w, h = faces[0]
 
-                # Définir une marge autour du visage
-                margin_x = int(w * 0.8)  # Augmenter légèrement la zone autour du visage
+                margin_x = int(w * 0.8)
                 margin_y = int(h * 0.8)
 
-                # Calculer les nouvelles dimensions de recadrage
                 x1 = max(0, x - margin_x)
                 y1 = max(0, y - margin_y)
                 x2 = min(img.shape[1], x + w + margin_x)
                 y2 = min(img.shape[0], y + h + margin_y)
 
-                # Recadrer l'image autour du visage
                 img_cropped = img[y1:y2, x1:x2]
             else:
-                # Si aucun visage n'est détecté, rogner l'image pour garder le bon format
                 img_cropped = img
 
-            # Calcul des proportions pour rogner sans aplatir
+            # Rogner proprement pour 600x600
             crop_x, crop_y = img_cropped.shape[1], img_cropped.shape[0]
             target_ratio = output_size[0] / output_size[1]
             img_ratio = crop_x / crop_y
 
             if img_ratio > target_ratio:
-                # Image trop large : rogner sur la largeur
                 new_width = int(target_ratio * crop_y)
                 left = (crop_x - new_width) // 2
                 img_cropped = img_cropped[:, left:left + new_width]
             else:
-                # Image trop haute : rogner sur la hauteur
                 new_height = int(crop_x / target_ratio)
                 top = (crop_y - new_height) // 2
                 img_cropped = img_cropped[top:top + new_height, :]
 
-            # Redimensionner à la taille cible (600x600) sans déformation
             img_resized = cv2.resize(img_cropped, output_size, interpolation=cv2.INTER_AREA)
 
-            # Sauvegarder la miniature en mémoire
-            is_success, buffer = cv2.imencode(".jpg", img_resized)
+            # Convertir en WebP
+            is_success, buffer = cv2.imencode(".webp", img_resized)
             if is_success:
                 file_buffer = BytesIO(buffer)
-                self.miniature.save(f"miniature_{self.user.id}.jpg", ContentFile(file_buffer.getvalue()), save=False)
+                self.miniature.save(f"miniature_{self.user.id}.webp", ContentFile(file_buffer.getvalue()), save=False)
 
-            # Sauvegarder le modèle avec la nouvelle miniature
             super().save(update_fields=["miniature"])
 
         except Exception as e:
-            print(f"Erreur lors du traitement de l'image : {e}")
+            print(f"❌ Erreur lors du traitement de la miniature : {e}")
 
     def __str__(self):
         return f"Profil de {self.user.nom} {self.user.prenom}"
@@ -280,11 +300,88 @@ class Album(models.Model):
         return self.titre
 
 
+def album_upload_path(instance, filename):
+    """ Génère un chemin de stockage en fonction du nom de l'album """
+    album_slug = slugify(instance.album.titre)  # Convertit le titre en slug
+    filename_base, file_extension = os.path.splitext(filename)
+    return f"gallery/{album_slug}/{filename_base}{file_extension}"
+
+
 class Photo(models.Model):
     album = models.ForeignKey(Album, related_name="photos", on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="gallery/")
+    image = models.ImageField(upload_to=album_upload_path)
     description = models.CharField(max_length=255, blank=True, null=True)
     date_ajout = models.DateTimeField(auto_now_add=True)
+
+    def get_absolute_url(self):
+        """ Génère l'URL complète de l'image pour le partage """
+        if self.image:
+            return f"{settings.MEDIA_URL}{self.image.name}"
+        return ""
+
+    def get_share_links(self):
+        """ Génère les liens de partage pour Facebook, Twitter, WhatsApp, LinkedIn """
+        url = f"{settings.SITE_URL}{self.get_absolute_url()}"
+
+        return {
+            "facebook": f"https://www.facebook.com/sharer/sharer.php?u={url}",
+            "twitter": f"https://twitter.com/intent/tweet?url={url}&text=Regardez cette photo !",
+            "linkedin": f"https://www.linkedin.com/sharing/share-offsite/?url={url}",
+            "whatsapp": f"https://api.whatsapp.com/send?text=Regardez cette photo ! {url}"
+        }
+
+    def save(self, *args, **kwargs):
+        """ Sauvegarde et conversion automatique en WebP """
+        super().save(*args, **kwargs)
+        if self.image:
+            self.convert_to_webp()
+            super().save(update_fields=["image"])
+
+    def convert_to_webp(self):
+        """ Convertit l'image en WebP quel que soit le format d'origine """
+        if not self.image:
+            return
+
+        image_path = self.image.path
+        output_format = "webp"  # Format cible
+        target_size = (1200, 800)  # Taille standardisée pour uniformiser les images
+
+        try:
+            with Image.open(image_path) as img:
+                img = img.convert("RGB")  # WebP ne supporte pas CMYK
+
+                # Vérification du support WebP
+                from PIL import features
+                if not features.check("webp"):
+                    print("⚠️ WebP non supporté par Pillow, conversion annulée.")
+                    return
+
+                # Redimensionnement proportionnel
+                img.thumbnail(target_size, Image.LANCZOS)
+
+                # Compression et sauvegarde en WebP
+                buffer = BytesIO()
+                img.save(buffer, format="WEBP", quality=90)
+
+                # Générer un nouveau nom de fichier
+                # base_name = os.path.splitext(os.path.basename(image_path))[0]
+                # new_filename = f"{base_name}.webp"
+
+                # album_slug = slugify(self.album.titre)
+                unique_id = uuid.uuid4().hex[:8]  # Génère un ID unique (8 caractères)
+                new_filename = f"{unique_id}.webp"
+
+                self.image.save(new_filename, ContentFile(buffer.getvalue()), save=False)
+
+                # Supprimer l'ancien fichier s'il existe encore
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+
+        except Exception as e:
+            print(f"❌ Erreur lors de la conversion en WebP : {e}")
+
+    def __str__(self):
+        return f"Photo de {self.album.titre}"
 
     def __str__(self):
         return f"Photo de {self.album.titre}"

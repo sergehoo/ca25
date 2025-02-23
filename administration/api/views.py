@@ -1,4 +1,6 @@
+from allauth.account.utils import complete_signup
 from dj_rest_auth.registration.views import RegisterView
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
@@ -13,11 +15,55 @@ from administration.api.serializers import BeToBeSerializer, MeetingSerializer, 
     GuestarsSpeakerSerializer, AttendanceSerializer, TemoignageSerializer, SessionSerializer
 from administration.models import Attendance, Session, Temoignage
 from public.models import BeToBe, Meeting, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker
+from allauth.account import app_settings as allauth_settings
+
 
 @method_decorator(csrf_exempt, name="dispatch")
-class CustomRegisterView(RegisterView):
-    """ Vue d'inscription personnalisée """
-    serializer_class = CustomRegisterSerializer
+class CustomRegisterViewSet(viewsets.ViewSet):
+    """ ViewSet personnalisé pour l'inscription des utilisateurs avec Django Allauth et DRF """
+
+    permission_classes = [AllowAny]  # ✅ Autoriser tout le monde
+
+    @action(detail=False, methods=["post"])
+    def register(self, request):
+        """ Gestion de l'inscription des utilisateurs """
+        serializer = CustomRegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save(request)
+            complete_signup(
+                request._request, user, allauth_settings.EMAIL_VERIFICATION, None
+            )
+            return Response(
+                {"message": "Inscription réussie. Veuillez vérifier votre email pour activer votre compte."},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class CustomRegisterView(RegisterView):
+#     """ Vue d'inscription personnalisée """
+#
+#     serializer_class = CustomRegisterSerializer
+#
+#     def form_valid(self, form):
+#         """ Ajout d'un message de confirmation """
+#         response = super().form_valid(form)
+#         return Response(
+#             {"message": "Inscription réussie. Veuillez vérifier votre email pour activer votre compte."},
+#             status=status.HTTP_201_CREATED
+#         )
+#
+#     def form_invalid(self, form):
+#         """ Gestion des erreurs de validation """
+#         return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#     def options(self, request, *args, **kwargs):
+#         """ Répond avec les méthodes autorisées """
+#         response = super().options(request, *args, **kwargs)
+#         response["Allow"] = "POST, OPTIONS"
+#         return response
+#
+#     def get(self, request, *args, **kwargs):
+#         """ Bloque les requêtes GET et affiche un message d’erreur """
+#         return JsonResponse({"error": "GET method not allowed. Use POST."}, status=405)
 
 
 class UserProfileView(generics.RetrieveUpdateAPIView):
@@ -150,7 +196,8 @@ class AttendanceViewSet(viewsets.ModelViewSet):
 
         # Vérifier si l'utilisateur est déjà enregistré
         if Attendance.objects.filter(user=request.user, session=session).exists():
-            return Response({"message": "Vous êtes déjà enregistré pour cette session."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Vous êtes déjà enregistré pour cette session."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         # Enregistrer la présence
         attendance = Attendance.objects.create(user=request.user, session=session)
