@@ -134,7 +134,7 @@ class Profile(models.Model):
 
         # 🎨 Ajouter le nom et le rôle du participant
         draw = ImageDraw.Draw(template)
-        font_path = os.path.join(settings.BASE_DIR, "static/fonts/Arial.ttf")
+        font_path = os.path.join(settings.BASE_DIR, "static/fonts/Impact.ttf")
 
         font_name = ImageFont.truetype(font_path, 100)  # 📌 Police grande pour le nom
         font_role = ImageFont.truetype(font_path, 70)  # 📌 Police plus petite pour le rôle
