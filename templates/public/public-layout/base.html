@@ -10,31 +10,40 @@
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
    {% load compress %}
-{% compress css %}
+
    <!-- animation -->
+
    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
+
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
    
    <!-- magnific popup -->
+{% compress css %}
    <link rel="stylesheet" href="{% static 'assets/css/magnific-popup.css' %}">
-   
+   {% endcompress %}
    <!-- font awesome -->
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css"
    integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A=="
    crossorigin="anonymous" referrerpolicy="no-referrer">
    
    <!-- slik carousel -->
-   <link rel="stylesheet" href="{% static  'assets/css/slick-theme.css' %}">
-   <link rel="stylesheet" href="{% static  'assets/css/slick.css' %}">
+{% compress css %}
+   <link rel="stylesheet" href="{% static  'assets/css/slick-theme.css' %}">{% endcompress %}
+    {% compress css %}
+   <link rel="stylesheet" href="{% static  'assets/css/slick.css' %}">{% endcompress %}
    <!-- bootstrap -->
-   <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+        {% compress css %}
+   <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">{% endcompress %}
    
-   <!-- css -->
-   <link rel="stylesheet" href="{% static  'assets/css/style.css' %}">
+   <!-- css -->à
+            {% compress css %}
+   <link rel="stylesheet" href="{% static  'assets/css/style.css' %}">{% endcompress %}
 
 	<!-- Color switch Alternatives -->
-     <link rel="stylesheet" type="text/css" href="{% static 'color-switch/css/switch.css' %}">
+                {% compress css %}
+     <link rel="stylesheet" type="text/css" href="{% static 'color-switch/css/switch.css' %}">{% endcompress %}
 {#	<link href="{% static 'color-switch/css/color-2.css' %}" rel="alternate stylesheet" type="text/css" title="color-2">#}
+                    {% compress css %}
 	<link href="{% static 'color-switch/css/color-3.css' %}" rel="alternate stylesheet" type="text/css" title="color-3">
     {% endcompress %}
 {#	<link href="{% static 'color-switch/css/color-4.css' %}" rel="alternate stylesheet" type="text/css" title="color-4">#}

@@ -195,7 +195,6 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = AttendanceSerializer
 
     # permission_classes = [IsAuthenticated]
-
     @action(detail=False, methods=["post"])
     def scan_qr(self, request):
         """ API pour scanner un QR Code et enregistrer une présence """
@@ -203,14 +202,59 @@ class AttendanceViewSet(viewsets.ModelViewSet):
         slug = request.data.get("slug")
         session = get_object_or_404(Session, slug=slug)
 
-        # Vérifier si l'utilisateur est déjà enregistré
+        # 📌 Vérifier si l'utilisateur a déjà scanné ce QR Code
         if Attendance.objects.filter(user=request.user, session=session).exists():
-            return Response({"message": "Vous êtes déjà enregistré pour cette session."},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response({
+                "message": "Vous êtes déjà enregistré pour cette session.",
+                "status": "already_registered"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-        # Enregistrer la présence
+        # ✅ Enregistrer la présence
         attendance = Attendance.objects.create(user=request.user, session=session)
-        return Response(AttendanceSerializer(attendance).data, status=status.HTTP_201_CREATED)
+
+        return Response({
+            "message": f"Votre présence à la session '{session.title}' a été confirmée.",
+            "status": "success",
+            "attendance": AttendanceSerializer(attendance).data
+        }, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=["get"])
+    def scan_redirect(self, request, slug=None):
+        """
+        Gère le scan d'un QR code hors de l'application.
+        Si l'utilisateur scanne via un navigateur web, redirige vers l'application mobile ou le store.
+        """
+
+        session = get_object_or_404(Session, slug=slug)
+
+        # 📌 Vérifier l'origine du scan (navigateur ou application)
+        user_agent = request.headers.get("User-Agent", "").lower()
+        is_mobile = "mobile" in user_agent or "android" in user_agent or "iphone" in user_agent
+
+        if is_mobile:
+            # ✅ Générer un **Lien Profond** pour ouvrir directement l’application mobile
+            deep_link = f"myapp://scan/{slug}"
+            return Response({"redirect_url": deep_link}, status=status.HTTP_302_FOUND)
+
+        else:
+            # 🚨 **Redirection vers le store** si le scan est fait depuis un navigateur
+            store_link = "https://play.google.com/store/apps/details?id=com.conferencedabidjan.app"
+            return Response({"redirect_url": store_link}, status=status.HTTP_302_FOUND)
+    # @action(detail=False, methods=["post"])
+    # def scan_qr(self, request):
+    #     """ API pour scanner un QR Code et enregistrer une présence """
+    #
+    #     slug = request.data.get("slug")
+    #     session = get_object_or_404(Session, slug=slug)
+    #
+    #     # Vérifier si l'utilisateur est déjà enregistré
+    #     if Attendance.objects.filter(user=request.user, session=session).exists():
+    #         return Response({"message": "Vous êtes déjà enregistré pour cette session."},
+    #                         status=status.HTTP_400_BAD_REQUEST)
+    #
+    #     # Enregistrer la présence
+    #     attendance = Attendance.objects.create(user=request.user, session=session)
+    #     return Response(AttendanceSerializer(attendance).data, status=status.HTTP_201_CREATED)
 
 
 class TemoignageViewSet(viewsets.ModelViewSet):

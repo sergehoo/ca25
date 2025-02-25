@@ -33,6 +33,9 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
 ]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.conferencedabidjan\.com$",  # Accepte tous les sous-domaines si besoin
+]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", ]
@@ -63,11 +66,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
-    "dj_rest_auth",
-    "dj_rest_auth.registration",
+
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
 
     'django_filters',
-    'djoser',
+
     'corsheaders',
     'simple_history',
     'django_celery_beat',
@@ -93,8 +97,9 @@ MIDDLEWARE = [
     'simple_history.middleware.HistoryRequestMiddleware',
     "whitenoise.middleware.WhiteNoiseMiddleware",
     'django_user_agents.middleware.UserAgentMiddleware',
-
     'public.middleware.VisitCounterMiddleware',
+    'public.middleware.QRRedirectMiddleware',
+    "public.middleware.DisableCSRFMiddleware",
 ]
 
 ROOT_URLCONF = 'siade25.urls'
@@ -149,7 +154,14 @@ CELERY_BROKER_URL = config('REDIS_URL')
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 # Active JWT avec Simple JWT
-REST_USE_JWT = True
+REST_USE_JWT = True  # Pour utiliser JWT avec dj-rest-auth
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # Ajuste selon tes besoins
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,  # Permet de rafraîchir les tokens sans se reconnecter
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
 
 # Configuration REST Framework
 REST_FRAMEWORK = {
@@ -163,28 +175,13 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Configuration de JWT (Sécurité renforcée)
-# SIMPLE_JWT = {
-#     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # Le token expire après 1 jour
-#     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # Le refresh token expire après 7 jours
-#     "ROTATE_REFRESH_TOKENS": True,  # Régénère un nouveau refresh token
-#     "BLACKLIST_AFTER_ROTATION": True,  # Blacklist les anciens tokens
-#     "SIGNING_KEY": SECRET_KEY,  # Utilise la clé secrète Django
-#     "AUTH_HEADER_TYPES": ("Bearer",),  # Type d'authentification JWT
-# }
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # Token JWT expire après 1 jour
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # Refresh token expire après 7 jours
-    "ROTATE_REFRESH_TOKENS": True,  # Régénère un refresh token après chaque connexion
-    "BLACKLIST_AFTER_ROTATION": True,  # Blacklist les anciens tokens
-    "SIGNING_KEY": SECRET_KEY,  # Utilise la clé secrète Django
-    "AUTH_HEADER_TYPES": ("Bearer",),  # Authentification via "Bearer <token>"
-}
+
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
-    "djoser.auth_backends.LoginFieldBackend",
+
 )
+
 
 # GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', '/opt/homebrew/opt/gdal/lib/libgdal.dylib')
 # GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH', '/opt/homebrew/opt/geos/lib/libgeos_c.dylib')
@@ -236,15 +233,15 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_FINDERS = [
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    "compressor.finders.CompressorFinder",  # 👈 Ajoutez cette ligne obligatoire
 ]
 
-# STORAGES = {
-#     "staticfiles": {
-#         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-#     },
-# }
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = True
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
@@ -293,19 +290,7 @@ SITE_URL = "https://www.conferencedabidjan.com"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
-DJOSER = {
-    "LOGIN_FIELD": "email",
-    "USER_CREATE_PASSWORD_RETYPE": True,
-    "SEND_CONFIRMATION_EMAIL": True,  # ✅ Active la confirmation par email
-    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": False,
-    "USERNAME_CHANGED_EMAIL_CONFIRMATION": False,
-    "ACTIVATION_URL": "auth/activate/{uid}/{token}/",
-    "SEND_ACTIVATION_EMAIL": True,
-    "SERIALIZERS": {
-        "user_create": "djoser.serializers.UserCreateSerializer",
-        "user": "djoser.serializers.UserSerializer",
-    },
-}
+
 
 # Configuration de l'e-mail via fichier .env
 EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")

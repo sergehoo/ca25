@@ -1,3 +1,7 @@
+import base64
+import io
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -8,9 +12,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.views.generic import TemplateView, ListView, DetailView, DeleteView, UpdateView, CreateView
+from matplotlib import pyplot as plt
 
 from administration.models import Attendance, Session, Event
-from public.models import User, BeToBe, Meeting
+from public.models import User, BeToBe, Meeting, VisitCounter
 
 User = get_user_model()
 
@@ -317,3 +322,41 @@ class BetobeDetailview(UserPassesTestMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context["participants"] = Meeting.objects.filter(btob=self.object).select_related("participant")
         return context
+def generate_visit_chart():
+    """ Génère un graphique des visites sur les 7 derniers jours. """
+    last_week = now() - timedelta(days=7)
+    visits_per_day = (
+        VisitCounter.objects.filter(timestamp__gte=last_week)
+        .extra({'day': "date(timestamp)"})
+        .values('day')
+        .annotate(total_visits=models.Count('id'))
+        .order_by('day')
+    )
+
+    days = [entry['day'] for entry in visits_per_day]
+    visit_counts = [entry['total_visits'] for entry in visits_per_day]
+
+    # Générer le graphique
+    plt.figure(figsize=(8, 4))
+    plt.plot(days, visit_counts, marker="o", linestyle="-", color="blue", label="Visites")
+    plt.xlabel("Date")
+    plt.ylabel("Nombre de visites")
+    plt.title("Nombre de visites par jour (7 derniers jours)")
+    plt.legend()
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    # Convertir l'image en base64
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format="png")
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+
+    graphic = base64.b64encode(image_png)
+    return graphic.decode("utf-8")
+
+def dashboard_view(request):
+    """ Vue du tableau de bord """
+    visit_chart = generate_visit_chart()
+    return render(request, "admin/dashboard.html", {"visit_chart": visit_chart})

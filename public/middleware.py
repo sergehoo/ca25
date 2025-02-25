@@ -1,3 +1,5 @@
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.timezone import now
 
@@ -42,3 +44,20 @@ class VisitCounterMiddleware(MiddlewareMixin):
         else:
             ip = request.META.get('REMOTE_ADDR')
         return ip
+
+
+class QRRedirectMiddleware:
+    """ Redirige les scans QR vers l'application mobile ou le store """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.path.startswith("/scan/"):
+            slug = request.path.split("/")[-1]
+            return HttpResponseRedirect(reverse("scan_redirect", kwargs={"slug": slug}))
+        return self.get_response(request)
+
+
+class DisableCSRFMiddleware(MiddlewareMixin):
+    def process_request(self, request):
+        setattr(request, '_dont_enforce_csrf_checks', True)

@@ -7,24 +7,40 @@ import cv2
 import qrcode
 import requests
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import AbstractUser, Group, Permission, PermissionsMixin
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from PIL import Image, ImageFont, ImageDraw
+from django.utils.html import format_html
 from django.utils.text import slugify
 from django.utils.timezone import now, make_aware
 
 
 # Create your models here.
-class User(AbstractUser):
+class UserManager(BaseUserManager):
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError("L'adresse email est obligatoire")
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        return self.create_user(email, password, **extra_fields)
+class User(AbstractBaseUser, PermissionsMixin):
     ROLES = [
         ('participant', 'Participant'),
         ('exposant', 'Exposant'),
-        ('Orateur', 'Orateur'),
-        ('FISS', 'FISS'),
+        ('orateur', 'Orateur'),
+        ('fiss', 'FISS'),
         ('sponsor', 'Sponsor'),
         ('media', 'Media'),
         ('organisateur', 'Organisateur'),
@@ -39,6 +55,7 @@ class User(AbstractUser):
         ('Excellence', 'Excellence'),
         ('Honorable', 'Honorable'),
     ]
+
     civilite = models.CharField(max_length=10, choices=CIVILITE_CHOICES, blank=True, null=True)
     nom = models.CharField(max_length=50, blank=True, null=True)
     prenom = models.CharField(max_length=100, blank=True, null=True)
@@ -47,27 +64,16 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLES, blank=True, null=True)
     fonction = models.CharField(max_length=255, blank=True, null=True)
     company = models.CharField(max_length=255, blank=True, null=True)
-    sector = models.CharField(max_length=255, blank=True, null=True)  # Secteur d'activité
+    sector = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    preferences = models.JSONField(default=dict, blank=True)  # Régimes alimentaires ou autres
+    preferences = models.JSONField(default=dict, blank=True)
 
-    # Ajoutez des `related_name` uniques ici pour éviter les conflits
-    groups = models.ManyToManyField(
-        Group,
-        related_name="custom_user_groups",
-        blank=True,
-        help_text="The groups this user belongs to.",
-        verbose_name="groups",
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name="custom_user_permissions",
-        blank=True,
-        help_text="Specific permissions for this user.",
-        verbose_name="user permissions",
-    )
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
 
-    USERNAME_FIELD = "email"  # Utilisation de l'email comme identifiant
+    objects = UserManager()
+
+    USERNAME_FIELD = "email"  # L'email est l'identifiant unique
     REQUIRED_FIELDS = ["nom", "prenom"]
 
     def __str__(self):
@@ -77,6 +83,67 @@ class User(AbstractUser):
         ordering = ["nom", "prenom"]
         verbose_name = "Utilisateur"
         verbose_name_plural = "Utilisateurs"
+
+# class User(AbstractBaseUser, PermissionsMixin):
+#     ROLES = [
+#         ('participant', 'Participant'),
+#         ('exposant', 'Exposant'),
+#         ('Orateur', 'Orateur'),
+#         ('FISS', 'FISS'),
+#         ('sponsor', 'Sponsor'),
+#         ('media', 'Media'),
+#         ('organisateur', 'Organisateur'),
+#     ]
+#     CIVILITE_CHOICES = [
+#         ('Monsieur', 'Monsieur'),
+#         ('Madame', 'Madame'),
+#         ('Docteur', 'Docteur'),
+#         ('Professeur', 'Professeur'),
+#         ('Pasteur', 'Pasteur'),
+#         ('Bishop', 'Bishop'),
+#         ('Excellence', 'Excellence'),
+#         ('Honorable', 'Honorable'),
+#     ]
+#     civilite = models.CharField(max_length=10, choices=CIVILITE_CHOICES, blank=True, null=True)
+#     nom = models.CharField(max_length=50, blank=True, null=True)
+#     prenom = models.CharField(max_length=100, blank=True, null=True)
+#     contact = models.CharField(max_length=100, blank=True, null=True)
+#     email = models.EmailField(unique=True, verbose_name="Adresse email")
+#     role = models.CharField(max_length=20, choices=ROLES, blank=True, null=True)
+#     fonction = models.CharField(max_length=255, blank=True, null=True)
+#     company = models.CharField(max_length=255, blank=True, null=True)
+#     sector = models.CharField(max_length=255, blank=True, null=True)  # Secteur d'activité
+#     description = models.TextField(blank=True, null=True)
+#     preferences = models.JSONField(default=dict, blank=True)  # Régimes alimentaires ou autres
+#
+#     # Ajoutez des `related_name` uniques ici pour éviter les conflits
+#     groups = models.ManyToManyField(
+#         Group,
+#         related_name="custom_user_groups",
+#         blank=True,
+#         help_text="The groups this user belongs to.",
+#         verbose_name="groups",
+#     )
+#     user_permissions = models.ManyToManyField(
+#         Permission,
+#         related_name="custom_user_permissions",
+#         blank=True,
+#         help_text="Specific permissions for this user.",
+#         verbose_name="user permissions",
+#     )
+#     is_active = models.BooleanField(default=True)
+#     is_staff = models.BooleanField(default=False)
+#
+#     USERNAME_FIELD = "email"  # Utilisation de l'email comme identifiant
+#     REQUIRED_FIELDS = ["nom", "prenom"]
+#
+#     def __str__(self):
+#         return f"{self.nom} {self.prenom} ({self.email})"
+#
+#     class Meta:
+#         ordering = ["nom", "prenom"]
+#         verbose_name = "Utilisateur"
+#         verbose_name_plural = "Utilisateurs"
 
 
 class Profile(models.Model):
@@ -685,3 +752,14 @@ class VisitCounter(models.Model):
             self.isp = location_data.get("isp")
 
         super().save(*args, **kwargs)
+
+    def get_map_url(self):
+        """Génère un lien vers Google Maps ou OpenStreetMap"""
+        if self.latitude and self.longitude:
+            return format_html(
+                '<a href="https://www.google.com/maps?q={},{}" target="_blank">📍 Voir sur la carte</a>',
+                self.latitude, self.longitude
+            )
+        return "🌍 Localisation non disponible"
+
+    get_map_url.short_description = "Carte"

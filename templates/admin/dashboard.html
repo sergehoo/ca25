@@ -1,0 +1,11 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <h1>📊 Tableau de Bord</h1>
+    <p>Statistiques des visites sur les 7 derniers jours.</p>
+
+    <img src="data:image/png;base64,{{ visit_chart }}" alt="Statistiques des Visites" style="width: 100%; max-width: 800px;">
+
+    <br><br>
+    <a href="{% url 'admin:index' %}" class="button">Retour à l'Admin</a>
+{% endblock %}

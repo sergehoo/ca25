@@ -1,21 +1,23 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.urls import path
 from django.utils.html import format_html
 
 from administration.models import Event, Session, Attendance, Temoignage
+from administration.views import dashboard_view
 from public.models import User, BeToBe, Meeting, Profile, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, \
     VisitCounter
 
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    list_display = ('username', 'fonction', 'civilite', 'nom', 'prenom', 'email', 'role', 'company', 'sector')
+    list_display = ('email', 'fonction', 'civilite', 'nom', 'prenom', 'role', 'company', 'sector')
     list_filter = ('role', 'is_active', 'is_staff', 'is_superuser')
-    search_fields = ('username', 'email', 'company', 'sector')
-    ordering = ('username',)
+    search_fields = ('email', 'company', 'sector')
+    ordering = ('email',)
 
     fieldsets = (
-        (None, {'fields': ('username', 'fonction', 'civilite', 'nom', 'prenom', 'email', 'password')}),
+        (None, {'fields': ('email', 'fonction', 'civilite', 'nom', 'prenom', 'password')}),
         ('Informations personnelles', {'fields': ('role', 'company', 'sector', 'description', 'preferences')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Dates importantes', {'fields': ('last_login', 'date_joined')}),
@@ -24,7 +26,7 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'email', 'password1', 'password2', 'role', 'company', 'sector'),
+            'fields': ('email', 'password1', 'password2', 'role', 'company', 'sector'),
         }),
     )
 
@@ -169,16 +171,57 @@ class GuestarsSpeakerAdmin(admin.ModelAdmin):
 
 @admin.register(VisitCounter)
 class VisitCounterAdmin(admin.ModelAdmin):
-    list_display = ('ip_address', 'timestamp', 'user_agent',
-                    'is_mobile',
-                    'is_tablet',
-                    'is_pc')
+    list_display = ('ip_address', 'city', 'country', 'timestamp', 'device_type', 'get_map_url')
+    list_filter = ('country', 'is_mobile', 'is_tablet', 'is_pc')
+    search_fields = ('ip_address', 'city', 'country', 'isp')
+
+    def device_type(self, obj):
+        """Affiche le type d'appareil avec un badge de couleur"""
+        if obj.is_mobile:
+            return format_html('<span style="color: green;">📱 Mobile</span>')
+        elif obj.is_tablet:
+            return format_html('<span style="color: orange;">📟 Tablette</span>')
+        else:
+            return format_html('<span style="color: blue;">💻 PC</span>')
+
+    device_type.short_description = "Appareil"
 
     def total_visits(self):
+        """Affiche le total des visites en gras"""
         return format_html("<strong>{}</strong>", VisitCounter.objects.count())
 
     total_visits.short_description = "Total des visites"
 
+    def dashboard_button(self):
+        return format_html('<a href="/admin/dashboard/" class="button">📊 Voir les Statistiques</a>')
+
+    dashboard_button.allow_tags = True
+    dashboard_button.short_description = "Tableau de Bord"
+
+
+class CustomAdminSite(admin.AdminSite):
+    """ Personnalisation de l'admin Django avec un tableau de bord """
+    site_header = "Administration Conférence d'Abidjan"
+    site_title = "Tableau de Bord"
+    index_title = "Bienvenue sur le Tableau de Bord"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path("dashboard/", self.admin_view(dashboard_view), name="dashboard"),
+        ]
+        return custom_urls + urls
+
+    def dashboard_link(self):
+        return format_html('<a href="/admin/dashboard/" class="button">📊 Voir le tableau de bord</a>')
+
+    dashboard_link.allow_tags = True
+    dashboard_link.short_description = "Tableau de Bord"
+
+
+admin_site = CustomAdminSite(name="admin")
+# Enregistrer les modèles avec le nouvel admin
+admin_site.register(VisitCounter, VisitCounterAdmin)
 
 # Ajouter un panneau de statistiques dans l'admin
 admin.site.site_header = "Administration du site"

@@ -25,14 +25,14 @@ router.register(r"guestarspeakers", GuestarsSpeakerViewSet, basename="guestarspe
 # router.register(r"events", EventViewSet, basename="event")
 router.register(r"sessions", SessionViewSet, basename="session")
 router.register(r"attendances", AttendanceViewSet, basename="attendance")
-path("scan/<slug:slug>/", scan_qr_code, name="scan-qr"),
+
 router.register(r"temoignages", TemoignageViewSet, basename="temoignage")
-router.register(r'auth/register', CustomRegisterViewSet, basename='register')
+# router.register(r'auth/register', CustomRegisterViewSet, basename='register')
 
 urlpatterns = [
                   path("organisateur/", include(router.urls)),
                   path("utilisateur/profile/", UserProfileView.as_view(), name="user-profile"),
-
+                  path("scan/<slug:slug>/", scan_qr_code, name="scan-qr"),
                   # path("auth/register/", CustomRegisterView.as_view(), name="register"),
                   path("auth/login/", LoginView.as_view(), name="login"),
                   path("auth/logout/", LogoutView.as_view(), name="logout"),
