@@ -238,7 +238,7 @@ STATICFILES_FINDERS = [
     "compressor.finders.CompressorFinder",  # 👈 Ajoutez cette ligne obligatoire
 ]
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 COMPRESS_ENABLED = True
 COMPRESS_OFFLINE = True
