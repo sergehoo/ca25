@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 # ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost').split(',')
-ALLOWED_HOSTS = ['conferencedabidjan.com', 'www.conferencedabidjan.com','127.0.0.1','localhost']
+ALLOWED_HOSTS = ['conferencedabidjan.com', 'www.conferencedabidjan.com', '127.0.0.1', 'localhost']
 CSRF_TRUSTED_ORIGINS = [
     "https://conferencedabidjan.com",
     "https://www.conferencedabidjan.com",
@@ -175,13 +175,11 @@ REST_FRAMEWORK = {
     ],
 }
 
-
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 
 )
-
 
 # GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', '/opt/homebrew/opt/gdal/lib/libgdal.dylib')
 # GEOS_LIBRARY_PATH = os.getenv('GEOS_LIBRARY_PATH', '/opt/homebrew/opt/geos/lib/libgeos_c.dylib')
@@ -220,7 +218,6 @@ USE_I18N = True
 USE_TZ = True
 
 USE_L10N = True
-
 
 LOCALE_PATHS = [
     BASE_DIR / 'locale',  # Dossier où seront stockés les fichiers de traduction
@@ -267,11 +264,13 @@ SITE_ID = 1
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 # ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
-ACCOUNT_ADAPTER = "public.adapters.NoRedirectAccountAdapter"
+# ACCOUNT_ADAPTER = "public.adapters.NoRedirectAccountAdapter"
+ACCOUNT_ADAPTER = "public.adapters.NoUsernameAccountAdapter"
 
-ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'administration.api.serializers.CustomRegisterSerializer',
 }
@@ -289,8 +288,6 @@ SITE_URL = "https://www.conferencedabidjan.com"
 # Configuration de Celery
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-
-
 
 # Configuration de l'e-mail via fichier .env
 EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")

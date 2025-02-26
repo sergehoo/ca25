@@ -8,3 +8,8 @@ class NoRedirectAccountAdapter(DefaultAccountAdapter):
 
     def get_login_redirect_url(self, request):
         return None  # Désactive la redirection automatique
+
+
+class NoUsernameAccountAdapter(DefaultAccountAdapter):
+    def clean_username(self, username, strict=False):
+        return ""  # Empêche l'utilisation d'un username
