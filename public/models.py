@@ -35,6 +35,8 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(email, password, **extra_fields)
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     ROLES = [
         ('participant', 'Participant'),
@@ -83,6 +85,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ordering = ["nom", "prenom"]
         verbose_name = "Utilisateur"
         verbose_name_plural = "Utilisateurs"
+
 
 # class User(AbstractBaseUser, PermissionsMixin):
 #     ROLES = [
