@@ -20,7 +20,7 @@ class CustomUserAdmin(UserAdmin):
         (None, {'fields': ('email', 'fonction', 'civilite', 'nom', 'prenom', 'password')}),
         ('Informations personnelles', {'fields': ('role', 'company', 'sector', 'description', 'preferences')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Dates importantes', {'fields': ('last_login')}),
+        ('Dates importantes', {'fields': ('last_login', 'date_joined')}),
     )
 
     add_fieldsets = (
