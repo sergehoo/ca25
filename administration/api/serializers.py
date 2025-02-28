@@ -3,6 +3,7 @@ from io import BytesIO
 
 import qrcode
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.files import File
 from django.urls import reverse
@@ -13,38 +14,93 @@ from dj_rest_auth.serializers import LoginSerializer
 from administration.models import Event, Session, Attendance, Temoignage
 from public.models import BeToBe, Meeting, Photo, Album, User, Profile, Category, BlogPost, Comment, GuestarsSpeaker
 
+# class CustomRegisterSerializer(RegisterSerializer):
+#     nom = serializers.CharField(required=True)
+#     prenom = serializers.CharField(required=True)
+#     email = serializers.EmailField(required=True)
+#     contact = serializers.CharField(required=False, allow_blank=True)
+#     role = serializers.ChoiceField(choices=User.ROLES, required=True)
+#     fonction = serializers.CharField(required=False, allow_blank=True)
+#     company = serializers.CharField(required=False, allow_blank=True)
+#     sector = serializers.CharField(required=False, allow_blank=True)
+#
+#     def validate_email(self, email):
+#         """ Vérifie que l'email est unique """
+#         if User.objects.filter(email=email).exists():
+#             raise serializers.ValidationError("Un utilisateur avec cet email existe déjà.")
+#         return email
+#
+#     def get_cleaned_data(self):
+#         """ Récupère les données nettoyées avant la création de l'utilisateur """
+#         data = super().get_cleaned_data()
+#         data.update({
+#             "nom": self.validated_data.get("nom", ""),
+#             "prenom": self.validated_data.get("prenom", ""),
+#             "contact": self.validated_data.get("contact", ""),
+#             "role": self.validated_data.get("role", ""),
+#             "fonction": self.validated_data.get("fonction", ""),
+#             "company": self.validated_data.get("company", ""),
+#             "sector": self.validated_data.get("sector", ""),
+#         })
+#         return data
+
+
+UserModel = get_user_model()
+
 
 class CustomRegisterSerializer(RegisterSerializer):
     nom = serializers.CharField(required=True)
     prenom = serializers.CharField(required=True)
-    email = serializers.EmailField(required=True)
     contact = serializers.CharField(required=False, allow_blank=True)
-    role = serializers.ChoiceField(choices=User.ROLES, required=True)
+    civilite = serializers.ChoiceField(choices=User.CIVILITE_CHOICES, required=False)
+    role = serializers.ChoiceField(choices=User.ROLES, required=False)
     fonction = serializers.CharField(required=False, allow_blank=True)
     company = serializers.CharField(required=False, allow_blank=True)
     sector = serializers.CharField(required=False, allow_blank=True)
+    description = serializers.CharField(required=False, allow_blank=True)
+    email = serializers.EmailField(required=True)
 
     def validate_email(self, email):
-        """ Vérifie que l'email est unique """
         if User.objects.filter(email=email).exists():
-            raise serializers.ValidationError("Un utilisateur avec cet email existe déjà.")
+            raise serializers.ValidationError("Cet email est déjà utilisé.")
         return email
 
     def get_cleaned_data(self):
-        """ Récupère les données nettoyées avant la création de l'utilisateur """
-        data = super().get_cleaned_data()
-        data.update({
+        """
+        Récupère les champs supplémentaires fournis par l'utilisateur
+        """
+        return {
             "nom": self.validated_data.get("nom", ""),
             "prenom": self.validated_data.get("prenom", ""),
             "contact": self.validated_data.get("contact", ""),
+            "civilite": self.validated_data.get("civilite", ""),
             "role": self.validated_data.get("role", ""),
             "fonction": self.validated_data.get("fonction", ""),
             "company": self.validated_data.get("company", ""),
             "sector": self.validated_data.get("sector", ""),
-        })
-        return data
+            "description": self.validated_data.get("description", ""),
+        }
 
+    def save(self, request):
+        """
+        🔹 Créer l'utilisateur manuellement pour s'assurer que tous les champs sont enregistrés
+        """
+        user = UserModel.objects.create_user(
+            email=self.validated_data.get("email"),
+            password=self.validated_data.get("password1"),
+            nom=self.validated_data.get("nom", ""),
+            prenom=self.validated_data.get("prenom", ""),
+            contact=self.validated_data.get("contact", ""),
+            civilite=self.validated_data.get("civilite", ""),
+            role=self.validated_data.get("role", ""),
+            fonction=self.validated_data.get("fonction", ""),
+            company=self.validated_data.get("company", ""),
+            sector=self.validated_data.get("sector", ""),
+            description=self.validated_data.get("description", ""),
+            is_active=False  # L'email doit être validé avant activation
+        )
 
+        return user
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -136,7 +192,6 @@ class EventSerializer(serializers.ModelSerializer):
 class SpeakerSerializer(serializers.ModelSerializer):
     """ Sérialiseur pour renvoyer toutes les informations du speaker """
     photo = serializers.SerializerMethodField()
-
 
     class Meta:
         model = User

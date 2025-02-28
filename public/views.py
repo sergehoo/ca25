@@ -115,3 +115,7 @@ def blog_detail(request, slug):
 
     return render(request, 'blog/blog_detail.html',
                   {'article': article, 'comments': comments, 'comment_form': comment_form})
+
+
+class PolitiqueConfidentialiteView(TemplateView):
+    template_name = "public/public-page/politique.html"

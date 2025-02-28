@@ -23,7 +23,7 @@ from django.urls import path, include
 
 from administration.views import scan_qr_code
 from public.sitemaps import StaticViewSitemap, EventSitemap, SpeakerSitemap
-from public.views import HomePageView, blog_list, blog_detail, soumettre_temoignage
+from public.views import HomePageView, blog_list, blog_detail, soumettre_temoignage, PolitiqueConfidentialiteView
 
 urlpatterns = [
     path("api/", include('administration.api.urls')),  # API indépendante
@@ -44,6 +44,7 @@ urlpatterns += i18n_patterns(
     path('blog/<slug:slug>/', blog_detail, name="blog_detail"),
     path('soumettre-temoignage/', soumettre_temoignage, name="soumettre_temoignage"),
     path('', HomePageView.as_view(), name='home'),
+    path('regle/confidentialite', PolitiqueConfidentialiteView.as_view(), name='politique'),
     path("sessions/scan/<slug:slug>/", scan_qr_code, name="scan-qr"),
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
 

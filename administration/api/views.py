@@ -40,6 +40,11 @@ class CustomRegisterViewSet(viewsets.ViewSet):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    # def validate_email(self, email):
+    #     if User.objects.filter(email=email).exists():
+    #         raise serializers.ValidationError("Cet email est déjà utilisé.")
+    #     return email
+
 
 # class CustomRegisterView(RegisterView):
 #     """ Vue d'inscription personnalisée """
