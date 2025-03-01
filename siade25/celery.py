@@ -1,5 +1,5 @@
 import os
-import Celery
+from celery import Celery  # ✅ Importation correcte
 
 # Définir le module Django pour Celery
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'siade25.settings')

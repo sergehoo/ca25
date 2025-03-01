@@ -70,11 +70,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'simple_history',
     'django_celery_beat',
-
+    'celery',
     "compressor",
     'decouple',
     'django_user_agents',
-    'djcelery',
 
     'administration',
     'public',
