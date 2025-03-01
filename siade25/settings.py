@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     "compressor",
     'decouple',
     'django_user_agents',
+    'djcelery',
 
     'administration',
     'public',
@@ -146,8 +147,7 @@ AUTH_USER_MODEL = 'public.User'
 ACCOUNT_FORMS = {
     'signup': 'public.forms.CustomSignupForm',  # Modifier avec ton app
 }
-# Redis settings
-CELERY_BROKER_URL = config('REDIS_URL')
+
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 # Active JWT avec Simple JWT
@@ -280,8 +280,8 @@ SITE_URL = "https://www.conferencedabidjan.com"
 # LOGOUT_REDIRECT_URL = "landing"
 # ACCOUNT_LOGOUT_REDIRECT = "account_login"
 # ACCOUNT_SIGNUP_REDIRECT_URL = "account_login"
-
-# Configuration de Celery
+# Redis settings
+CELERY_BROKER_URL = config('REDIS_URL', default='redis://redis:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 

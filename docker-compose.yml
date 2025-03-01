@@ -113,7 +113,7 @@ services:
       - redis
       - cadb
     environment:
-      CELERY_BROKER_URL: redis://redis:6325/0  # Utilisation du nom du service Docker
+      CELERY_BROKER_URL: redis://redis:6379/0  # Utilisation du nom du service Docker
     restart: always
 
 volumes:
