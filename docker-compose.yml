@@ -25,7 +25,7 @@ services:
       context: .
       dockerfile: Dockerfile
     command: >
-      sh -c "until pg_isready -h cadata -U ${DB_USER}; do sleep 2; done &&
+      sh -c "until pg_isready -h cadb -U ${DB_USER}; do sleep 2; done &&
              python manage.py migrate &&
              python manage.py collectstatic --noinput &&
              gunicorn siade25.wsgi:application --bind 0.0.0.0:8000"
@@ -39,7 +39,7 @@ services:
     env_file:
       - ./.env
     depends_on:
-      cadata:
+      cadb:
         condition: service_healthy  # ✅ Attend que PostgreSQL soit prêt
       redis:
         condition: service_started
@@ -55,7 +55,7 @@ services:
 #      - pgdata:/var/lib/postgresql/data
 #
 #    restart: always
-  cadata:
+  cadb:
     image: postgis/postgis:13-3.1
     environment:
       POSTGRES_DB: ${DB_NAME}
@@ -74,9 +74,9 @@ services:
     image: adminer
     restart: always
     ports:
-      - 2503:8080  # Port mapping for Adminer
+      - 2502:8080  # Port mapping for Adminer
     environment:
-      - ADMINER_DEFAULT_SERVER=cadata  # Default DB server in Adminer
+      - ADMINER_DEFAULT_SERVER=cadb  # Default DB server in Adminer
 
   redis:
     image: redis:6
@@ -95,7 +95,7 @@ services:
       - .env
     depends_on:
       - redis
-      - cadata
+      - cadb
     environment:
       CELERY_BROKER_URL: redis://redis:6325/0  # Utilisation du nom du service Docker
     restart: always
@@ -111,7 +111,7 @@ services:
       - .env
     depends_on:
       - redis
-      - cadata
+      - cadb
     environment:
       CELERY_BROKER_URL: redis://redis:6325/0  # Utilisation du nom du service Docker
     restart: always
