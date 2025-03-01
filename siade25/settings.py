@@ -70,11 +70,14 @@ INSTALLED_APPS = [
     'corsheaders',
     'simple_history',
     'django_celery_beat',
-    'public',
-    'administration',
+
     "compressor",
     'decouple',
     'django_user_agents',
+
+    'administration',
+    'public',
+
 ]
 
 MIDDLEWARE = [
@@ -264,7 +267,6 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 # ACCOUNT_ADAPTER = "public.adapters.NoRedirectAccountAdapter"
 ACCOUNT_ADAPTER = "public.adapters.NoUsernameAccountAdapter"
 
-
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'administration.api.serializers.CustomRegisterSerializer',
 }
@@ -292,7 +294,6 @@ EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default=EMAIL_HOST_USER)
-
 
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
