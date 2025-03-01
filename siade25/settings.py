@@ -292,3 +292,16 @@ EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False)
 EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default=EMAIL_HOST_USER)
+
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": "561003086296-2e42ee5tjtgrhujf2mooum141l8nj6v9.apps.googleusercontent.com",
+            "secret": "",
+            "key": "",
+        },
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    }
+}
