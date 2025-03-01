@@ -74,7 +74,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - 2502:8080  # Port mapping for Adminer
+      - 2503:8080  # Port mapping for Adminer
     environment:
       - ADMINER_DEFAULT_SERVER=cadata  # Default DB server in Adminer
 
