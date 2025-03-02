@@ -8,6 +8,7 @@ from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets, permissions, generics, status
 from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -86,25 +87,47 @@ class RegisterView(APIView):
             return Response({"message": "Utilisateur créé avec succès !"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UserProfileView(generics.RetrieveUpdateAPIView):
-    """ API pour récupérer le profil de l'utilisateur connecté """
+
+class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
+    """ API pour récupérer, créer, mettre à jour et supprimer le profil utilisateur """
 
     serializer_class = UserProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]  # ✅ Authentification requise
+    permission_classes = [permissions.IsAuthenticated]  # ✅ Seul l'utilisateur connecté peut gérer son profil
+
+    def get_object(self):
+        """ 🔍 Récupérer le profil de l'utilisateur connecté ou lever une erreur """
+        try:
+            return Profile.objects.get(user=self.request.user)
+        except Profile.DoesNotExist:
+            raise NotFound({"error": "Profil introuvable"})
 
     def get(self, request, *args, **kwargs):
-        """ Retourne le profil de l'utilisateur connecté """
-        profile = Profile.objects.get(user=request.user)  # 🔍 Récupérer le profil de l'utilisateur
-        serializer = self.get_serializer(profile)
-        return Response(serializer.data)
+        """ 📌 Récupère le profil de l'utilisateur connecté """
+        return super().retrieve(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """ 📌 Crée un profil pour l'utilisateur s'il n'existe pas """
+        if Profile.objects.filter(user=request.user).exists():
+            return Response({"error": "Le profil existe déjà"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, *args, **kwargs):
-        """ Met à jour le profil utilisateur """
+        """ 📌 Met à jour complètement le profil """
         return self.update(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
-        """ Met à jour partiellement le profil utilisateur """
+        """ 📌 Mise à jour partielle du profil """
         return self.partial_update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        """ 📌 Supprime le profil utilisateur """
+        return self.destroy(request, *args, **kwargs)
 
 
 class ChangePasswordView(generics.UpdateAPIView):

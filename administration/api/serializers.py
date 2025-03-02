@@ -135,27 +135,28 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
-    """ Sérialiseur pour le modèle Profile """
+    """ Sérialiseur permettant la mise à jour des informations du profil ET de l'utilisateur """
 
-    user_email = serializers.EmailField(source="user.email", read_only=True)
-    user_nom = serializers.CharField(source="user.nom", read_only=True)
-    user_prenom = serializers.CharField(source="user.prenom", read_only=True)
-    user_sexe = serializers.CharField(source="user.sexe", read_only=True)
-    user_civilite = serializers.CharField(source="user.civilite", read_only=True)
-    user_contact = serializers.CharField(source="user.contact", read_only=True)
-    user_fonction = serializers.CharField(source="user.fonction", read_only=True)
-    user_company = serializers.CharField(source="user.company", read_only=True)
-    user_pays = serializers.CharField(source="user.pays", read_only=True)
-    user_ville = serializers.CharField(source="user.ville", read_only=True)
-    user_sector = serializers.CharField(source="user.sector", read_only=True)
-    user_description = serializers.CharField(source="user.description", read_only=True)
-    user_preferences = serializers.JSONField(source="user.preferences", read_only=True)
+    user_email = serializers.EmailField(source="user.email", read_only=True)  # Email inchangé
+    user_nom = serializers.CharField(source="user.nom", required=False)
+    user_prenom = serializers.CharField(source="user.prenom", required=False)
+    user_sexe = serializers.CharField(source="user.sexe", required=False, allow_blank=True, allow_null=True)
+    user_civilite = serializers.CharField(source="user.civilite", required=False, allow_blank=True, allow_null=True)
+    user_contact = serializers.CharField(source="user.contact", required=False, allow_blank=True, allow_null=True)
+    user_fonction = serializers.CharField(source="user.fonction", required=False, allow_blank=True, allow_null=True)
+    user_company = serializers.CharField(source="user.company", required=False, allow_blank=True, allow_null=True)
+    user_pays = serializers.CharField(source="user.pays", required=False, allow_blank=True, allow_null=True)
+    user_ville = serializers.CharField(source="user.ville", required=False, allow_blank=True, allow_null=True)
+    user_sector = serializers.CharField(source="user.sector", required=False, allow_blank=True, allow_null=True)
+    user_description = serializers.CharField(source="user.description", required=False, allow_blank=True,
+                                             allow_null=True)
+    user_preferences = serializers.JSONField(source="user.preferences", required=False)
 
     user_role = serializers.SerializerMethodField()  # ✅ Corrige l'affichage des rôles
 
-    photo = serializers.SerializerMethodField()
-    miniature = serializers.SerializerMethodField()
-    badge = serializers.SerializerMethodField()
+    photo = serializers.ImageField(required=False, allow_null=True)
+    miniature = serializers.ImageField(required=False, allow_null=True)
+    badge = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Profile
@@ -169,28 +170,28 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "website", "address", "birth_date", "bio"
         ]
 
-    def get_photo(self, obj):
-        return self.get_secure_url(obj.photo)
-
-    def get_miniature(self, obj):
-        return self.get_secure_url(obj.miniature)
-
-    def get_badge(self, obj):
-        return self.get_secure_url(obj.badge)
-
     def get_user_role(self, obj):
-        """ Récupère le rôle de l'utilisateur avec une valeur par défaut si nécessaire """
-        if obj.user.role:
-            return obj.user.get_role_display()
-        return "Non défini"  # ✅ Correction : Empêche la valeur `null`
+        """ Récupère le rôle de l'utilisateur """
+        return obj.user.get_role_display() if obj.user.role else "Non défini"
 
-    def get_secure_url(self, image_field):
-        """ Génère une URL HTTPS complète pour une image si elle existe """
-        request = self.context.get("request")
-        if image_field:
-            url = request.build_absolute_uri(image_field.url) if request else f"{settings.MEDIA_URL}{image_field.name}"
-            return url.replace("http://", "https://")  # 🔒 Force HTTPS
-        return None
+    def update(self, instance, validated_data):
+        """
+        🔄 Mise à jour du profil ET de l'utilisateur en même temps.
+        """
+        user_data = validated_data.pop("user", {})  # Extraire les données utilisateur
+
+        # ✅ Mise à jour des données de `User`
+        user = instance.user
+        for attr, value in user_data.items():
+            setattr(user, attr, value)
+        user.save()  # Sauvegarder les modifications de l'utilisateur
+
+        # ✅ Mise à jour des données de `Profile`
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        return instance
 
 
 class UserSerializer(serializers.ModelSerializer):
