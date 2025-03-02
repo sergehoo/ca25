@@ -13,6 +13,7 @@ from dj_rest_auth.serializers import LoginSerializer
 
 from administration.models import Event, Session, Attendance, Temoignage
 from public.models import BeToBe, Meeting, Photo, Album, User, Profile, Category, BlogPost, Comment, GuestarsSpeaker
+from siade25 import settings
 
 # class CustomRegisterSerializer(RegisterSerializer):
 #     nom = serializers.CharField(required=True)
@@ -118,6 +119,23 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "photo", "miniature", "badge", "linkedin", "twitter",
             "website", "address", "birth_date", "bio"
         ]
+
+    def get_photo(self, obj):
+        return self.get_secure_url(obj.photo)
+
+    def get_miniature(self, obj):
+        return self.get_secure_url(obj.miniature)
+
+    def get_badge(self, obj):
+        return self.get_secure_url(obj.badge)
+
+    def get_secure_url(self, image_field):
+        """ Génère une URL HTTPS complète pour une image si elle existe """
+        request = self.context.get("request")
+        if image_field:
+            url = request.build_absolute_uri(image_field.url) if request else f"{settings.MEDIA_URL}{image_field.name}"
+            return url.replace("http://", "https://")  # 🔒 Force HTTPS
+        return None
 
 
 class UserSerializer(serializers.ModelSerializer):
