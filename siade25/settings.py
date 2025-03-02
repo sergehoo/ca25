@@ -65,7 +65,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'dj_rest_auth',
-    'dj_rest_auth.registration',
+    # 'dj_rest_auth.registration',
+
     'django_filters',
     'corsheaders',
     'simple_history',
@@ -267,7 +268,7 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_ADAPTER = "public.adapters.NoUsernameAccountAdapter"
 
 REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'administration.api.serializers.CustomRegisterSerializer',
+    "REGISTER_SERIALIZER": "administration.api.serializers.CustomRegisterSerializer",
 }
 
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"

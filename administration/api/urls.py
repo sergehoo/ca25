@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import BeToBeViewSet, MeetingViewSet, UserProfileView, ChangePasswordView, AlbumViewSet, \
     PhotoViewSet, CategoryViewSet, BlogPostViewSet, CommentViewSet, GuestarsSpeakerViewSet, SessionViewSet, \
-    AttendanceViewSet, TemoignageViewSet, CustomRegisterViewSet
+    AttendanceViewSet, TemoignageViewSet, RegisterView
 from ..views import scan_qr_code
 
 router = DefaultRouter()
@@ -41,7 +41,10 @@ urlpatterns = [
                   path("auth/change-password/", ChangePasswordView.as_view(), name="change-password"),
 
                   path("auth/", include("dj_rest_auth.urls")),  # Connexion, Déconnexion, Changement de mot de passe
-                  path("auth/registration/", include("dj_rest_auth.registration.urls")),  # Inscription
+                  # path("auth/registration/", include("dj_rest_auth.registration.urls")),  # Inscription
+
+                  path("chantelou/auth/register/", RegisterView.as_view(), name="register"),
+
                   path("auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

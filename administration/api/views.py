@@ -10,40 +10,42 @@ from rest_framework import viewsets, permissions, generics, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from administration.api.serializers import BeToBeSerializer, MeetingSerializer, CustomRegisterSerializer, \
     UserSerializer, AlbumSerializer, PhotoSerializer, CategorySerializer, BlogPostSerializer, CommentSerializer, \
-    GuestarsSpeakerSerializer, AttendanceSerializer, TemoignageSerializer, SessionSerializer, UserProfileSerializer
+    GuestarsSpeakerSerializer, AttendanceSerializer, TemoignageSerializer, SessionSerializer, UserProfileSerializer, \
+    RegisterSerializer
 from administration.models import Attendance, Session, Temoignage
 from public.models import BeToBe, Meeting, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, Profile
 from allauth.account import app_settings as allauth_settings
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class CustomRegisterViewSet(viewsets.ViewSet):
-    """ ViewSet personnalisé pour l'inscription des utilisateurs avec Django Allauth et DRF """
-
-    permission_classes = [AllowAny]  # ✅ Autoriser tout le monde
-
-    @action(detail=False, methods=["post"])
-    def register(self, request):
-        """ Gestion de l'inscription des utilisateurs """
-        serializer = CustomRegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save(request)
-            complete_signup(
-                request._request, user, allauth_settings.EMAIL_VERIFICATION, None
-            )
-            return Response(
-                {"message": "Inscription réussie. Veuillez vérifier votre email pour activer votre compte."},
-                status=status.HTTP_201_CREATED,
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # def validate_email(self, email):
-    #     if User.objects.filter(email=email).exists():
-    #         raise serializers.ValidationError("Cet email est déjà utilisé.")
-    #     return email
+# @method_decorator(csrf_exempt, name="dispatch")
+# class CustomRegisterViewSet(viewsets.ViewSet):
+#     """ ViewSet personnalisé pour l'inscription des utilisateurs avec Django Allauth et DRF """
+#
+#     permission_classes = [AllowAny]  # ✅ Autoriser tout le monde
+#
+#     @action(detail=False, methods=["post"])
+#     def register(self, request):
+#         """ Gestion de l'inscription des utilisateurs """
+#         serializer = CustomRegisterSerializer(data=request.data)
+#         if serializer.is_valid():
+#             user = serializer.save(request)
+#             complete_signup(
+#                 request._request, user, allauth_settings.EMAIL_VERIFICATION, None
+#             )
+#             return Response(
+#                 {"message": "Inscription réussie. Veuillez vérifier votre email pour activer votre compte."},
+#                 status=status.HTTP_201_CREATED,
+#             )
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#     # def validate_email(self, email):
+#     #     if User.objects.filter(email=email).exists():
+#     #         raise serializers.ValidationError("Cet email est déjà utilisé.")
+#     #     return email
 
 
 # class CustomRegisterView(RegisterView):
@@ -73,8 +75,18 @@ class CustomRegisterViewSet(viewsets.ViewSet):
 #         """ Bloque les requêtes GET et affiche un message d’erreur """
 #         return JsonResponse({"error": "GET method not allowed. Use POST."}, status=405)
 
+class RegisterView(APIView):
+    """ Vue API pour l'inscription des utilisateurs """
+    permission_classes = [AllowAny]
 
-class UserProfileView(generics.RetrieveAPIView):
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({"message": "Utilisateur créé avec succès !"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserProfileView(generics.RetrieveUpdateAPIView):
     """ API pour récupérer le profil de l'utilisateur connecté """
 
     serializer_class = UserProfileSerializer
@@ -85,6 +97,14 @@ class UserProfileView(generics.RetrieveAPIView):
         profile = Profile.objects.get(user=request.user)  # 🔍 Récupérer le profil de l'utilisateur
         serializer = self.get_serializer(profile)
         return Response(serializer.data)
+
+    def put(self, request, *args, **kwargs):
+        """ Met à jour le profil utilisateur """
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        """ Met à jour partiellement le profil utilisateur """
+        return self.partial_update(request, *args, **kwargs)
 
 
 class ChangePasswordView(generics.UpdateAPIView):
@@ -238,7 +258,7 @@ class AttendanceViewSet(viewsets.ModelViewSet):
 
         if is_mobile:
             # ✅ Générer un **Lien Profond** pour ouvrir directement l’application mobile
-            deep_link = f"myapp://scan/{slug}"
+            deep_link = f"conferenceca://scan/{slug}"
             return Response({"redirect_url": deep_link}, status=status.HTTP_302_FOUND)
 
         else:

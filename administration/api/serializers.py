@@ -15,7 +15,6 @@ from dj_rest_auth.serializers import LoginSerializer
 from administration.models import Event, Session, Attendance, Temoignage
 from public.models import BeToBe, Meeting, Photo, Album, User, Profile, Category, BlogPost, Comment, GuestarsSpeaker
 
-
 # class CustomRegisterSerializer(RegisterSerializer):
 #     nom = serializers.CharField(required=True)
 #     prenom = serializers.CharField(required=True)
@@ -51,57 +50,87 @@ UserModel = get_user_model()
 
 
 class CustomRegisterSerializer(RegisterSerializer):
-    nom = serializers.CharField(required=True)
-    prenom = serializers.CharField(required=True)
-    contact = serializers.CharField(required=False, allow_blank=True)
-    civilite = serializers.ChoiceField(choices=User.CIVILITE_CHOICES, required=False)
-    role = serializers.ChoiceField(choices=User.ROLES, required=False)
-    fonction = serializers.CharField(required=False, allow_blank=True)
-    company = serializers.CharField(required=False, allow_blank=True)
-    sector = serializers.CharField(required=False, allow_blank=True)
-    description = serializers.CharField(required=False, allow_blank=True)
-    email = serializers.EmailField(required=True)
+    """ Sérialiseur d'inscription personnalisé avec plusieurs champs """
 
-    def validate_email(self, email):
-        if User.objects.filter(email=email).exists():
-            raise serializers.ValidationError("Cet email est déjà utilisé.")
-        return email
+    nom = serializers.CharField(required=True, max_length=50)
+    prenom = serializers.CharField(required=True, max_length=100)
+    civilite = serializers.ChoiceField(choices=User.CIVILITE_CHOICES, required=False, allow_null=True)
+    sexe = serializers.ChoiceField(choices=User.sexe_CHOICES, required=False, allow_null=True)
+    contact = serializers.CharField(required=False, allow_blank=True, max_length=100)
+    role = serializers.ChoiceField(choices=User.ROLES, required=False, allow_null=True)
+    fonction = serializers.CharField(required=False, allow_blank=True, max_length=255)
+    company = serializers.CharField(required=False, allow_blank=True, max_length=255)
+    pays = serializers.CharField(required=False, allow_blank=True, max_length=255)
+    ville = serializers.CharField(required=False, allow_blank=True, max_length=255)
+    sector = serializers.CharField(required=False, allow_blank=True, max_length=255)
+    description = serializers.CharField(required=False, allow_blank=True)
+    preferences = serializers.JSONField(required=False)
 
     def get_cleaned_data(self):
-        """
-        Récupère les champs supplémentaires fournis par l'utilisateur
-        """
-        return {
+        """ Permet de récupérer les données avant enregistrement """
+        data = super().get_cleaned_data()
+        data.update({
             "nom": self.validated_data.get("nom", ""),
             "prenom": self.validated_data.get("prenom", ""),
+            "civilite": self.validated_data.get("civilite", None),
+            "sexe": self.validated_data.get("sexe", None),
             "contact": self.validated_data.get("contact", ""),
-            "civilite": self.validated_data.get("civilite", ""),
-            "role": self.validated_data.get("role", ""),
+            "role": self.validated_data.get("role", None),
             "fonction": self.validated_data.get("fonction", ""),
             "company": self.validated_data.get("company", ""),
+            "pays": self.validated_data.get("pays", ""),
+            "ville": self.validated_data.get("ville", ""),
             "sector": self.validated_data.get("sector", ""),
             "description": self.validated_data.get("description", ""),
-        }
+            "preferences": self.validated_data.get("preferences", {}),
+        })
+        return data
 
     def save(self, request):
-        """
-        🔹 Créer l'utilisateur manuellement pour s'assurer que tous les champs sont enregistrés
-        """
-        user = UserModel.objects.create_user(
-            email=self.validated_data.get("email"),
-            password=self.validated_data.get("password1"),
-            nom=self.validated_data.get("nom", ""),
-            prenom=self.validated_data.get("prenom", ""),
-            contact=self.validated_data.get("contact", ""),
-            civilite=self.validated_data.get("civilite", ""),
-            role=self.validated_data.get("role", ""),
-            fonction=self.validated_data.get("fonction", ""),
-            company=self.validated_data.get("company", ""),
-            sector=self.validated_data.get("sector", ""),
-            description=self.validated_data.get("description", ""),
-            is_active=False  # L'email doit être validé avant activation
+        """ Sauvegarde les données personnalisées avec l'utilisateur """
+        user = super().save(request)
+        user.nom = self.validated_data.get("nom", "")
+        user.prenom = self.validated_data.get("prenom", "")
+        user.civilite = self.validated_data.get("civilite", None)
+        user.sexe = self.validated_data.get("sexe", None)
+        user.contact = self.validated_data.get("contact", "")
+        user.role = self.validated_data.get("role", None)
+        user.fonction = self.validated_data.get("fonction", "")
+        user.company = self.validated_data.get("company", "")
+        user.pays = self.validated_data.get("pays", "")
+        user.ville = self.validated_data.get("ville", "")
+        user.sector = self.validated_data.get("sector", "")
+        user.description = self.validated_data.get("description", "")
+        user.preferences = self.validated_data.get("preferences", {})
+        cleaned_data = self.get_cleaned_data()
+        user = User.objects.create_user(
+            email=cleaned_data["email"],
+            password=self.validated_data["password1"],
+            **cleaned_data
         )
 
+        user.save()
+        return user
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})
+
+    class Meta:
+        model = User
+        fields = [
+            "email", "password", "nom", "prenom", "civilite", "sexe",
+            "contact", "role", "fonction", "company", "pays",
+            "ville", "sector", "description", "preferences"
+        ]
+
+    def create(self, validated_data):
+        """ Création de l'utilisateur avec un mot de passe hashé """
+        password = validated_data.pop("password")
+        user = User.objects.create(role="participant", **validated_data)
+        user = User.objects.create(**validated_data)
+        user.set_password(password)
+        user.save()
         return user
 
 
@@ -111,7 +140,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source="user.email", read_only=True)
     user_nom = serializers.CharField(source="user.nom", read_only=True)
     user_prenom = serializers.CharField(source="user.prenom", read_only=True)
-    user_role = serializers.CharField(source="user.get_role_display", read_only=True)
+    user_sexe = serializers.CharField(source="user.sexe", read_only=True)
+    user_civilite = serializers.CharField(source="user.civilite", read_only=True)
+    user_contact = serializers.CharField(source="user.contact", read_only=True)
+    user_fonction = serializers.CharField(source="user.fonction", read_only=True)
+    user_company = serializers.CharField(source="user.company", read_only=True)
+    user_pays = serializers.CharField(source="user.pays", read_only=True)
+    user_ville = serializers.CharField(source="user.ville", read_only=True)
+    user_sector = serializers.CharField(source="user.sector", read_only=True)
+    user_description = serializers.CharField(source="user.description", read_only=True)
+    user_preferences = serializers.JSONField(source="user.preferences", read_only=True)
+
+    user_role = serializers.SerializerMethodField()  # ✅ Corrige l'affichage des rôles
 
     photo = serializers.SerializerMethodField()
     miniature = serializers.SerializerMethodField()
@@ -120,7 +160,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = [
-            "user_email", "user_nom", "user_prenom", "user_role",
+            # Champs de l'utilisateur
+            "user_email", "user_nom", "user_prenom", "user_sexe", "user_civilite",
+            "user_contact", "user_fonction", "user_company", "user_pays", "user_ville",
+            "user_sector", "user_description", "user_preferences", "user_role",
+            # Champs du profil
             "photo", "miniature", "badge", "linkedin", "twitter",
             "website", "address", "birth_date", "bio"
         ]

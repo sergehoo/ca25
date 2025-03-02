@@ -57,8 +57,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('Excellence', 'Excellence'),
         ('Honorable', 'Honorable'),
     ]
+    sexe_CHOICES = [
+        ('Homme', 'Homme'),
+        ('Femme', 'Femme'),
+
+    ]
 
     civilite = models.CharField(max_length=10, choices=CIVILITE_CHOICES, blank=True, null=True)
+    sexe = models.CharField(max_length=10, choices=sexe_CHOICES, blank=True, null=True)
     nom = models.CharField(max_length=50, blank=True, null=True)
     prenom = models.CharField(max_length=100, blank=True, null=True)
     contact = models.CharField(max_length=100, blank=True, null=True)
@@ -66,6 +72,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=20, choices=ROLES, blank=True, null=True)
     fonction = models.CharField(max_length=255, blank=True, null=True)
     company = models.CharField(max_length=255, blank=True, null=True)
+    pays = models.CharField(max_length=255, blank=True, null=True)
+    ville = models.CharField(max_length=255, blank=True, null=True)
     sector = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     preferences = models.JSONField(default=dict, blank=True)
@@ -88,71 +96,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = "Utilisateurs"
 
 
-# class User(AbstractBaseUser, PermissionsMixin):
-#     ROLES = [
-#         ('participant', 'Participant'),
-#         ('exposant', 'Exposant'),
-#         ('Orateur', 'Orateur'),
-#         ('FISS', 'FISS'),
-#         ('sponsor', 'Sponsor'),
-#         ('media', 'Media'),
-#         ('organisateur', 'Organisateur'),
-#     ]
-#     CIVILITE_CHOICES = [
-#         ('Monsieur', 'Monsieur'),
-#         ('Madame', 'Madame'),
-#         ('Docteur', 'Docteur'),
-#         ('Professeur', 'Professeur'),
-#         ('Pasteur', 'Pasteur'),
-#         ('Bishop', 'Bishop'),
-#         ('Excellence', 'Excellence'),
-#         ('Honorable', 'Honorable'),
-#     ]
-#     civilite = models.CharField(max_length=10, choices=CIVILITE_CHOICES, blank=True, null=True)
-#     nom = models.CharField(max_length=50, blank=True, null=True)
-#     prenom = models.CharField(max_length=100, blank=True, null=True)
-#     contact = models.CharField(max_length=100, blank=True, null=True)
-#     email = models.EmailField(unique=True, verbose_name="Adresse email")
-#     role = models.CharField(max_length=20, choices=ROLES, blank=True, null=True)
-#     fonction = models.CharField(max_length=255, blank=True, null=True)
-#     company = models.CharField(max_length=255, blank=True, null=True)
-#     sector = models.CharField(max_length=255, blank=True, null=True)  # Secteur d'activité
-#     description = models.TextField(blank=True, null=True)
-#     preferences = models.JSONField(default=dict, blank=True)  # Régimes alimentaires ou autres
-#
-#     # Ajoutez des `related_name` uniques ici pour éviter les conflits
-#     groups = models.ManyToManyField(
-#         Group,
-#         related_name="custom_user_groups",
-#         blank=True,
-#         help_text="The groups this user belongs to.",
-#         verbose_name="groups",
-#     )
-#     user_permissions = models.ManyToManyField(
-#         Permission,
-#         related_name="custom_user_permissions",
-#         blank=True,
-#         help_text="Specific permissions for this user.",
-#         verbose_name="user permissions",
-#     )
-#     is_active = models.BooleanField(default=True)
-#     is_staff = models.BooleanField(default=False)
-#
-#     USERNAME_FIELD = "email"  # Utilisation de l'email comme identifiant
-#     REQUIRED_FIELDS = ["nom", "prenom"]
-#
-#     def __str__(self):
-#         return f"{self.nom} {self.prenom} ({self.email})"
-#
-#     class Meta:
-#         ordering = ["nom", "prenom"]
-#         verbose_name = "Utilisateur"
-#         verbose_name_plural = "Utilisateurs"
-
-
 class Profile(models.Model):
     """ Profil utilisateur avec gestion avancée des images (WebP & Miniature) """
-
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     photo = models.ImageField(upload_to="profiles/", blank=True, null=True)
     miniature = models.ImageField(upload_to="profiles/", blank=True, null=True)
@@ -272,63 +217,12 @@ class Profile(models.Model):
         self.badge.save(file_name, ContentFile(buffer.getvalue()), save=True)
         # def generate_badge(self):
 
-    #     """ Génère un badge personnalisé avec QR Code """
-    #     if not self.user.nom or not self.user.prenom:
-    #         print("⚠️ Impossible de générer le badge : nom/prénom manquant")
-    #         return
-    #
-    #     # Charger le template du badge
-    #     template_path = os.path.join(settings.MEDIA_ROOT, "templates/templateweb.png")
-    #     if not os.path.exists(template_path):
-    #         print(f"❌ Erreur : Le fichier {template_path} est introuvable !")
-    #         return
-    #
-    #     template = Image.open(template_path)
-    #     width, height = template.size
-    #
-    #     # Définir positions du texte et QR Code
-    #     name_position = (width // 2, height // 2 - 60)  # Texte centré
-    #     role_position = (width // 2, height // 1 - 0)  # 📌 Rôle sous le nom
-    #     qr_position = (width - 420, height - 350)  # QR Code en bas à droite
-    #
-    #     # Générer un QR Code contenant un lien vers le profil utilisateur
-    #     qr_data = f"https://www.conferencedabidjan.com/profile/{self.user.id}"
-    #     qr = qrcode.make(qr_data)
-    #     qr = qr.resize((350, 350))  # Taille du QR Code
-    #
-    #     # Ajouter le nom du participant
-    #     draw = ImageDraw.Draw(template)
-    #     # font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"  # Police standard
-    #     font_path = os.path.join(settings.BASE_DIR, "static/fonts/Arial.ttf")
-    #     font = ImageFont.truetype(font_path, 160)  # Grande taille pour le texte
-    #
-    #     font_role = ImageFont.truetype(font_path, 100)  # 📌 Police plus petite pour le rôle
-    #
-    #     participant_name = f"{self.user.nom} {self.user.prenom}"
-    #     participant_role = f"{self.user.get_role_display()}"  # 📌 Rôle du participant
-    #
-    #     # Centrer le texte
-    #     text_width, text_height = draw.textbbox((0, 0), participant_name, font=font)[2:]
-    #     text_x = (width - text_width) // 2
-    #     text_y = name_position[1]
-    #     draw.text((text_x, text_y), participant_name, fill="black", font=font)
-    #
-    #     # 📌 Centrage du texte pour le rôle
-    #     role_width, role_height = draw.textbbox((0, 0), participant_role, font=font_role)[2:]
-    #     role_x = (width - role_width) // 2
-    #     role_y = role_position[1]
-    #     draw.text((role_x, role_y), participant_role, fill="gray", font=font_role)  # 📌 Couleur plus discrète
-    #
-    #     # Ajouter le QR Code au badge
-    #     template.paste(qr, qr_position)
-    #
-    #     # Sauvegarde de l'image finale
-    #     buffer = BytesIO()
-    #     template.save(buffer, format="PNG")
-    #
-    #     # Enregistrer le fichier dans le modèle
-    #     file_name = f"badges/badge_{self.user.id}.png"
-    #     self.badge.save(file_name, ContentFile(buffer.getvalue()), save=True)  # ✅ Correction : save=True
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """ Création automatique du profil après l'inscription """
+    if created:
+        Profile.objects.create(user=instance)
 
     def __str__(self):
         return f"Profil de {self.user.nom} {self.user.prenom}"
