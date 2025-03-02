@@ -3,6 +3,7 @@ from io import BytesIO
 
 import qrcode
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.files import File
@@ -13,7 +14,7 @@ from dj_rest_auth.serializers import LoginSerializer
 
 from administration.models import Event, Session, Attendance, Temoignage
 from public.models import BeToBe, Meeting, Photo, Album, User, Profile, Category, BlogPost, Comment, GuestarsSpeaker
-from siade25 import settings
+
 
 # class CustomRegisterSerializer(RegisterSerializer):
 #     nom = serializers.CharField(required=True)
@@ -128,6 +129,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_badge(self, obj):
         return self.get_secure_url(obj.badge)
+
+    def get_user_role(self, obj):
+        """ Récupère le rôle de l'utilisateur avec une valeur par défaut si nécessaire """
+        return obj.user.get_role_display() if obj.user.role else "Non défini"
 
     def get_secure_url(self, image_field):
         """ Génère une URL HTTPS complète pour une image si elle existe """
