@@ -113,6 +113,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
     user_prenom = serializers.CharField(source="user.prenom", read_only=True)
     user_role = serializers.CharField(source="user.get_role_display", read_only=True)
 
+    photo = serializers.SerializerMethodField()
+    miniature = serializers.SerializerMethodField()
+    badge = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
         fields = [
@@ -132,7 +136,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_user_role(self, obj):
         """ Récupère le rôle de l'utilisateur avec une valeur par défaut si nécessaire """
-        return obj.user.get_role_display() if obj.user.role else "Non défini"
+        if obj.user.role:
+            return obj.user.get_role_display()
+        return "Non défini"  # ✅ Correction : Empêche la valeur `null`
 
     def get_secure_url(self, image_field):
         """ Génère une URL HTTPS complète pour une image si elle existe """
