@@ -69,7 +69,7 @@ class SessionAdmin(admin.ModelAdmin):
 @admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
     list_display = ('user', 'session', 'scanned_at')
-    search_fields = ('user__username', 'session__title')
+    search_fields = ('user__first_name', 'session__title')
     list_filter = ('scanned_at',)
     ordering = ('user',)  # Tri des éléments
     autocomplete_fields = ('user',)

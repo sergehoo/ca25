@@ -138,6 +138,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     """ Sérialiseur permettant la mise à jour des informations du profil ET de l'utilisateur """
 
     user_email = serializers.EmailField(source="user.email", read_only=True)  # Email inchangé
+    user_id = serializers.CharField(source="user.id", required=False)
     user_nom = serializers.CharField(source="user.nom", required=False)
     user_prenom = serializers.CharField(source="user.prenom", required=False)
     user_sexe = serializers.CharField(source="user.sexe", required=False, allow_blank=True, allow_null=True)
@@ -156,17 +157,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     photo = serializers.ImageField(required=False, allow_null=True)
     miniature = serializers.ImageField(required=False, allow_null=True)
-    badge = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Profile
         fields = [
             # Champs de l'utilisateur
-            "user_email", "user_nom", "user_prenom", "user_sexe", "user_civilite",
+            "user_id","user_email", "user_nom", "user_prenom", "user_sexe", "user_civilite",
             "user_contact", "user_fonction", "user_company", "user_pays", "user_ville",
             "user_sector", "user_description", "user_preferences", "user_role",
             # Champs du profil
-            "photo", "miniature", "badge", "linkedin", "twitter",
+            "photo", "miniature", "linkedin", "twitter",
             "website", "address", "birth_date", "bio"
         ]
 
@@ -200,7 +200,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["civilite", "nom", "prenom", "email", "contact", "role", "fonction", "company", "sector",
+        fields = ["civilite","id", "nom", "prenom", "email", "contact", "role", "fonction", "company", "sector",
                   "description", "preferences", "profile"]
 
     def update(self, instance, validated_data):
