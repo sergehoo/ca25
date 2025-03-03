@@ -25,7 +25,6 @@ router.register(r"guestarspeakers", GuestarsSpeakerViewSet, basename="guestarspe
 # router.register(r"events", EventViewSet, basename="event")
 router.register(r"sessions", SessionViewSet, basename="session")
 router.register(r"attendances", AttendanceViewSet, basename="attendance")
-
 router.register(r"temoignages", TemoignageViewSet, basename="temoignage")
 # router.register(r'auth/register', CustomRegisterViewSet, basename='register')
 

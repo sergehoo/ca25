@@ -125,13 +125,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        """ Création de l'utilisateur avec un mot de passe hashé """
+        """ ✅ Création de l'utilisateur avec un mot de passe hashé et un rôle par défaut """
+        validated_data.setdefault("role", "participant")  # Définit "participant" si non fourni
+
         password = validated_data.pop("password")
-        user = User.objects.create(role="participant", **validated_data)
         user = User.objects.create(**validated_data)
-        user.set_password(password)
+        user.set_password(password)  # Hash du mot de passe
         user.save()
         return user
+
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
