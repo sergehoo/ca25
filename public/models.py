@@ -217,16 +217,6 @@ class Profile(models.Model):
         self.badge.save(file_name, ContentFile(buffer.getvalue()), save=True)
         # def generate_badge(self):
 
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    """ Création automatique du profil après l'inscription """
-    if created:
-        Profile.objects.create(user=instance)
-
-    def __str__(self):
-        return f"Profil de {self.user.nom} {self.user.prenom}"
-
     def force_webp_conversion(self):
         """ Convertit n'importe quel format en WebP avec compression optimisée """
         if not self.photo:
@@ -341,6 +331,12 @@ def create_user_profile(sender, instance, created, **kwargs):
 
     def __str__(self):
         return f"Profil de {self.user.nom} {self.user.prenom}"
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """ Création automatique du profil après l'inscription """
+    if created:
+        Profile.objects.create(user=instance)
 
 
 class BeToBe(models.Model):

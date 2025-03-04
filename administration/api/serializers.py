@@ -113,28 +113,41 @@ class CustomRegisterSerializer(RegisterSerializer):
         return user
 
 
+# class RegisterSerializer(serializers.ModelSerializer):
+#     password = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})
+#
+#     class Meta:
+#         model = User
+#         fields = [
+#             "email", "password", "nom", "prenom", "civilite", "sexe",
+#             "contact", "role", "fonction", "company", "pays",
+#             "ville", "sector", "description", "preferences"
+#         ]
+#
+#     def create(self, validated_data):
+#         """ ✅ Création de l'utilisateur avec un mot de passe hashé et un rôle par défaut """
+#         validated_data.setdefault("role", "participant")  # Définit "participant" si non fourni
+#
+#         password = validated_data.pop("password")
+#         user = User.objects.create(**validated_data)
+#         user.set_password(password)  # Hash du mot de passe
+#         user.save()
+#         return user
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})
-
     class Meta:
         model = User
         fields = [
-            "email", "password", "nom", "prenom", "civilite", "sexe",
+            "email", "nom", "prenom", "civilite", "sexe",
             "contact", "role", "fonction", "company", "pays",
             "ville", "sector", "description", "preferences"
         ]
 
     def create(self, validated_data):
-        """ ✅ Création de l'utilisateur avec un mot de passe hashé et un rôle par défaut """
+        """ ✅ Création de l'utilisateur sans mot de passe """
         validated_data.setdefault("role", "participant")  # Définit "participant" si non fourni
 
-        password = validated_data.pop("password")
         user = User.objects.create(**validated_data)
-        user.set_password(password)  # Hash du mot de passe
-        user.save()
         return user
-
-
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """ Sérialiseur permettant la mise à jour des informations du profil ET de l'utilisateur """
@@ -164,7 +177,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = [
             # Champs de l'utilisateur
-            "user_id","user_email", "user_nom", "user_prenom", "user_sexe", "user_civilite",
+            "user_id", "user_email", "user_nom", "user_prenom", "user_sexe", "user_civilite",
             "user_contact", "user_fonction", "user_company", "user_pays", "user_ville",
             "user_sector", "user_description", "user_preferences", "user_role",
             # Champs du profil
@@ -202,7 +215,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["civilite","id", "nom", "prenom", "email", "contact", "role", "fonction", "company", "sector",
+        fields = ["civilite", "id", "nom", "prenom", "email", "contact", "role", "fonction", "company", "sector",
                   "description", "preferences", "profile"]
 
     def update(self, instance, validated_data):
