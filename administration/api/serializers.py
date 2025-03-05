@@ -113,41 +113,41 @@ class CustomRegisterSerializer(RegisterSerializer):
         return user
 
 
-# class RegisterSerializer(serializers.ModelSerializer):
-#     password = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})
-#
-#     class Meta:
-#         model = User
-#         fields = [
-#             "email", "password", "nom", "prenom", "civilite", "sexe",
-#             "contact", "role", "fonction", "company", "pays",
-#             "ville", "sector", "description", "preferences"
-#         ]
-#
-#     def create(self, validated_data):
-#         """ ✅ Création de l'utilisateur avec un mot de passe hashé et un rôle par défaut """
-#         validated_data.setdefault("role", "participant")  # Définit "participant" si non fourni
-#
-#         password = validated_data.pop("password")
-#         user = User.objects.create(**validated_data)
-#         user.set_password(password)  # Hash du mot de passe
-#         user.save()
-#         return user
 class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, style={"input_type": "password"})
+
     class Meta:
         model = User
         fields = [
-            "email", "nom", "prenom", "civilite", "sexe",
+            "email", "password", "nom", "prenom", "civilite", "sexe",
             "contact", "role", "fonction", "company", "pays",
             "ville", "sector", "description", "preferences"
         ]
 
     def create(self, validated_data):
-        """ ✅ Création de l'utilisateur sans mot de passe """
+        """ ✅ Création de l'utilisateur avec un mot de passe hashé et un rôle par défaut """
         validated_data.setdefault("role", "participant")  # Définit "participant" si non fourni
 
+        password = validated_data.pop("password")
         user = User.objects.create(**validated_data)
+        user.set_password(password)  # Hash du mot de passe
+        user.save()
         return user
+# class RegisterSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = [
+#             "email", "nom", "prenom", "civilite", "sexe",
+#             "contact", "role", "fonction", "company", "pays",
+#             "ville", "sector", "description", "preferences"
+#         ]
+#
+#     def create(self, validated_data):
+#         """ ✅ Création de l'utilisateur sans mot de passe """
+#         validated_data.setdefault("role", "participant")  # Définit "participant" si non fourni
+#
+#         user = User.objects.create(**validated_data)
+#         return user
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
