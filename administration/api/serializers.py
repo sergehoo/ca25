@@ -188,7 +188,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             # Champs de l'utilisateur
             "user_id", "user_email", "user_nom", "user_prenom", "user_sexe", "user_civilite",
             "user_contact", "user_fonction", "user_company", "user_pays", "user_ville",
-            "user_sector", "user_description", "user_preferences", "user_role",
+            "user_sector", "user_description","photo_profile", "user_preferences", "user_role",
             # Champs du profil
             "photo", "badge", "miniature", "linkedin", "twitter",
             "website", "address", "birth_date", "bio"
