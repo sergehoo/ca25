@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core.files import File
+from django.core.files.storage import default_storage
 from django.urls import reverse
 from django.utils.text import slugify
 from rest_framework import serializers
@@ -173,9 +174,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     user_role = serializers.SerializerMethodField()  # ✅ Corrige l'affichage des rôles
 
-    photo = serializers.ImageField(required=False, allow_null=True)
-    badge = serializers.ImageField(required=False, allow_null=True)
-    miniature = serializers.ImageField(required=False, allow_null=True)
+    # photo = serializers.ImageField(required=False, allow_null=True)
+    # badge = serializers.ImageField(required=False, allow_null=True)
+    # miniature = serializers.ImageField(required=False, allow_null=True)
+    photo = serializers.SerializerMethodField()
+    badge = serializers.SerializerMethodField()
+    miniature = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
@@ -192,6 +196,38 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_user_role(self, obj):
         """ Récupère le rôle de l'utilisateur """
         return obj.user.get_role_display() if obj.user.role else "Non défini"
+
+    def get_photo(self, obj):
+        """ Génère l'URL HTTPS pour le champ `photo` """
+        if obj.photo:
+            return self._get_absolute_https_url(obj.photo)
+        return None
+
+    def get_badge(self, obj):
+        """ Génère l'URL HTTPS pour le champ `badge` """
+        if obj.badge:
+            return self._get_absolute_https_url(obj.badge)
+        return None
+
+    def get_miniature(self, obj):
+        """ Génère l'URL HTTPS pour le champ `miniature` """
+        if obj.miniature:
+            return self._get_absolute_https_url(obj.miniature)
+        return None
+
+    def _get_absolute_https_url(self, file_field):
+        """
+        Génère une URL absolue en HTTPS pour un champ de fichier.
+        """
+        if file_field:
+            # Générer l'URL absolue en utilisant la requête
+            request = self.context.get('request')
+            if request:
+                # Convertir le chemin relatif en URL absolue
+                absolute_url = request.build_absolute_uri(file_field.url)
+                # Forcer l'utilisation de HTTPS
+                return absolute_url.replace("http://", "https://", 1)
+        return None
 
     def update(self, instance, validated_data):
         """
