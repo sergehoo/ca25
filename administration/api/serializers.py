@@ -133,6 +133,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(password)  # Hash du mot de passe
         user.save()
         return user
+
+
 # class RegisterSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = User
@@ -172,6 +174,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     user_role = serializers.SerializerMethodField()  # ✅ Corrige l'affichage des rôles
 
     photo = serializers.ImageField(required=False, allow_null=True)
+    badge = serializers.ImageField(required=False, allow_null=True)
     miniature = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
@@ -182,7 +185,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "user_contact", "user_fonction", "user_company", "user_pays", "user_ville",
             "user_sector", "user_description", "user_preferences", "user_role",
             # Champs du profil
-            "photo", "miniature", "linkedin", "twitter",
+            "photo", "badge", "miniature", "linkedin", "twitter",
             "website", "address", "birth_date", "bio"
         ]
 
