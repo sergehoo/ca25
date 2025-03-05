@@ -149,6 +149,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create(**validated_data)
         return user
 
+
 class UserProfileSerializer(serializers.ModelSerializer):
     """ Sérialiseur permettant la mise à jour des informations du profil ET de l'utilisateur """
 
