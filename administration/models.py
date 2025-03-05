@@ -87,7 +87,7 @@ class Attendance(models.Model):
         unique_together = ('user', 'session')  # Évite les doublons de participation
 
     def __str__(self):
-        return f"{self.user.username} - {self.session.title}"
+        return f"{self.user} - {self.session.title}"
 
 
 class Temoignage(models.Model):

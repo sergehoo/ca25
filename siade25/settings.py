@@ -75,7 +75,6 @@ INSTALLED_APPS = [
     "compressor",
     'decouple',
     'django_user_agents',
-
     'administration',
     'public',
 
