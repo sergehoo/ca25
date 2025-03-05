@@ -100,6 +100,7 @@ class Profile(models.Model):
     """ Profil utilisateur avec gestion avancée des images (WebP & Miniature) """
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     photo = models.ImageField(upload_to="profiles/", blank=True, null=True)
+    photo_profile = models.TextField(blank=True, null=True)
     miniature = models.ImageField(upload_to="profiles/", blank=True, null=True)
     badge = models.ImageField(upload_to="badges/", blank=True, null=True)
     linkedin = models.URLField(blank=True, null=True)

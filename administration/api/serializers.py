@@ -170,6 +170,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     user_sector = serializers.CharField(source="user.sector", required=False, allow_blank=True, allow_null=True)
     user_description = serializers.CharField(source="user.description", required=False, allow_blank=True,
                                              allow_null=True)
+    photo_profile = serializers.CharField(required=False, allow_blank=True, allow_null=True)
     user_preferences = serializers.JSONField(source="user.preferences", required=False)
 
     user_role = serializers.SerializerMethodField()  # ✅ Corrige l'affichage des rôles
