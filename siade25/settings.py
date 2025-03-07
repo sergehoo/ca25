@@ -52,7 +52,7 @@ LOGGING = {
         'disallowed_host': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
-            'filename': '/var/log/django/disallowed_host.log',
+            'filename': os.path.join('/tmp', 'disallowed_host.log'),  # 🔥 Changer ici 🔥
         },
     },
     'loggers': {
