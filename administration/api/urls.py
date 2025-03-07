@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import BeToBeViewSet, MeetingViewSet, UserProfileView, ChangePasswordView, AlbumViewSet, \
     PhotoViewSet, CategoryViewSet, BlogPostViewSet, CommentViewSet, GuestarsSpeakerViewSet, SessionViewSet, \
-    AttendanceViewSet, TemoignageViewSet, RegisterView, CommentListCreateView, ToggleLikeTemoignageView
+    AttendanceViewSet, TemoignageViewSet, RegisterView, ToggleLikeTemoignageView, AvisListCreateView
 from ..views import scan_qr_code
 
 router = DefaultRouter()
@@ -38,7 +38,7 @@ urlpatterns = [
                   path("auth/profile/", UserProfileView.as_view(), name="profile"),
                   path("auth/profile/update/", UserProfileView.as_view(), name="profile-update"),
                   path("auth/change-password/", ChangePasswordView.as_view(), name="change-password"),
-                  path('sessions/<int:session_id>/comments/', CommentListCreateView.as_view(), name='session-comments'),
+                  path('sessions/<int:session_id>/avis/', AvisListCreateView.as_view(), name='session-comments'),
                   path('temoignages/<int:temoignage_id>/like/', ToggleLikeTemoignageView.as_view(),
                        name='like-temoignage'),
 

@@ -73,15 +73,18 @@ class Session(models.Model):
 
         super().save(*args, **kwargs)
 
+    def average_rating(self):
+        return self.avis.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
+
+    def avis_count(self):
+        return self.avis.count()
+
     def __str__(self):
         return self.title
 
-    def average_rating(self):
-        return self.comments.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
 
-
-class Comment(models.Model):
-    session = models.ForeignKey('Session', on_delete=models.CASCADE, related_name="comments")
+class Avis(models.Model):
+    session = models.ForeignKey('Session', on_delete=models.CASCADE, related_name="avis")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     rating = models.IntegerField(null=True, blank=True)  # Optionnel, note de 1 à 5

@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.urls import path
 from django.utils.html import format_html
 
-from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage
+from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage, Avis
 from administration.views import dashboard_view
 from public.models import User, BeToBe, Meeting, Profile, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, \
     VisitCounter
@@ -154,14 +154,14 @@ class BlogPostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
 
 
-@admin.register(Comment)
-class CommentAdmin(admin.ModelAdmin):
-    list_display = ('author', 'post', 'approved', 'created_at')
-    list_filter = ('approved', 'created_at')
-    search_fields = ('author', 'content')
-    actions = ['approve_comments']
+@admin.register(Avis)
+class AvisAdmin(admin.ModelAdmin):
+    list_display = ('user', 'rating', 'created_at')
+    list_filter = ('user', 'created_at')
+    search_fields = ('user', 'text')
+    actions = ['approve_avis']
 
-    def approve_comments(self, request, queryset):
+    def approve_avis(self, request, queryset):
         queryset.update(approved=True)
 
 

@@ -17,8 +17,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from administration.api.serializers import BeToBeSerializer, MeetingSerializer, CustomRegisterSerializer, \
     UserSerializer, AlbumSerializer, PhotoSerializer, CategorySerializer, BlogPostSerializer, CommentSerializer, \
     GuestarsSpeakerSerializer, AttendanceSerializer, TemoignageSerializer, SessionSerializer, UserProfileSerializer, \
-    RegisterSerializer, LikeTemoignageSerializer
-from administration.models import Attendance, Session, Temoignage, LikeTemoignage
+    RegisterSerializer, LikeTemoignageSerializer, AvisSerializer
+from administration.models import Attendance, Session, Temoignage, LikeTemoignage, Avis
 from public.models import BeToBe, Meeting, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, Profile
 from allauth.account import app_settings as allauth_settings
 
@@ -98,16 +98,16 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CommentListCreateView(generics.ListCreateAPIView):
+class AvisListCreateView(generics.ListCreateAPIView):
     """
     Liste et création de commentaires pour une session spécifique
     """
-    serializer_class = CommentSerializer
+    serializer_class = AvisSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         session_id = self.kwargs['session_id']
-        return Comment.objects.filter(session_id=session_id)
+        return Avis.objects.filter(session_id=session_id)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -257,7 +257,7 @@ class GuestarsSpeakerViewSet(viewsets.ModelViewSet):
 
 class SessionViewSet(viewsets.ModelViewSet):
     """ API CRUD pour les sessions """
-    queryset = Session.objects.all()
+    queryset = Session.objects.all().prefetch_related("avis", "speaker")
     serializer_class = SessionSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 

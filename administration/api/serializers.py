@@ -13,7 +13,7 @@ from django.utils.text import slugify
 from rest_framework import serializers
 from dj_rest_auth.serializers import LoginSerializer
 
-from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage
+from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage, Avis
 from public.models import BeToBe, Meeting, Photo, Album, User, Profile, Category, BlogPost, Comment, GuestarsSpeaker
 
 # class CustomRegisterSerializer(RegisterSerializer):
@@ -335,15 +335,24 @@ class SpeakerSerializer(serializers.ModelSerializer):
         return None  # Si pas de photo, retourner None
 
 
+class AvisSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Avis
+        fields = ["id", "user", "session", "text", "rating", "created_at"]
+        read_only_fields = ["id", "user", "created_at"]  # On empêche seulement ces champs d'être modifiés
+
+
 class SessionSerializer(serializers.ModelSerializer):
     """ Sérialiseur des sessions avec les détails du speaker """
     qr_code_url = serializers.SerializerMethodField()
     speaker = SpeakerSerializer(read_only=True)  # Renvoie toutes les infos du speaker
+    avis_count = serializers.IntegerField(read_only=True)  # ✅ Nombre d'avis
+    avis = AvisSerializer(many=True, read_only=True)  # ✅ Liste des avis
 
     class Meta:
         model = Session
         fields = ["id", "uuid", "event", "speaker", "title", "description", "start_time", "end_time", "qr_code_url",
-                  "slug"]
+                  "slug","avis_count", "avis"]
 
     def get_qr_code_url(self, obj):
         if obj.qr_code:
@@ -412,9 +421,9 @@ class TemoignageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Temoignage
-        fields = ["id", "participant", "participant_name",'like_count', "nom", "email", "telephone", "temoignage", "note", "statut",
+        fields = ["id", "participant", "participant_name", 'like_count', "nom", "email", "telephone", "temoignage",
+                  "note", "statut",
                   "date_soumission", "date_validation", "liked_by_user"]
-
 
 
 # class MeetingSerializer(serializers.ModelSerializer):
@@ -452,14 +461,6 @@ class BlogPostSerializer(serializers.ModelSerializer):
         model = BlogPost
         fields = ["id", "title", "slug", "category", "category_name", "author", "author_name", "content", "image",
                   "created_at", "updated_at", "published_at", "status"]
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    post_title = serializers.CharField(source="post.title", read_only=True)
-
-    class Meta:
-        model = Comment
-        fields = ["id", "post", "post_title", "author", "email", "content", "created_at", "approved"]
 
 
 class GuestarsSpeakerSerializer(serializers.ModelSerializer):
