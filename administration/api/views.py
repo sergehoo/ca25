@@ -17,8 +17,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from administration.api.serializers import BeToBeSerializer, MeetingSerializer, CustomRegisterSerializer, \
     UserSerializer, AlbumSerializer, PhotoSerializer, CategorySerializer, BlogPostSerializer, CommentSerializer, \
     GuestarsSpeakerSerializer, AttendanceSerializer, TemoignageSerializer, SessionSerializer, UserProfileSerializer, \
-    RegisterSerializer
-from administration.models import Attendance, Session, Temoignage
+    RegisterSerializer, LikeTemoignageSerializer
+from administration.models import Attendance, Session, Temoignage, LikeTemoignage
 from public.models import BeToBe, Meeting, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, Profile
 from allauth.account import app_settings as allauth_settings
 
@@ -96,6 +96,21 @@ class RegisterView(APIView):
             }, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CommentListCreateView(generics.ListCreateAPIView):
+    """
+    Liste et création de commentaires pour une session spécifique
+    """
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        session_id = self.kwargs['session_id']
+        return Comment.objects.filter(session_id=session_id)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
 class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
@@ -315,11 +330,31 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     #     return Response(AttendanceSerializer(attendance).data, status=status.HTTP_201_CREATED)
 
 
+class ToggleLikeTemoignageView(generics.GenericAPIView):
+    serializer_class = LikeTemoignageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, temoignage_id):
+        temoignage = get_object_or_404(Temoignage, id=temoignage_id)
+        like, created = LikeTemoignage.objects.get_or_create(user=request.user, temoignage=temoignage)
+
+        if not created:
+            like.delete()
+            return Response({"message": "Like retiré", "like_count": temoignage.like_count()}, status=status.HTTP_200_OK)
+
+        return Response({"message": "Témoignage liké", "like_count": temoignage.like_count()}, status=status.HTTP_201_CREATED)
+
+
 class TemoignageViewSet(viewsets.ModelViewSet):
     """ API CRUD pour les témoignages """
     queryset = Temoignage.objects.all()
     serializer_class = TemoignageSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Temoignage.objects.all()  # Admin voit tout
+        return Temoignage.objects.filter(statut='Validé')  # Utilisateurs voient seulement les témoignages validés
 
     def perform_create(self, serializer):
         serializer.save(participant=self.request.user)

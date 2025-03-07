@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.urls import path
 from django.utils.html import format_html
 
-from administration.models import Event, Session, Attendance, Temoignage
+from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage
 from administration.views import dashboard_view
 from public.models import User, BeToBe, Meeting, Profile, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, \
     VisitCounter
@@ -109,6 +109,11 @@ class TemoignageAdmin(admin.ModelAdmin):
         self.message_user(request, "Les témoignages sélectionnés ont été validés.")
 
     valider_temoignage.short_description = "Valider les témoignages sélectionnés"
+
+
+@admin.register(LikeTemoignage)
+class LikeTemoignageAdmin(admin.ModelAdmin):
+    list_display = ('user', 'temoignage', 'created_at')
 
 
 @admin.register(Album)

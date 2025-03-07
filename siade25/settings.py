@@ -45,7 +45,24 @@ CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", ]
 # ALLOWED_HOSTS = []
 
 # Application definition
-
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'disallowed_host': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': '/var/log/django/disallowed_host.log',
+        },
+    },
+    'loggers': {
+        'django.security.DisallowedHost': {
+            'handlers': ['disallowed_host'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
 INSTALLED_APPS = [
     'django.contrib.gis',
     'django.contrib.admin',

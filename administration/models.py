@@ -7,8 +7,10 @@ from django.contrib.sites.models import Site
 from django.core.files import File
 from django.db import models
 import qrcode
+from django.db.models import Avg
 from django.utils.text import slugify
 from django.shortcuts import reverse
+from django.utils.timezone import now
 
 from public.models import User
 from django.utils.translation import gettext_lazy as _
@@ -74,8 +76,22 @@ class Session(models.Model):
     def __str__(self):
         return self.title
 
+    def average_rating(self):
+        return self.comments.aggregate(avg_rating=Avg('rating'))['avg_rating'] or 0
+
+
+class Comment(models.Model):
+    session = models.ForeignKey('Session', on_delete=models.CASCADE, related_name="comments")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    rating = models.IntegerField(null=True, blank=True)  # Optionnel, note de 1 à 5
+    created_at = models.DateTimeField(default=now)
+
+    class Meta:
+        ordering = ['-created_at']  # Derniers commentaires en premier
+
     def __str__(self):
-        return self.title
+        return f"Comment by {self.user.username} on {self.session.title}"
 
 
 class Attendance(models.Model):
@@ -116,5 +132,20 @@ class Temoignage(models.Model):
         verbose_name = "Témoignage"
         verbose_name_plural = "Témoignages"
 
+    def like_count(self):
+        return self.likes.count()
+
     def __str__(self):
         return f"{self.nom} - {self.temoignage[:50]}..."
+
+
+class LikeTemoignage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    temoignage = models.ForeignKey('Temoignage', on_delete=models.CASCADE, related_name="likes")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'temoignage')  # Un utilisateur ne peut liker qu'une seule fois un témoignage
+
+    def __str__(self):
+        return f"{self.user} a liké {self.temoignage.nom}"

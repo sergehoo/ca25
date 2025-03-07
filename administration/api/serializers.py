@@ -13,7 +13,7 @@ from django.utils.text import slugify
 from rest_framework import serializers
 from dj_rest_auth.serializers import LoginSerializer
 
-from administration.models import Event, Session, Attendance, Temoignage
+from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage
 from public.models import BeToBe, Meeting, Photo, Album, User, Profile, Category, BlogPost, Comment, GuestarsSpeaker
 
 # class CustomRegisterSerializer(RegisterSerializer):
@@ -188,7 +188,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             # Champs de l'utilisateur
             "user_id", "user_email", "user_nom", "user_prenom", "user_sexe", "user_civilite",
             "user_contact", "user_fonction", "user_company", "user_pays", "user_ville",
-            "user_sector", "user_description","photo_profile", "user_preferences", "user_role",
+            "user_sector", "user_description", "photo_profile", "user_preferences", "user_role",
             # Champs du profil
             "photo", "badge", "miniature", "linkedin", "twitter",
             "website", "address", "birth_date", "bio"
@@ -372,6 +372,15 @@ class SessionSerializer(serializers.ModelSerializer):
         return session
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)  # Affiche le nom d'utilisateur
+    session = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'session', 'user', 'text', 'rating', 'created_at']
+
+
 class AttendanceSerializer(serializers.ModelSerializer):
     session_title = serializers.CharField(source="session.title", read_only=True)
     user_name = serializers.CharField(source="user.nom", read_only=True)
@@ -381,13 +390,31 @@ class AttendanceSerializer(serializers.ModelSerializer):
         fields = ["id", "user", "session", "session_title", "user_name", "scanned_at"]
 
 
+class LikeTemoignageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LikeTemoignage
+        fields = ['user', 'temoignage', 'created_at']
+
+
 class TemoignageSerializer(serializers.ModelSerializer):
     participant_name = serializers.CharField(source="participant.nom", read_only=True)
+    like_count = serializers.IntegerField(read_only=True)  # ✅ Correction ici
+    liked_by_user = serializers.SerializerMethodField()
+
+    def get_liked_by_user(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return obj.likes.filter(user=user).exists()
+        return False
+
+    def get_like_count(self, obj):
+        return obj.likes.count()
 
     class Meta:
         model = Temoignage
-        fields = ["id", "participant", "participant_name", "nom", "email", "telephone", "temoignage", "note", "statut",
-                  "date_soumission", "date_validation"]
+        fields = ["id", "participant", "participant_name",'like_count', "nom", "email", "telephone", "temoignage", "note", "statut",
+                  "date_soumission", "date_validation", "liked_by_user"]
+
 
 
 # class MeetingSerializer(serializers.ModelSerializer):
