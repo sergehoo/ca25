@@ -8,7 +8,8 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import BeToBeViewSet, MeetingViewSet, UserProfileView, ChangePasswordView, AlbumViewSet, \
     PhotoViewSet, CategoryViewSet, BlogPostViewSet, CommentViewSet, GuestarsSpeakerViewSet, SessionViewSet, \
-    AttendanceViewSet, TemoignageViewSet, RegisterView, ToggleLikeTemoignageView, AvisListCreateView
+    AttendanceViewSet, TemoignageViewSet, RegisterView, ToggleLikeTemoignageView, AvisListCreateView, \
+    NotificationListView, MarkNotificationAsReadView, SendNotificationView
 from ..views import scan_qr_code
 
 router = DefaultRouter()
@@ -41,6 +42,11 @@ urlpatterns = [
                   path('sessions/<int:session_id>/avis/', AvisListCreateView.as_view(), name='session-comments'),
                   path('temoignages/<int:temoignage_id>/like/', ToggleLikeTemoignageView.as_view(),
                        name='like-temoignage'),
+                  path("notifications/", NotificationListView.as_view(), name="notifications"),
+                  path("notifications/<int:pk>/read/", MarkNotificationAsReadView.as_view(),
+                       name="mark-notification-read"),
+
+                  path("send-notification/", SendNotificationView.as_view(), name="send-notification"),
 
                   path("auth/", include("dj_rest_auth.urls")),  # Connexion, Déconnexion, Changement de mot de passe
                   # path("auth/registration/", include("dj_rest_auth.registration.urls")),  # Inscription

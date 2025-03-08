@@ -38,4 +38,5 @@ RUN apt-get update && apt-get install -y postgresql-client
 EXPOSE 8000
 
 # 🛠 Exécuter les migrations avant de démarrer le serveur Gunicorn
-CMD ["sh", "-c", " python manage.py migrate && python manage.py collectstatic --noinput && gunicorn siade25.wsgi:application --bind=0.0.0.0:8000 --workers=4 --timeout=180 --log-level=debug"]
+#CMD ["sh", "-c", " python manage.py migrate && python manage.py collectstatic --noinput && gunicorn siade25.wsgi:application --bind=0.0.0.0:8000 --workers=4 --timeout=180 --log-level=debug"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && daphne -b 0.0.0.0 -p 8000 siade25.asgi:application"]

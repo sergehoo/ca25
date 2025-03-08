@@ -18,7 +18,17 @@ from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    message = models.TextField()
+    created_at = models.DateTimeField(default=now)
+    read = models.BooleanField(default=False)  # Indique si l'utilisateur a lu la notification
 
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Notification for {self.user}: {self.message[:50]}"
 class Event(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()

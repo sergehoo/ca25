@@ -13,7 +13,7 @@ from django.utils.text import slugify
 from rest_framework import serializers
 from dj_rest_auth.serializers import LoginSerializer
 
-from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage, Avis
+from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage, Avis, Notification
 from public.models import BeToBe, Meeting, Photo, Album, User, Profile, Category, BlogPost, Comment, GuestarsSpeaker
 
 # class CustomRegisterSerializer(RegisterSerializer):
@@ -335,6 +335,12 @@ class SpeakerSerializer(serializers.ModelSerializer):
         return None  # Si pas de photo, retourner None
 
 
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ["id", "message", "created_at", "read"]
+
+
 class AvisSerializer(serializers.ModelSerializer):
     class Meta:
         model = Avis
@@ -352,7 +358,7 @@ class SessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Session
         fields = ["id", "uuid", "event", "speaker", "title", "description", "start_time", "end_time", "qr_code_url",
-                  "slug","avis_count", "avis"]
+                  "slug", "avis_count", "avis"]
 
     def get_qr_code_url(self, obj):
         if obj.qr_code:

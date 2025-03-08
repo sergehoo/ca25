@@ -1,4 +1,7 @@
+import requests
 from allauth.account.utils import complete_signup
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from dj_rest_auth.registration.views import RegisterView
 from django.conf.urls.static import static
 from django.http import JsonResponse
@@ -17,10 +20,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from administration.api.serializers import BeToBeSerializer, MeetingSerializer, CustomRegisterSerializer, \
     UserSerializer, AlbumSerializer, PhotoSerializer, CategorySerializer, BlogPostSerializer, CommentSerializer, \
     GuestarsSpeakerSerializer, AttendanceSerializer, TemoignageSerializer, SessionSerializer, UserProfileSerializer, \
-    RegisterSerializer, LikeTemoignageSerializer, AvisSerializer
-from administration.models import Attendance, Session, Temoignage, LikeTemoignage, Avis
+    RegisterSerializer, LikeTemoignageSerializer, AvisSerializer, NotificationSerializer
+from administration.models import Attendance, Session, Temoignage, LikeTemoignage, Avis, Notification
 from public.models import BeToBe, Meeting, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, Profile
 from allauth.account import app_settings as allauth_settings
+
+from siade25 import settings
 
 
 # @method_decorator(csrf_exempt, name="dispatch")
@@ -76,6 +81,66 @@ from allauth.account import app_settings as allauth_settings
 #     def get(self, request, *args, **kwargs):
 #         """ Bloque les requêtes GET et affiche un message d’erreur """
 #         return JsonResponse({"error": "GET method not allowed. Use POST."}, status=405)
+class NotificationListView(generics.ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user, read=False)  # ✅ Récupère les non lues
+
+
+def send_test_notification(user_id):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f"user_{user_id}",
+        {
+            "type": "send_notification",
+            "message": "🔥 Ceci est un test de notification WebSocket !"
+        }
+    )
+
+
+class SendNotificationView(APIView):
+    """
+    API pour envoyer des notifications push via OneSignal.
+    """
+    permission_classes = [IsAuthenticated]  # ✅ Autoriser uniquement les utilisateurs connectés
+
+    def post(self, request):
+        title = request.data.get("title")
+        message = request.data.get("message")
+        user_id = request.user.id  # ✅ Envoyer à l'utilisateur connecté
+
+        if not title or not message:
+            return Response({"error": "Titre et message requis"}, status=status.HTTP_400_BAD_REQUEST)
+
+        url = "https://onesignal.com/api/v1/notifications"
+        headers = {
+            "Content-Type": "application/json; charset=utf-8",
+            "Authorization": f"Basic {settings.ONESIGNAL_REST_API_KEY}",
+        }
+
+        payload = {
+            "app_id": settings.ONESIGNAL_APP_ID,
+            # "include_external_user_ids": [str(user_id)],  # ✅ Ciblage utilisateur
+            "included_segments": ["Total Subscriptions"],
+            "headings": {"en": title},
+            "contents": {"en": message},
+        }
+
+        response = requests.post(url, json=payload, headers=headers)
+        return Response(response.json(), status=response.status_code)
+
+
+class MarkNotificationAsReadView(generics.UpdateAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_update(self, serializer):
+        serializer.instance.read = True  # ✅ Marquer comme lu
+        serializer.save()
+
 
 class RegisterView(APIView):
     """ API pour l'inscription des utilisateurs """
@@ -111,6 +176,14 @@ class AvisListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+        avis = serializer.save(user=self.request.user)
+
+        # ✅ Notifier le speaker de la session
+        if avis.session.speaker:
+            Notification.objects.create(
+                user=avis.session.speaker,
+                message=f"Un nouvel avis a été ajouté sur votre session '{avis.session.title}'."
+            )
 
 
 class UserProfileView(generics.RetrieveUpdateDestroyAPIView):
@@ -340,9 +413,11 @@ class ToggleLikeTemoignageView(generics.GenericAPIView):
 
         if not created:
             like.delete()
-            return Response({"message": "Like retiré", "like_count": temoignage.like_count()}, status=status.HTTP_200_OK)
+            return Response({"message": "Like retiré", "like_count": temoignage.like_count()},
+                            status=status.HTTP_200_OK)
 
-        return Response({"message": "Témoignage liké", "like_count": temoignage.like_count()}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Témoignage liké", "like_count": temoignage.like_count()},
+                        status=status.HTTP_201_CREATED)
 
 
 class TemoignageViewSet(viewsets.ModelViewSet):

@@ -1,9 +1,11 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.urls import path
 from django.utils.html import format_html
 
-from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage, Avis
+from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage, Avis, Notification
 from administration.views import dashboard_view
 from public.models import User, BeToBe, Meeting, Profile, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, \
     VisitCounter
@@ -163,6 +165,31 @@ class AvisAdmin(admin.ModelAdmin):
 
     def approve_avis(self, request, queryset):
         queryset.update(approved=True)
+
+
+@admin.action(description="Envoyer une notification WebSocket")
+def send_notification(modeladmin, request, queryset):
+    """
+    Action Admin pour envoyer une notification WebSocket
+    """
+    channel_layer = get_channel_layer()
+
+    for notification in queryset:
+        async_to_sync(channel_layer.group_send)(
+            f"user_{notification.user.id}",
+            {
+                "type": "send_notification",
+                "message": notification.message,
+            }
+        )
+    modeladmin.message_user(request, "📢 Notifications envoyées avec succès !")
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ("user", "message", "created_at", "read")
+    list_filter = ("read", "created_at")
+    actions = [send_notification]  # ✅ Ajout du bouton
 
 
 @admin.register(GuestarsSpeaker)
