@@ -100,37 +100,79 @@ def send_test_notification(user_id):
     )
 
 
+# class SendNotificationView(APIView):
+#     """
+#     API pour envoyer des notifications push via OneSignal.
+#     """
+#     permission_classes = [IsAuthenticated]  # ✅ Autoriser uniquement les utilisateurs connectés
+#
+#     def post(self, request):
+#         title = request.data.get("title")
+#         message = request.data.get("message")
+#         user_id = request.user.id  # ✅ Envoyer à l'utilisateur connecté
+#
+#         if not title or not message:
+#             return Response({"error": "Titre et message requis"}, status=status.HTTP_400_BAD_REQUEST)
+#
+#         url = "https://onesignal.com/api/v1/notifications"
+#         headers = {
+#             "Content-Type": "application/json; charset=utf-8",
+#             "Authorization": f"Basic {settings.ONESIGNAL_REST_API_KEY}",
+#         }
+#
+#         payload = {
+#             "app_id": settings.ONESIGNAL_APP_ID,
+#             # "include_external_user_ids": [str(user_id)],  # ✅ Ciblage utilisateur
+#             "included_segments": ["Total Subscriptions"],
+#             "headings": {"en": title},
+#             "contents": {"en": message},
+#         }
+#
+#         response = requests.post(url, json=payload, headers=headers)
+#         return Response(response.json(), status=response.status_code)
+
 class SendNotificationView(APIView):
     """
-    API pour envoyer des notifications push via OneSignal.
+    API pour envoyer des notifications push via OneSignal avec des paramètres avancés.
     """
     permission_classes = [IsAuthenticated]  # ✅ Autoriser uniquement les utilisateurs connectés
 
     def post(self, request):
         title = request.data.get("title")
         message = request.data.get("message")
-        user_id = request.user.id  # ✅ Envoyer à l'utilisateur connecté
+        url_action = request.data.get("url", None)  # ✅ Lien cliquable dans la notification
+        schedule_time = request.data.get("schedule", None)  # ✅ Planification de la notification (ISO 8601)
+        image_url = request.data.get("image", None)  # ✅ Image dans la notification
+        large_icon = request.data.get("large_icon", None)  # ✅ Icône de l’application
+        subtitle = request.data.get("subtitle", None)  # ✅ Sous-titre de la notification
+        segment = request.data.get("segment", "Total Subscriptions")  # ✅ Ciblage par segment
 
         if not title or not message:
             return Response({"error": "Titre et message requis"}, status=status.HTTP_400_BAD_REQUEST)
 
-        url = "https://onesignal.com/api/v1/notifications"
+        # ✅ Construction du payload avec tous les paramètres avancés
+        payload = {
+            "app_id": settings.ONESIGNAL_APP_ID,
+            "included_segments": [segment],  # Par défaut, "Total Subscriptions" = tous les utilisateurs
+            "headings": {"en": title},
+            "contents": {"en": message},
+            "subtitle": {"en": subtitle} if subtitle else None,  # ✅ Ajout du sous-titre si présent
+            "big_picture": image_url,  # ✅ Image affichée dans la notification
+            "large_icon": large_icon,  # ✅ Icône de l’application
+            "url": url_action,  # ✅ Lien sur lequel la notification redirige
+            "send_after": schedule_time,  # ✅ Planification de la notification (ex: "2025-03-10T12:00:00Z")
+        }
+
+        # Supprimer les clés `None` du payload
+        payload = {k: v for k, v in payload.items() if v is not None}
+
         headers = {
             "Content-Type": "application/json; charset=utf-8",
             "Authorization": f"Basic {settings.ONESIGNAL_REST_API_KEY}",
         }
 
-        payload = {
-            "app_id": settings.ONESIGNAL_APP_ID,
-            # "include_external_user_ids": [str(user_id)],  # ✅ Ciblage utilisateur
-            "included_segments": ["Total Subscriptions"],
-            "headings": {"en": title},
-            "contents": {"en": message},
-        }
-
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post("https://onesignal.com/api/v1/notifications", json=payload, headers=headers)
         return Response(response.json(), status=response.status_code)
-
 
 class MarkNotificationAsReadView(generics.UpdateAPIView):
     queryset = Notification.objects.all()

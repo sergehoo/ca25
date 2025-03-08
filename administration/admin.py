@@ -1,3 +1,4 @@
+import requests
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.contrib import admin
@@ -9,6 +10,7 @@ from administration.models import Event, Session, Attendance, Temoignage, LikeTe
 from administration.views import dashboard_view
 from public.models import User, BeToBe, Meeting, Profile, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, \
     VisitCounter
+from siade25 import settings
 
 
 @admin.register(User)
@@ -167,29 +169,47 @@ class AvisAdmin(admin.ModelAdmin):
         queryset.update(approved=True)
 
 
-@admin.action(description="Envoyer une notification WebSocket")
+@admin.action(description="📢 Envoyer la notification OneSignal")
 def send_notification(modeladmin, request, queryset):
     """
-    Action Admin pour envoyer une notification WebSocket
+    Action Admin pour envoyer une notification push via OneSignal.
     """
-    channel_layer = get_channel_layer()
+    headers = {
+        "Content-Type": "application/json; charset=utf-8",
+        "Authorization": f"Basic {settings.ONESIGNAL_REST_API_KEY}",
+    }
+    url = "https://onesignal.com/api/v1/notifications"
 
     for notification in queryset:
-        async_to_sync(channel_layer.group_send)(
-            f"user_{notification.user.id}",
-            {
-                "type": "send_notification",
-                "message": notification.message,
-            }
-        )
+        payload = {
+            "app_id": settings.ONESIGNAL_APP_ID,
+            "included_segments": [notification.segment],  # ✅ Ciblage
+            "headings": {"en": notification.title},
+            "contents": {"en": notification.message},
+            "subtitle": {"en": notification.subtitle} if notification.subtitle else None,
+            "big_picture": notification.image_url,  # ✅ Image
+            "large_icon": notification.large_icon,  # ✅ Icône de l’app
+            "url": notification.url_action,  # ✅ Lien cliquable
+            "send_after": notification.schedule_time.isoformat() if notification.schedule_time else None,
+            # ✅ Planification
+        }
+
+        # Supprime les clés `None`
+        payload = {k: v for k, v in payload.items() if v is not None}
+
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code == 200:
+            notification.sent = True  # ✅ Marquer comme envoyée
+            notification.save()
+
     modeladmin.message_user(request, "📢 Notifications envoyées avec succès !")
 
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    list_display = ("user", "message", "created_at", "read")
-    list_filter = ("read", "created_at")
-    actions = [send_notification]  # ✅ Ajout du bouton
+    list_display = ("title", "user", "created_at", "sent")
+    list_filter = ("sent", "created_at")
+    actions = [send_notification]  # ✅ Ajout du bouton d'action
 
 
 @admin.register(GuestarsSpeaker)

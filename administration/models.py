@@ -19,16 +19,27 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
 class Notification(models.Model):
+    """
+    Modèle pour stocker les notifications OneSignal envoyées.
+    """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    title = models.CharField(max_length=255)
     message = models.TextField()
+    subtitle = models.CharField(max_length=255, blank=True, null=True)  # ✅ Sous-titre facultatif
+    image_url = models.URLField(blank=True, null=True)  # ✅ Image affichée
+    large_icon = models.URLField(blank=True, null=True)  # ✅ Icône
+    url_action = models.URLField(blank=True, null=True)  # ✅ Lien cliquable
+    schedule_time = models.DateTimeField(blank=True, null=True)  # ✅ Planification de la notification
+    segment = models.CharField(max_length=100, default="Total Subscriptions")  # ✅ Ciblage
+    sent = models.BooleanField(default=False)  # ✅ Statut d'envoi
     created_at = models.DateTimeField(default=now)
-    read = models.BooleanField(default=False)  # Indique si l'utilisateur a lu la notification
 
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Notification for {self.user}: {self.message[:50]}"
+        return f"{self.title} - {self.user.email if self.user else 'Tous'}"
+
 class Event(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
