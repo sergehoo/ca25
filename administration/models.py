@@ -116,7 +116,7 @@ class Avis(models.Model):
         ordering = ['-created_at']  # Derniers commentaires en premier
 
     def __str__(self):
-        return f"Comment by {self.user} on {self.session.title}"
+        return f"Comment by {self.user.nom} on {self.session.title}"
 
 
 class LikeAvis(models.Model):

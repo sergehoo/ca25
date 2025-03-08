@@ -343,8 +343,10 @@ class NotificationSerializer(serializers.ModelSerializer):
 
 class AvisSerializer(serializers.ModelSerializer):
     user_email = serializers.CharField(source="user.email", read_only=True)
-    like_count = serializers.IntegerField(source="like_count", read_only=True)  # ✅ Compte des likes
-    liked_by_user = serializers.SerializerMethodField()  # ✅ Indique si l'utilisateur a liké
+    user_nom = serializers.CharField(source="user.nom", read_only=True)  # ✅ Affichage du nom
+    user_prenom = serializers.CharField(source="user.prenom", read_only=True)  # ✅ Affichage du prénom
+    like_count = serializers.SerializerMethodField()  # ✅ Correction pour compter les likes
+    liked_by_user = serializers.SerializerMethodField()  # ✅ Vérifier si l'utilisateur a liké
 
     def get_liked_by_user(self, obj):
         user = self.context['request'].user
@@ -352,9 +354,12 @@ class AvisSerializer(serializers.ModelSerializer):
             return obj.likes.filter(user=user).exists()
         return False
 
+    def get_like_count(self, obj):
+        return obj.likes.count()  # ✅ Récupère le nombre de likes correctement
+
     class Meta:
         model = Avis
-        fields = ["id", "session", "user", "user_email", "text", "rating", "created_at", "like_count", "liked_by_user"]
+        fields = ["id", "session", "user", "user_email", "user_nom", "user_prenom", "text", "rating", "created_at", "like_count", "liked_by_user"]
 
 
 class LikeAvisSerializer(serializers.ModelSerializer):

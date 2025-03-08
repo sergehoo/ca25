@@ -83,7 +83,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'dj_rest_auth',
     # 'dj_rest_auth.registration',
-    "channels",
+    # "channels",
     'django_filters',
     'corsheaders',
     'simple_history',
@@ -325,18 +325,18 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # django channel pour les notification en temps reel
 
-ASGI_APPLICATION = "siade25.asgi.application"
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",  # Utilisation de la mémoire (pour le développement)
-        # Pour la production, utilise Redis :
-        # "BACKEND": "channels_redis.core.RedisChannelLayer",
-        # "CONFIG": {
-        #     "hosts": [("127.0.0.1", 6379)],
-        # },
-    },
-}
+# ASGI_APPLICATION = "siade25.asgi.application"
+#
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels.layers.InMemoryChannelLayer",  # Utilisation de la mémoire (pour le développement)
+#         # Pour la production, utilise Redis :
+#         # "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         # "CONFIG": {
+#         #     "hosts": [("127.0.0.1", 6379)],
+#         # },
+#     },
+# }
 
 ONESIGNAL_APP_ID = "b9a6e433-a916-4552-a71f-19b4aed7db04"
 ONESIGNAL_REST_API_KEY = "os_v2_app_xgtoim5jczcvfjy7dg2k5v63aqmqforend3u545yjmjdkurvcrejn7cq6rro7ipdccxthighlpltscqma2txagsboo335uxuyrz5iny"
