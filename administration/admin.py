@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.urls import path
 from django.utils.html import format_html
 
-from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage, Avis, Notification
+from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage, Avis, Notification, LikeAvis
 from administration.views import dashboard_view
 from public.models import User, BeToBe, Meeting, Profile, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, \
     VisitCounter
@@ -269,6 +269,11 @@ class CustomAdminSite(admin.AdminSite):
 
     dashboard_link.allow_tags = True
     dashboard_link.short_description = "Tableau de Bord"
+
+
+@admin.register(LikeAvis)
+class LikeAvisAdmin(admin.ModelAdmin):
+    list_display = ("user", "avis", "created_at")
 
 
 admin_site = CustomAdminSite(name="admin")

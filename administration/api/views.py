@@ -20,8 +20,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from administration.api.serializers import BeToBeSerializer, MeetingSerializer, CustomRegisterSerializer, \
     UserSerializer, AlbumSerializer, PhotoSerializer, CategorySerializer, BlogPostSerializer, CommentSerializer, \
     GuestarsSpeakerSerializer, AttendanceSerializer, TemoignageSerializer, SessionSerializer, UserProfileSerializer, \
-    RegisterSerializer, LikeTemoignageSerializer, AvisSerializer, NotificationSerializer
-from administration.models import Attendance, Session, Temoignage, LikeTemoignage, Avis, Notification
+    RegisterSerializer, LikeTemoignageSerializer, AvisSerializer, NotificationSerializer, LikeAvisSerializer
+from administration.models import Attendance, Session, Temoignage, LikeTemoignage, Avis, Notification, LikeAvis
 from public.models import BeToBe, Meeting, Album, Photo, Category, BlogPost, Comment, GuestarsSpeaker, Profile
 from allauth.account import app_settings as allauth_settings
 
@@ -87,17 +87,6 @@ class NotificationListView(generics.ListAPIView):
 
     def get_queryset(self):
         return Notification.objects.filter(user=self.request.user, read=False)  # ✅ Récupère les non lues
-
-
-def send_test_notification(user_id):
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        f"user_{user_id}",
-        {
-            "type": "send_notification",
-            "message": "🔥 Ceci est un test de notification WebSocket !"
-        }
-    )
 
 
 # class SendNotificationView(APIView):
@@ -174,6 +163,7 @@ class SendNotificationView(APIView):
         response = requests.post("https://onesignal.com/api/v1/notifications", json=payload, headers=headers)
         return Response(response.json(), status=response.status_code)
 
+
 class MarkNotificationAsReadView(generics.UpdateAPIView):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
@@ -226,6 +216,24 @@ class AvisListCreateView(generics.ListCreateAPIView):
                 user=avis.session.speaker,
                 message=f"Un nouvel avis a été ajouté sur votre session '{avis.session.title}'."
             )
+
+
+class ToggleLikeAvisView(generics.GenericAPIView):
+    """
+    API pour liker ou unliker un avis
+    """
+    serializer_class = LikeAvisSerializer  # ✅ Ajout du serializer_class
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, avis_id):
+        avis = Avis.objects.get(id=avis_id)
+        like, created = LikeAvis.objects.get_or_create(user=request.user, avis=avis)
+
+        if not created:  # ✅ Si l'utilisateur a déjà liké, on retire le like
+            like.delete()
+            return Response({"message": "Like retiré"}, status=status.HTTP_204_NO_CONTENT)
+
+        return Response({"message": "Avis liké"}, status=status.HTTP_201_CREATED)
 
 
 class UserProfileView(generics.RetrieveUpdateDestroyAPIView):

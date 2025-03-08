@@ -9,7 +9,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from .views import BeToBeViewSet, MeetingViewSet, UserProfileView, ChangePasswordView, AlbumViewSet, \
     PhotoViewSet, CategoryViewSet, BlogPostViewSet, CommentViewSet, GuestarsSpeakerViewSet, SessionViewSet, \
     AttendanceViewSet, TemoignageViewSet, RegisterView, ToggleLikeTemoignageView, AvisListCreateView, \
-    NotificationListView, MarkNotificationAsReadView, SendNotificationView
+    NotificationListView, MarkNotificationAsReadView, SendNotificationView, ToggleLikeAvisView
 from ..views import scan_qr_code
 
 router = DefaultRouter()
@@ -45,6 +45,7 @@ urlpatterns = [
                   path("notifications/", NotificationListView.as_view(), name="notifications"),
                   path("notifications/<int:pk>/read/", MarkNotificationAsReadView.as_view(),
                        name="mark-notification-read"),
+                  path("avis/<int:avis_id>/like/", ToggleLikeAvisView.as_view(), name="toggle-like-avis"),
 
                   path("send-notification/", SendNotificationView.as_view(), name="send-notification"),
 

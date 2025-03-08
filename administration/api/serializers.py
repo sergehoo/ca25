@@ -13,7 +13,7 @@ from django.utils.text import slugify
 from rest_framework import serializers
 from dj_rest_auth.serializers import LoginSerializer
 
-from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage, Avis, Notification
+from administration.models import Event, Session, Attendance, Temoignage, LikeTemoignage, Avis, Notification, LikeAvis
 from public.models import BeToBe, Meeting, Photo, Album, User, Profile, Category, BlogPost, Comment, GuestarsSpeaker
 
 # class CustomRegisterSerializer(RegisterSerializer):
@@ -342,10 +342,25 @@ class NotificationSerializer(serializers.ModelSerializer):
 
 
 class AvisSerializer(serializers.ModelSerializer):
+    user_email = serializers.CharField(source="user.email", read_only=True)
+    like_count = serializers.IntegerField(source="like_count", read_only=True)  # ✅ Compte des likes
+    liked_by_user = serializers.SerializerMethodField()  # ✅ Indique si l'utilisateur a liké
+
+    def get_liked_by_user(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            return obj.likes.filter(user=user).exists()
+        return False
+
     class Meta:
         model = Avis
-        fields = ["id", "user", "session", "text", "rating", "created_at"]
-        read_only_fields = ["id", "user", "created_at"]  # On empêche seulement ces champs d'être modifiés
+        fields = ["id", "session", "user", "user_email", "text", "rating", "created_at", "like_count", "liked_by_user"]
+
+
+class LikeAvisSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LikeAvis
+        fields = ["user", "avis", "created_at"]
 
 
 class SessionSerializer(serializers.ModelSerializer):

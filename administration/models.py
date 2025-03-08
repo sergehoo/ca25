@@ -40,6 +40,7 @@ class Notification(models.Model):
     def __str__(self):
         return f"{self.title} - {self.user.email if self.user else 'Tous'}"
 
+
 class Event(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -115,7 +116,19 @@ class Avis(models.Model):
         ordering = ['-created_at']  # Derniers commentaires en premier
 
     def __str__(self):
-        return f"Comment by {self.user.username} on {self.session.title}"
+        return f"Comment by {self.user} on {self.session.title}"
+
+
+class LikeAvis(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    avis = models.ForeignKey(Avis, on_delete=models.CASCADE, related_name="likes")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'avis')  # ✅ Un utilisateur ne peut liker un avis qu'une seule fois
+
+    def __str__(self):
+        return f"{self.user.email} a liké un avis"
 
 
 class Attendance(models.Model):
